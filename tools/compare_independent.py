@@ -87,6 +87,7 @@ def main() -> None:
         "row_disposition_mismatches": row_mismatch,
         "numbers_compared": len(checks),
         "number_mismatches": failed,
+        "numbers_checked": [name for name, _ in checks],
     }
     (ROOT / "results" / "independent_check.json").write_text(json.dumps(out, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(out, indent=2))

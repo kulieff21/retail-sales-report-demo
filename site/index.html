@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail sales report: where the growth came from</title>
+<meta name="description" content="A reproducible sales analysis of 1,067,371 raw transaction lines: revenue grew 1.9%, existing customers spent 7.7% less. Every row reconciled, every number checked twice.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%273%27 fill=%27%2314161a%27/%3E%3Cpath d=%27M9 8h14M9 13h14M9 18h9M9 23h5%27 stroke=%27%23fffefb%27 stroke-width=%272.2%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eaee; --paper:#fffefb; --ink:#14161a; --muted:#5d6570; --rule:#c5ccd4; --soft:#d9dee4;
+  --teal:#0f7b6c; --coral:#d0452f; --mustard:#b98a12; --slate:#4a5563; --a:#9aa4af;
+  --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--sans);font-stretch:100%}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+.teal{color:var(--teal)} .coral{color:var(--coral)} .mustard{color:var(--mustard)}
+
+/* top bar */
+.bar{border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 86%,white)}
+.bar .wrap{display:flex;gap:18px;align-items:center;justify-content:space-between;min-height:54px;flex-wrap:wrap}
+.brand{font:600 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.brand b{display:inline-block;background:var(--ink);color:var(--paper);padding:4px 7px;margin-right:8px;border-radius:2px}
+.bar nav{display:flex;gap:16px;font:500 13px/1 var(--mono)}
+.bar nav a{text-decoration:none;border-bottom:1px solid transparent;padding:6px 0}
+.bar nav a:hover{border-bottom-color:var(--ink)}
+
+/* hero */
+.hero{padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:56px;align-items:start}
+.kicker{font:500 12.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+h1{font:850 clamp(38px,5.4vw,68px)/.95 var(--sans);font-stretch:72%;letter-spacing:-.01em;margin:0 0 22px;text-transform:uppercase}
+h1 .l2{display:block;color:var(--coral)}
+.lede{font-size:19px;max-width:560px;margin:0 0 26px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--mono);padding:13px 16px;border:1.5px solid var(--ink);border-radius:3px;text-decoration:none;background:var(--ink);color:var(--paper);transition:transform .15s ease,box-shadow .15s ease}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:34px;border-top:1.5px solid var(--ink)}
+.facts div{padding:14px 14px 0 0}
+.facts b{display:block;font:500 24px/1.1 var(--mono);letter-spacing:-.02em}
+.facts span{font-size:13.5px;color:var(--muted)}
+
+/* receipt */
+.till{position:relative}
+.till-head{display:flex;justify-content:space-between;font:500 12px/1 var(--mono);color:var(--muted);margin-bottom:8px}
+.till-head .count{color:var(--ink)}
+.receipt-window{position:relative;height:560px;overflow:hidden;border-radius:4px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 70px,#000 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 70px,#000 100%)}
+.roll{position:absolute;left:14px;right:14px;bottom:30px;background:var(--paper);font:400 12.3px/1.5 var(--mono);color:#23262b;
+  padding:18px 18px 74px;box-shadow:0 1px 0 var(--rule),0 18px 30px -18px rgba(20,22,26,.35)}
+.roll [hidden]{display:none!important}
+.feed{animation:feed .26s ease-out both;overflow:hidden}
+@keyframes feed{from{max-height:0;opacity:0}to{max-height:64px;opacity:1}}
+.roll:after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;
+  background:linear-gradient(-45deg,transparent 5px,var(--paper) 0) 0 0/10px 8px,linear-gradient(45deg,transparent 5px,var(--paper) 0) 0 0/10px 8px}
+.slot{position:absolute;left:0;right:0;bottom:0;height:34px;background:var(--ink);border-radius:6px 6px 4px 4px;
+  box-shadow:inset 0 6px 0 #2b2f36}
+.slot:before{content:"";position:absolute;left:10px;right:10px;top:9px;height:4px;background:#000;border-radius:3px}
+.slot .led{position:absolute;right:14px;bottom:8px;width:7px;height:7px;border-radius:50%;background:#3a3f46}
+.slot .led.on{background:#39d3a4;box-shadow:0 0 8px #39d3a4}
+.r-title{text-align:center;font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.r-sub{text-align:center;color:#6b7078;font-size:11px;margin-bottom:10px}
+.r-dash{border-top:1.5px dashed #9aa1aa;margin:8px 0}
+.r-line{display:grid;grid-template-columns:1fr auto;column-gap:10px;padding:1px 0}
+.r-line .d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-line .v{text-align:right}
+.r-line .meta{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:10.5px;color:#7a8089;margin-bottom:3px}
+.tag{display:inline-block;font-size:9.5px;font-weight:500;letter-spacing:.06em;padding:1px 5px;border-radius:2px;border:1px solid currentColor}
+.t-sale{color:var(--teal)} .t-cancel{color:var(--coral)} .t-dup{color:#7b4bb3} .t-np{color:var(--mustard)} .t-zero{color:var(--slate)} .t-adj{color:#8a2c68}
+.r-line.void .d,.r-line.void .v{text-decoration:line-through;text-decoration-color:#7b4bb3}
+.r-skip{text-align:center;color:#6b7078;font-size:11px;padding:6px 0}
+.r-tot{display:grid;grid-template-columns:1fr auto auto;column-gap:12px;padding:1px 0}
+.r-tot .n{text-align:right;color:#6b7078}
+.r-tot .v{text-align:right;min-width:112px}
+.r-grand{font-weight:500;border-top:1.5px solid #23262b;margin-top:6px;padding-top:6px}
+.stamp{position:absolute;right:34px;bottom:52px;font:600 13px/1.15 var(--mono);color:var(--teal);border:2.5px solid var(--teal);
+  padding:7px 10px;border-radius:4px;transform:rotate(-8deg) scale(1);text-align:center;letter-spacing:.08em;background:rgba(255,254,251,.85);opacity:1}
+.js .stamp{opacity:0;transform:rotate(-8deg) scale(1.6)}
+.js .stamp.on{opacity:1;transform:rotate(-8deg) scale(1);transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+.replay{margin-top:10px;background:none;border:0;font:500 12px/1 var(--mono);color:var(--muted);cursor:pointer;padding:6px 0;text-decoration:underline;display:none}
+.js .replay{display:inline-block}
+
+/* sections */
+section.q{padding:72px 0 30px;border-top:1.5px solid var(--ink)}
+.q-head{display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;margin-bottom:34px}
+.q-label{font:500 12.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.q-label .num{display:inline-block;font-size:30px;letter-spacing:0;border:1.5px dashed var(--ink);padding:6px 10px 4px;margin-bottom:10px}
+h2{font:800 clamp(28px,3.6vw,44px)/1.02 var(--sans);font-stretch:78%;margin:0 0 14px;text-transform:uppercase;letter-spacing:-.005em}
+.answer{font-size:20px;line-height:1.45;max-width:780px;margin:0}
+.answer b{font-weight:700}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px}
+.grid2.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--paper);border-radius:4px;padding:22px 22px 16px;box-shadow:0 1px 0 var(--rule)}
+.card h3{font:700 16px/1.25 var(--sans);margin:0 0 4px}
+.card .sub{font-size:13.5px;color:var(--muted);margin:0 0 14px}
+.card .src{font:400 11px/1.4 var(--mono);color:var(--muted);margin-top:10px}
+.card + .card{margin-top:0}
+.stack{display:grid;gap:26px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--mono);fill:var(--muted);font-size:12px}
+svg .lbl{fill:var(--ink);font-weight:500}
+svg .axis{stroke:var(--rule);stroke-width:1}
+svg .grid{stroke:var(--soft);stroke-width:1}
+.not{margin-top:24px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px}
+.not p{margin:0;font-size:15px;color:var(--muted);max-width:780px}
+.not .q-label{color:var(--muted)}
+
+/* bars & motion (only when JS is on; without JS everything is drawn) */
+.js .grow-y{transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%}
+.js .grow-y.down{transform-origin:50% 0}
+.js .grow-x{transform:scaleX(0);transform-box:fill-box;transform-origin:0 50%}
+.js .grow-x.left{transform-origin:100% 50%}
+.js .fade{opacity:0}
+.js .draw{stroke-dasharray:1;stroke-dashoffset:1}
+.js .in .grow-y,.js .in .grow-x{transform:none;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.js .in .fade{opacity:1;transition:opacity .6s ease}
+.js .in .draw{stroke-dashoffset:0;transition:stroke-dashoffset 1.8s cubic-bezier(.4,.1,.2,1)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hot{cursor:default}
+.hot:hover{filter:brightness(1.12)}
+
+/* waterfall legend chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 12px/1 var(--mono);margin-top:12px}
+.chips i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+/* product shelf */
+.shelf{display:grid;gap:7px}
+.shelf .row{display:grid;grid-template-columns:minmax(0,1fr) 110px 86px;gap:10px;align-items:center;font-size:13.5px}
+.shelf .row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelf .row .nm small{font-family:var(--mono);color:var(--muted);margin-right:6px}
+.shelf .track{position:relative;height:10px;background:var(--soft);border-radius:2px}
+.shelf .track span{position:absolute;top:0;bottom:0;border-radius:2px}
+.shelf .val{font:500 12.5px/1 var(--mono);text-align:right}
+
+/* pareto slider */
+.slider{margin-top:12px}
+.slider input{width:100%;accent-color:var(--ink)}
+.readout{font-size:18px;line-height:1.35;margin:10px 0 0;min-height:52px}
+.readout b{font-family:var(--mono);font-weight:500}
+
+/* big stat */
+.big{font:850 76px/1 var(--sans);font-stretch:72%;letter-spacing:-.01em}
+.big small{font:500 16px/1 var(--mono);color:var(--muted);margin-left:10px}
+
+/* heatmap */
+.heat td{width:calc(100%/13)}
+.legend-scale{display:flex;align-items:center;gap:8px;font:400 11px/1 var(--mono);color:var(--muted);margin-top:8px}
+.legend-scale span{display:block;width:120px;height:8px;border-radius:2px;background:linear-gradient(90deg,rgba(15,123,108,.06),rgba(15,123,108,1))}
+
+/* toggle */
+.toggle{display:inline-flex;border:1.5px solid var(--ink);border-radius:3px;overflow:hidden;font:500 12.5px/1 var(--mono);margin-bottom:14px}
+.toggle button{background:none;border:0;padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink)}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.ratio-row{display:flex;gap:26px;flex-wrap:wrap;margin:4px 0 12px}
+.ratio-row div{font-size:13px;color:var(--muted)}
+.ratio-row b{display:block;font:500 28px/1.1 var(--mono);color:var(--ink);transition:color .3s}
+.js .cut{transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .4s}
+.hide-top .cut{transform:scaleY(0)!important;opacity:.2}
+
+/* voided stubs */
+.stubs{display:grid;gap:6px;font:400 12px/1.35 var(--mono)}
+.stub{display:grid;grid-template-columns:78px minmax(0,1fr) 100px;gap:10px;padding:7px 10px;background:#fbf7f5;border-left:3px solid var(--coral);position:relative}
+.stub .v{text-align:right;font-weight:500}
+.stub .v{position:relative;align-self:start}
+.stub .v:after{content:"";position:absolute;left:-4px;right:-2px;top:52%;height:2px;background:var(--coral);transform-origin:0 50%}
+.js .stub .v:after{transform:scaleX(0)}
+.js .in .stub .v:after{transform:scaleX(1);transition:transform .45s ease}
+.stub small{color:var(--muted)}
+
+/* trace bar */
+.trace{display:flex;height:34px;border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.trace span{display:flex;align-items:center;justify-content:flex-start;padding-left:8px;color:#fff;font:500 12px/1 var(--mono);white-space:nowrap}
+
+/* proof */
+.proof{background:var(--ink);color:var(--paper);padding:78px 0 70px;margin-top:60px}
+.proof h2{color:var(--paper)}
+.proof .answer{color:#d8dce1}
+.proof .q-label{color:#aeb5bd}
+.proof .q-label .num{border-color:#aeb5bd}
+.ledger{width:100%;border-collapse:collapse;font:400 13px/1.3 var(--mono)}
+.ledger th{font-weight:500;text-align:left;color:#aeb5bd;border-bottom:1px solid #3a3f46;padding:8px 6px}
+.ledger td{border-bottom:1px solid #2a2e34;padding:8px 6px;vertical-align:middle}
+.ledger td.r{text-align:right}
+.ledger .barcell{width:34%}
+.ledger .b{height:8px;background:#39d3a4;border-radius:2px;min-width:2px}
+.ledger tfoot td{border-bottom:0;color:#fff;font-weight:500}
+.ok{color:#39d3a4}
+.twin{display:grid;grid-template-columns:minmax(0,1fr) 170px minmax(0,1fr);gap:14px;align-items:stretch;margin-top:10px}
+.impl{border:1px solid #3a3f46;border-radius:4px;padding:16px}
+.impl h3{font:700 15px/1.2 var(--sans);margin:0 0 6px;color:#fff}
+.impl p{margin:0;font-size:13.5px;color:#aeb5bd}
+.meet{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font:500 13px/1.35 var(--mono)}
+.meet b{font-size:30px;color:#39d3a4;display:block}
+.ticker{height:210px;overflow:hidden;border:1px solid #3a3f46;border-radius:4px;margin-top:14px;position:relative;
+  -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.ticker ul{list-style:none;margin:0;padding:10px 16px;columns:3 220px;column-gap:24px;font:400 12px/1.9 var(--mono);color:#cfd4da}
+.js .ticker ul{animation:tick 38s linear infinite}
+.ticker li:before{content:"✓ ";color:#39d3a4}
+@keyframes tick{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.timeline{list-style:none;margin:0;padding:0;border-left:1.5px solid #3a3f46}
+.timeline li{position:relative;padding:0 0 18px 20px;font-size:14.5px}
+.timeline li:before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--ink);border:2px solid #39d3a4}
+.timeline .h{font:500 12px/1.3 var(--mono);color:#aeb5bd;display:block}
+.proof .card{background:#1d2026;box-shadow:none;border:1px solid #2f343b}
+.proof .card h3{color:#fff}
+.proof .card .sub,.proof .card .src{color:#aeb5bd}
+
+/* limits & files */
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;counter-reset:l}
+.limits div{border-top:1px solid var(--rule);padding:14px 0 16px 40px;position:relative;counter-increment:l}
+.limits div:before{content:counter(l,decimal-leading-zero);position:absolute;left:0;top:15px;font:500 13px/1 var(--mono);color:var(--muted)}
+.limits b{display:block;font-weight:700;margin-bottom:2px}
+.limits p{margin:0;font-size:15px;color:var(--muted)}
+.files{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.file{display:block;background:var(--paper);border-radius:4px;padding:18px 16px 16px;text-decoration:none;box-shadow:0 1px 0 var(--rule);transition:transform .15s ease,box-shadow .15s ease;position:relative;overflow:hidden}
+.file:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(20,22,26,.45)}
+.file .ext{font:500 11px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.file b{display:block;font:700 17px/1.2 var(--sans);margin:8px 0 6px}
+.file span{font-size:13.5px;color:var(--muted)}
+footer{padding:40px 0 60px;font-size:13.5px;color:var(--muted)}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:30px}
+footer p{margin:0 0 8px}
+
+/* tooltip */
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--paper);font:400 12px/1.45 var(--mono);padding:8px 10px;border-radius:3px;max-width:280px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;white-space:pre-line}
+.tip.on{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero .wrap,.grid2,.grid2.even,.twin,footer .wrap{grid-template-columns:minmax(0,1fr)}
+  .q-head,.not{grid-template-columns:minmax(0,1fr);gap:10px}
+  .files{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .limits{grid-template-columns:minmax(0,1fr)}
+  .receipt-window{height:480px}
+  .meet{padding:8px 0}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  body{font-size:16px}
+  .facts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .files{grid-template-columns:minmax(0,1fr)}
+  .shelf .row{grid-template-columns:minmax(0,1fr) 70px 74px}
+  .bar nav{gap:12px}
+  .stub{grid-template-columns:64px minmax(0,1fr) 84px}
+  .big{font-size:60px}
+  .scroll svg.wide{min-width:620px}
+  .scroll .ledger{min-width:520px}
+  .kicker{letter-spacing:.04em}
+  .answer{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{transition:none!important;animation:none!important}
+}
+@media print{
+  .bar nav,.cta,.replay,.toggle,.slider,.ticker{display:none}
+  body{background:#fff}
+  .proof{background:#fff;color:#000}
+  section.q,.proof{break-inside:avoid-page}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <div class="brand"><b>DEMO</b>Retail sales report</div>
+    <nav aria-label="Sections">
+      <a href="#q1">Growth</a><a href="#q2">Customers</a><a href="#q3">Cancellations</a><a href="#proof">Proof</a><a href="#files">Files</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="kicker">Sales analysis · UK online gift retailer · Dec 2009 – Dec 2011</p>
+      <h1>Revenue grew 1.9%.<span class="l2">Existing customers spent 7.7% less.</span></h1>
+      <p class="lede">A reproducible report on 1,067,371 raw transaction lines. Every line is accounted for in a row ledger, and every headline number was re-derived by a second, independent implementation.</p>
+      <div class="cta">
+        <a class="btn" href="#q1">Read the answers ↓</a>
+        <a class="btn ghost" href="files/retail-sales-report.xlsx">Excel workbook</a>
+      </div>
+      <div class="facts">
+        <div><b>1,067,371</b><span>raw lines read</span></div>
+        <div><b>0</b><span>rows unaccounted for</span></div>
+        <div><b>118</b><span>numbers re-derived independently</span></div>
+      </div>
+    </div>
+    <div class="till" aria-label="The raw export printed as a till roll: real lines, then the reconciled totals">
+      <div class="till-head"><span>raw export → row ledger</span><span class="count"><span id="lines">1,067,371</span> lines</span></div>
+      <div class="receipt-window" id="rw">
+        <div class="roll" id="roll">
+          <div class="r-title">ONLINE RETAIL II</div>
+          <div class="r-sub">raw export · 2 sheets · Dec 2009 – Dec 2011</div>
+          <div class="r-dash"></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:1</span><span>489434</span><span class="tag t-sale">SALE</span></span><span class="d">12 × 15CM CHRISTMAS GLASS BALL 20 LIGHTS</span><span class="v">83.40</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:2</span><span>489434</span><span class="tag t-sale">SALE</span></span><span class="d">12 × PINK CHERRY LIGHTS</span><span class="v">81.00</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:3</span><span>489434</span><span class="tag t-sale">SALE</span></span><span class="d">12 × WHITE CHERRY LIGHTS</span><span class="v">81.00</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:4</span><span>489434</span><span class="tag t-sale">SALE</span></span><span class="d">48 × RECORD FRAME 7&quot; SINGLE SIZE</span><span class="v">100.80</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:90</span><span>489439</span><span class="tag t-np">POSTAGE/FEE</span></span><span class="d">3 × POSTAGE</span><span class="v">54.00</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:179</span><span>C489449</span><span class="tag t-cancel">CANCEL</span></span><span class="d">-12 × PAPER BUNTING WHITE LACE</span><span class="v">-35.40</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:180</span><span>C489449</span><span class="tag t-cancel">CANCEL</span></span><span class="d">-6 × CREAM FELT EASTER EGG BASKET</span><span class="v">-9.90</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:264</span><span>489464</span><span class="tag t-zero">STOCK MOVE</span></span><span class="d">-96 × 85123a mixed</span><span class="v">0.00</span></div>
+          <div class="r-line void" data-row="1"><span class="meta"><span>#1:372</span><span>489517</span><span class="tag t-dup">DUPLICATE</span></span><span class="d">1 × VINTAGE SNAKES &amp; LADDERS</span><span class="v">3.75</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:736</span><span>C489535</span><span class="tag t-cancel">CANCEL FEE</span></span><span class="d">-1 × Discount</span><span class="v">-9.00</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:3162</span><span>489659</span><span class="tag t-zero">£0 PRICE</span></span><span class="d">230 × (no description)</span><span class="v">0.00</span></div>
+          <div class="r-line" data-row="1"><span class="meta"><span>#1:179404</span><span>A506401</span><span class="tag t-adj">ADJUSTMENT</span></span><span class="d">1 × Adjust bad debt</span><span class="v">-53,594.36</span></div>
+          <div class="r-line void" data-row="1"><span class="meta"><span>#2:1</span><span>536365</span><span class="tag t-dup">SHEET COPY</span></span><span class="d">6 × WHITE HANGING HEART T-LIGHT HOLDER</span><span class="v">15.30</span></div>
+          <div class="r-skip">▸▸ 1,067,358 more lines ▸▸</div>
+          <div class="r-dash"></div>
+          <div class="r-tot"><span>SALE</span><span class="n">1,003,357</span><span class="v">19,643,861.637</span></div>
+          <div class="r-tot"><span>POSTAGE/FEE</span><span class="n">4,555</span><span class="v">821,336.751</span></div>
+          <div class="r-tot"><span>CANCEL</span><span class="n">17,915</span><span class="v">-716,462.570</span></div>
+          <div class="r-tot"><span>CANCEL FEE</span><span class="n">1,189</span><span class="v">-745,588.040</span></div>
+          <div class="r-tot"><span>STOCK MOVE</span><span class="n">3,393</span><span class="v">0.000</span></div>
+          <div class="r-tot"><span>£0 PRICE</span><span class="n">2,621</span><span class="v">0.000</span></div>
+          <div class="r-tot"><span>DUPLICATE</span><span class="n">11,812</span><span class="v">54,228.420</span></div>
+          <div class="r-tot"><span>SHEET COPY</span><span class="n">22,523</span><span class="v">377,488.450</span></div>
+          <div class="r-tot"><span>ADJUSTMENT</span><span class="n">6</span><span class="v">-147,614.080</span></div>
+          <div class="r-tot"><span>UNCLASSIFIED</span><span class="n">0</span><span class="v">0.000</span></div>
+          <div class="r-tot r-grand"><span>LEDGER TOTAL</span><span class="n">1,067,371</span><span class="v">19,287,250.568</span></div>
+          <div class="r-tot"><span>RAW EXPORT</span><span class="n">1,067,371</span><span class="v">19,287,250.568</span></div>
+          <div class="r-tot"><span>DIFFERENCE</span><span class="n">0</span><span class="v">0.000</span></div>
+        </div>
+        <div class="stamp" id="stamp">RECONCILED<br>TO £0.001</div>
+        <div class="slot"><span class="led" id="led"></span></div>
+      </div>
+      <button class="replay" id="replay" type="button">↻ print again</button>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="bridge">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">A→B</span><br>The answer in one picture</div>
+      <div>
+        <h2>The headline hides a swap of customers</h2>
+        <p class="answer">Net product revenue went from <b>£9.16M</b> to <b>£9.33M</b> (+1.9%). Customers who bought in both years spent <b class="coral">7.7% less</b> (−£548k). Customers lost after Year A took £1.02M with them; new customers brought <b class="teal">£1.40M</b>, and sales without a customer ID grew by £341k. The year grew by replacing customers, not by growing them.</p>
+      </div>
+    </div>
+    <div class="card chart" data-chart>
+      <h3>Net product revenue, Year A to Year B, by customer status</h3>
+      <p class="sub">Year A = Dec 2009 – Nov 2010, Year B = Dec 2010 – Nov 2011. Net product revenue = product sales minus product cancellations.</p>
+<div class="scroll"><svg class="wide" viewBox="0 0 960 430" role="img" aria-label="Waterfall from Year A to Year B net product revenue">
+<line class="grid" x1="66" x2="948" y1="356.0" y2="356.0"/><text x="58" y="360.0" text-anchor="end">£6.5M</text>
+<line class="grid" x1="66" x2="948" y1="310.0" y2="310.0"/><text x="58" y="314.0" text-anchor="end">£7.0M</text>
+<line class="grid" x1="66" x2="948" y1="264.0" y2="264.0"/><text x="58" y="268.0" text-anchor="end">£7.5M</text>
+<line class="grid" x1="66" x2="948" y1="218.0" y2="218.0"/><text x="58" y="222.0" text-anchor="end">£8.0M</text>
+<line class="grid" x1="66" x2="948" y1="172.0" y2="172.0"/><text x="58" y="176.0" text-anchor="end">£8.5M</text>
+<line class="grid" x1="66" x2="948" y1="126.0" y2="126.0"/><text x="58" y="130.0" text-anchor="end">£9.0M</text>
+<line class="grid" x1="66" x2="948" y1="80.0" y2="80.0"/><text x="58" y="84.0" text-anchor="end">£9.5M</text>
+<line class="grid" x1="66" x2="948" y1="34.0" y2="34.0"/><text x="58" y="38.0" text-anchor="end">£10.0M</text>
+<rect class="grow-y hot" style="transition-delay:0.15s" x="91.2" y="111.6" width="75.6" height="244.4" rx="2" fill="var(--a)" data-tip="Year A&#10;£9,156,080.904"/>
+<text class="lbl fade" style="transition-delay:0.15s" x="129.0" y="102.6" text-anchor="middle">£9.16M</text>
+<text x="129.0" y="378" text-anchor="middle">Year</text>
+<text x="129.0" y="394" text-anchor="middle">A</text>
+<rect class="grow-y down hot" style="transition-delay:0.37s" x="217.2" y="111.6" width="75.6" height="50.4" rx="2" fill="var(--slate)" data-tip="Retained customers&#10;−£548,344.569"/>
+<text class="lbl fade" style="transition-delay:0.37s" x="255.0" y="179.1" text-anchor="middle">−£548k</text>
+<text x="255.0" y="378" text-anchor="middle">Retained</text>
+<text x="255.0" y="394" text-anchor="middle">customers</text>
+<line class="fade" style="transition-delay:0.37s" x1="166.8" x2="217.2" y1="111.6" y2="111.6" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<rect class="grow-y down hot" style="transition-delay:0.59s" x="343.2" y="162.1" width="75.6" height="94.0" rx="2" fill="var(--coral)" data-tip="Lost customers&#10;−£1,021,299.313"/>
+<text class="lbl fade" style="transition-delay:0.59s" x="381.0" y="273.0" text-anchor="middle">−£1.02M</text>
+<text x="381.0" y="378" text-anchor="middle">Lost</text>
+<text x="381.0" y="394" text-anchor="middle">customers</text>
+<line class="fade" style="transition-delay:0.59s" x1="292.8" x2="343.2" y1="162.1" y2="162.1" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<rect class="grow-y hot" style="transition-delay:0.81s" x="469.2" y="127.0" width="75.6" height="129.0" rx="2" fill="var(--teal)" data-tip="New customers&#10;+£1,402,449.391"/>
+<text class="lbl fade" style="transition-delay:0.81s" x="507.0" y="118.0" text-anchor="middle">+£1.40M</text>
+<text x="507.0" y="378" text-anchor="middle">New</text>
+<text x="507.0" y="394" text-anchor="middle">customers</text>
+<line class="fade" style="transition-delay:0.81s" x1="418.8" x2="469.2" y1="256.0" y2="256.0" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<rect class="grow-y hot" style="transition-delay:1.03s" x="595.2" y="126.9" width="75.6" height="2.0" rx="2" fill="#7b4bb3" data-tip="Cancellation-only&#10;+£1,403.630"/>
+<text class="lbl fade" style="transition-delay:1.03s" x="633.0" y="117.9" text-anchor="middle">+£1,404</text>
+<text x="633.0" y="378" text-anchor="middle">Cancellation-only</text>
+<line class="fade" style="transition-delay:1.03s" x1="544.8" x2="595.2" y1="127.0" y2="127.0" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<rect class="grow-y hot" style="transition-delay:1.25s" x="721.2" y="95.6" width="75.6" height="31.3" rx="2" fill="var(--mustard)" data-tip="No customer ID&#10;+£340,628.560"/>
+<text class="lbl fade" style="transition-delay:1.25s" x="759.0" y="86.6" text-anchor="middle">+£341k</text>
+<text x="759.0" y="378" text-anchor="middle">No</text>
+<text x="759.0" y="394" text-anchor="middle">customer ID</text>
+<line class="fade" style="transition-delay:1.25s" x1="670.8" x2="721.2" y1="126.9" y2="126.9" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<rect class="grow-y hot" style="transition-delay:1.47s" x="847.2" y="95.6" width="75.6" height="260.4" rx="2" fill="var(--ink)" data-tip="Year B&#10;£9,330,918.603"/>
+<text class="lbl fade" style="transition-delay:1.47s" x="885.0" y="86.6" text-anchor="middle">£9.33M</text>
+<text x="885.0" y="378" text-anchor="middle">Year</text>
+<text x="885.0" y="394" text-anchor="middle">B</text>
+<line class="fade" style="transition-delay:1.47s" x1="796.8" x2="847.2" y1="95.6" y2="95.6" stroke="var(--muted)" stroke-dasharray="3 3"/>
+<path d="M87.2,347.0l83.6,-8M87.2,353.0l83.6,-8" stroke="var(--paper)" stroke-width="4"/>
+<path d="M843.2,347.0l83.6,-8M843.2,353.0l83.6,-8" stroke="var(--paper)" stroke-width="4"/>
+<text x="948" y="426" text-anchor="end">axis starts at £6.5M (break marked on the totals)</text>
+</svg></div>
+      <div class="chips"><span><i style="background:var(--slate)"></i>Retained customers</span><span><i style="background:var(--coral)"></i>Lost customers</span><span><i style="background:var(--teal)"></i>New customers</span><span><i style="background:#7b4bb3"></i>Cancellation-only</span><span><i style="background:var(--mustard)"></i>No customer ID</span></div>
+      <p class="src">Hover a bar for the exact figure. Source: UCI Online Retail II (CC BY 4.0); results/q1.json.</p>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q1">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q1</span><br>Growth</div>
+      <div>
+        <h2>Where did revenue growth come from?</h2>
+        <p class="answer">Not from the core market: the United Kingdom moved −£4,472. The rise came from Australia (<b class="teal">+£108k</b>) and France (+£64k), while EIRE fell (<b class="coral">−£91k</b>). No single product explains it.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart>
+        <h3>Monthly net product revenue</h3>
+        <p class="sub">Same calendar months, Year A against Year B. Nov is the peak; in Year B it is 3.0× the weakest month (Apr). Hover for each month.</p>
+<div class="scroll"><svg class="wide" viewBox="0 0 640 360" role="img" aria-label="Monthly net product revenue, Year A and Year B">
+<line class="grid" x1="58" x2="626" y1="320.0" y2="320.0"/><text x="50" y="324.0" text-anchor="end">£0.00M</text>
+<line class="grid" x1="58" x2="626" y1="269.7" y2="269.7"/><text x="50" y="273.7" text-anchor="end">£0.25M</text>
+<line class="grid" x1="58" x2="626" y1="219.3" y2="219.3"/><text x="50" y="223.3" text-anchor="end">£0.50M</text>
+<line class="grid" x1="58" x2="626" y1="169.0" y2="169.0"/><text x="50" y="173.0" text-anchor="end">£0.75M</text>
+<line class="grid" x1="58" x2="626" y1="118.7" y2="118.7"/><text x="50" y="122.7" text-anchor="end">£1.00M</text>
+<line class="grid" x1="58" x2="626" y1="68.3" y2="68.3"/><text x="50" y="72.3" text-anchor="end">£1.25M</text>
+<line class="grid" x1="58" x2="626" y1="18.0" y2="18.0"/><text x="50" y="22.0" text-anchor="end">£1.50M</text>
+<text x="58.0" y="344" text-anchor="middle">Dec</text>
+<text x="109.6" y="344" text-anchor="middle">Jan</text>
+<text x="161.3" y="344" text-anchor="middle">Feb</text>
+<text x="212.9" y="344" text-anchor="middle">Mar</text>
+<text x="264.5" y="344" text-anchor="middle">Apr</text>
+<text x="316.2" y="344" text-anchor="middle">May</text>
+<text x="367.8" y="344" text-anchor="middle">Jun</text>
+<text x="419.5" y="344" text-anchor="middle">Jul</text>
+<text x="471.1" y="344" text-anchor="middle">Aug</text>
+<text x="522.7" y="344" text-anchor="middle">Sep</text>
+<text x="574.4" y="344" text-anchor="middle">Oct</text>
+<text x="626.0" y="344" text-anchor="middle">Nov</text>
+<path class="draw" style="transition-delay:0s" pathLength="1" d="M58.0,163.3 L109.6,198.2 L161.3,214.2 L212.9,168.6 L264.5,191.9 L316.2,197.9 L367.8,185.1 L419.5,196.0 L471.1,186.8 L522.7,150.6 L574.4,104.8 L626.0,39.2" fill="none" stroke="var(--a)" stroke-width="2.5" stroke-linejoin="round"/>
+<circle class="fade" style="transition-delay:0.00s" cx="58.0" cy="163.3" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.12s" cx="109.6" cy="198.2" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.24s" cx="161.3" cy="214.2" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.36s" cx="212.9" cy="168.6" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.48s" cx="264.5" cy="191.9" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.60s" cx="316.2" cy="197.9" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.72s" cx="367.8" cy="185.1" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.84s" cx="419.5" cy="196.0" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:0.96s" cx="471.1" cy="186.8" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:1.08s" cx="522.7" cy="150.6" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:1.20s" cx="574.4" cy="104.8" r="3.2" fill="var(--a)"/>
+<circle class="fade" style="transition-delay:1.32s" cx="626.0" cy="39.2" r="3.2" fill="var(--a)"/>
+<path class="draw" style="transition-delay:0.5s" pathLength="1" d="M58.0,167.4 L109.6,203.5 L161.3,219.4 L212.9,183.2 L264.5,222.9 L316.2,172.8 L367.8,174.3 L419.5,183.7 L471.1,178.8 L522.7,116.4 L574.4,106.2 L626.0,32.7" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>
+<circle class="fade" style="transition-delay:0.50s" cx="58.0" cy="167.4" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:0.62s" cx="109.6" cy="203.5" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:0.74s" cx="161.3" cy="219.4" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:0.86s" cx="212.9" cy="183.2" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:0.98s" cx="264.5" cy="222.9" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.10s" cx="316.2" cy="172.8" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.22s" cx="367.8" cy="174.3" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.34s" cx="419.5" cy="183.7" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.46s" cx="471.1" cy="178.8" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.58s" cx="522.7" cy="116.4" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.70s" cx="574.4" cy="106.2" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:1.82s" cx="626.0" cy="32.7" r="4" fill="var(--ink)"/>
+<circle class="fade" style="transition-delay:2s" cx="58.0" cy="231.3" r="4.5" fill="var(--paper)" stroke="var(--ink)" stroke-opacity=".45" stroke-width="2" data-tip="Dec 2011 (1–9 only)&#10;£440,400"/>
+<rect x="32.2" y="18" width="51.6" height="302" fill="transparent" data-tip="Dec&#10;Year A £778,343&#10;Year B £758,090&#10;−£20,253 (-2.6%)"/>
+<rect x="83.8" y="18" width="51.6" height="302" fill="transparent" data-tip="Jan&#10;Year A £604,832&#10;Year B £578,855&#10;−£25,977 (-4.3%)"/>
+<rect x="135.5" y="18" width="51.6" height="302" fill="transparent" data-tip="Feb&#10;Year A £525,334&#10;Year B £499,464&#10;−£25,870 (-4.9%)"/>
+<rect x="187.1" y="18" width="51.6" height="302" fill="transparent" data-tip="Mar&#10;Year A £752,102&#10;Year B £679,329&#10;−£72,773 (-9.7%)"/>
+<rect x="238.7" y="18" width="51.6" height="302" fill="transparent" data-tip="Apr&#10;Year A £636,316&#10;Year B £482,062&#10;−£154,254 (-24.2%)"/>
+<rect x="290.4" y="18" width="51.6" height="302" fill="transparent" data-tip="May&#10;Year A £606,299&#10;Year B £731,005&#10;+£124,706 (+20.6%)"/>
+<rect x="342.0" y="18" width="51.6" height="302" fill="transparent" data-tip="Jun&#10;Year A £670,210&#10;Year B £723,845&#10;+£53,635 (+8.0%)"/>
+<rect x="393.6" y="18" width="51.6" height="302" fill="transparent" data-tip="Jul&#10;Year A £615,862&#10;Year B £676,812&#10;+£60,950 (+9.9%)"/>
+<rect x="445.3" y="18" width="51.6" height="302" fill="transparent" data-tip="Aug&#10;Year A £661,640&#10;Year B £701,290&#10;+£39,650 (+6.0%)"/>
+<rect x="496.9" y="18" width="51.6" height="302" fill="transparent" data-tip="Sep&#10;Year A £841,557&#10;Year B £1,011,340&#10;+£169,783 (+20.2%)"/>
+<rect x="548.5" y="18" width="51.6" height="302" fill="transparent" data-tip="Oct&#10;Year A £1,068,985&#10;Year B £1,061,701&#10;−£7,284 (-0.7%)"/>
+<rect x="600.2" y="18" width="51.6" height="302" fill="transparent" data-tip="Nov&#10;Year A £1,394,602&#10;Year B £1,427,125&#10;+£32,523 (+2.3%)"/>
+</svg></div>
+        <div class="chips"><span><i style="background:var(--a)"></i>Year A</span><span><i style="background:var(--ink)"></i>Year B</span><span><i style="background:var(--ink);opacity:.35"></i>Dec 2011 (1–9 only, not compared)</span></div>
+        <p class="src">results/q1.json · monthly</p>
+      </div>
+      <div class="stack">
+        <div class="card chart" data-chart>
+          <h3>Change by country group</h3>
+          <p class="sub">The United Kingdom is 84% of Year B revenue and moved −£4,472. The change happened abroad.</p>
+<svg viewBox="0 0 440 276" role="img" aria-label="Change in net product revenue by country group">
+<line class="axis" x1="243.0" x2="243.0" y1="0" y2="276"/>
+<text class="lbl" x="0" y="24">United Kingdom</text>
+<rect class="grow-x left hot" style="transition-delay:0.10s" x="237.6" y="11" width="5.4" height="18" rx="2" fill="var(--coral)" data-tip="United Kingdom&#10;Year A £7,887,516&#10;Year B £7,883,044"/>
+<text class="lbl" x="440" y="24" text-anchor="end">−£4,472</text>
+<text class="lbl" x="0" y="62">Netherlands</text>
+<rect class="grow-x hot" style="transition-delay:0.18s" x="243.0" y="49" width="11.1" height="18" rx="2" fill="var(--teal)" data-tip="Netherlands&#10;Year A £262,616&#10;Year B £271,752"/>
+<text class="lbl" x="440" y="62" text-anchor="end">+£9,136</text>
+<text class="lbl" x="0" y="100">EIRE</text>
+<rect class="grow-x left hot" style="transition-delay:0.26s" x="131.6" y="87" width="111.4" height="18" rx="2" fill="var(--coral)" data-tip="EIRE&#10;Year A £343,737&#10;Year B £252,257"/>
+<text class="lbl" x="440" y="100" text-anchor="end">−£91k</text>
+<text class="lbl" x="0" y="138">Germany</text>
+<rect class="grow-x hot" style="transition-delay:0.34s" x="243.0" y="125" width="24.1" height="18" rx="2" fill="var(--teal)" data-tip="Germany&#10;Year A £173,954&#10;Year B £193,775"/>
+<text class="lbl" x="440" y="138" text-anchor="end">+£20k</text>
+<text class="lbl" x="0" y="176">France</text>
+<rect class="grow-x hot" style="transition-delay:0.42s" x="243.0" y="163" width="78.3" height="18" rx="2" fill="var(--teal)" data-tip="France&#10;Year A £111,355&#10;Year B £175,685"/>
+<text class="lbl" x="440" y="176" text-anchor="end">+£64k</text>
+<text class="lbl" x="0" y="214">Australia</text>
+<rect class="grow-x hot" style="transition-delay:0.50s" x="243.0" y="201" width="131.0" height="18" rx="2" fill="var(--teal)" data-tip="Australia&#10;Year A £29,360&#10;Year B £136,922"/>
+<text class="lbl" x="440" y="214" text-anchor="end">+£108k</text>
+<text class="lbl" x="0" y="252">Other</text>
+<rect class="grow-x hot" style="transition-delay:0.58s" x="243.0" y="239" width="85.2" height="18" rx="2" fill="var(--teal)" data-tip="Other&#10;Year A £347,545&#10;Year B £417,483"/>
+<text class="lbl" x="440" y="252" text-anchor="end">+£70k</text>
+</svg>
+          <p class="src">Five largest non-UK countries by Year B revenue, named; the rest is “Other”.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card chart" data-chart style="margin-top:26px">
+      <h3>The ten products that moved most</h3>
+      <p class="sub">Top 10 of 4,738 products by size of change. Together they are 6.5% of all product-level movement, up and down: the change is spread thin, not driven by a few hits.</p>
+      <div class="shelf">
+        <div class="row" data-tip="23084 RABBIT NIGHT LIGHT&amp;#10;Year A £0&amp;#10;Year B £57,058"><span class="nm"><small>23084</small>Rabbit Night Light</span><span class="track"><span class="grow-x" style="left:50%;width:50.0%;background:var(--teal);transition-delay:0.10s"></span></span><span class="val">+£57k</span></div>
+        <div class="row" data-tip="85123A WHITE HANGING HEART T-LIGHT HOLDER&amp;#10;Year A £151,991&amp;#10;Year B £97,408"><span class="nm"><small>85123A</small>White Hanging Heart T-Light Holder</span><span class="track"><span class="grow-x left" style="right:50%;width:47.8%;background:var(--coral);transition-delay:0.17s"></span></span><span class="val">−£55k</span></div>
+        <div class="row" data-tip="47566 PARTY BUNTING&amp;#10;Year A £48,836&amp;#10;Year B £97,325"><span class="nm"><small>47566</small>Party Bunting</span><span class="track"><span class="grow-x" style="left:50%;width:42.5%;background:var(--teal);transition-delay:0.24s"></span></span><span class="val">+£48k</span></div>
+        <div class="row" data-tip="23298 SPOTTY BUNTING&amp;#10;Year A £0&amp;#10;Year B £41,901"><span class="nm"><small>23298</small>Spotty Bunting</span><span class="track"><span class="grow-x" style="left:50%;width:36.7%;background:var(--teal);transition-delay:0.31s"></span></span><span class="val">+£42k</span></div>
+        <div class="row" data-tip="22502 PICNIC BASKET WICKER SMALL&amp;#10;Year A £9,420&amp;#10;Year B £51,024"><span class="nm"><small>22502</small>Picnic Basket Wicker Small</span><span class="track"><span class="grow-x" style="left:50%;width:36.5%;background:var(--teal);transition-delay:0.38s"></span></span><span class="val">+£42k</span></div>
+        <div class="row" data-tip="23203 JUMBO BAG VINTAGE DOILY &amp;#10;Year A £0&amp;#10;Year B £39,604"><span class="nm"><small>23203</small>Jumbo Bag Vintage Doily</span><span class="track"><span class="grow-x" style="left:50%;width:34.7%;background:var(--teal);transition-delay:0.45s"></span></span><span class="val">+£40k</span></div>
+        <div class="row" data-tip="22720 SET OF 3 CAKE TINS PANTRY DESIGN &amp;#10;Year A £0&amp;#10;Year B £36,330"><span class="nm"><small>22720</small>Set Of 3 Cake Tins Pantry Design</span><span class="track"><span class="grow-x" style="left:50%;width:31.8%;background:var(--teal);transition-delay:0.52s"></span></span><span class="val">+£36k</span></div>
+        <div class="row" data-tip="23284 DOORMAT KEEP CALM AND COME IN&amp;#10;Year A £0&amp;#10;Year B £34,991"><span class="nm"><small>23284</small>Doormat Keep Calm And Come In</span><span class="track"><span class="grow-x" style="left:50%;width:30.7%;background:var(--teal);transition-delay:0.59s"></span></span><span class="val">+£35k</span></div>
+        <div class="row" data-tip="22960 JAM MAKING SET WITH JARS&amp;#10;Year A £1,298&amp;#10;Year B £34,827"><span class="nm"><small>22960</small>Jam Making Set With Jars</span><span class="track"><span class="grow-x" style="left:50%;width:29.4%;background:var(--teal);transition-delay:0.66s"></span></span><span class="val">+£34k</span></div>
+        <div class="row" data-tip="23245 SET OF 3 REGENCY CAKE TINS&amp;#10;Year A £0&amp;#10;Year B £29,066"><span class="nm"><small>23245</small>Set Of 3 Regency Cake Tins</span><span class="track"><span class="grow-x" style="left:50%;width:25.5%;background:var(--teal);transition-delay:0.73s"></span></span><span class="val">+£29k</span></div>
+      </div>
+      <p class="src">Product key = stock code, case and spaces normalised (plan amendment 4).</p>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>It does not say why customers left or spent less: the data has no prices over time, no marketing and no stock-outs. It shows where the change sits, which is where to ask next.</p></div>
+  </div>
+</section>
+
+<section class="q" id="q2">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q2</span><br>Customers</div>
+      <div>
+        <h2>How dependent is revenue on a few customers?</h2>
+        <p class="answer">Heavily. The top 1% of customers (43 accounts) brought <b>30.2%</b> of identified Year B revenue; the top 10 customers alone 16.7%. Among new customers, <b class="teal">38.8%</b> ordered again within 90 days.</p>
+      </div>
+    </div>
+    <div class="grid2 even">
+      <div class="card chart" data-chart>
+        <h3>Share of Year B revenue by share of customers</h3>
+        <p class="sub">Identified customers ranked by net revenue. Drag the slider.</p>
+<svg viewBox="0 0 560 420" role="img" aria-label="Cumulative share of revenue by share of customers">
+<line class="grid" x1="48" x2="546" y1="378.0" y2="378.0"/><text x="40" y="382.0" text-anchor="end">0%</text><text x="48.0" y="402" text-anchor="middle">0%</text>
+<line class="grid" x1="48" x2="546" y1="305.2" y2="305.2"/><text x="40" y="309.2" text-anchor="end">20%</text><text x="147.6" y="402" text-anchor="middle">20%</text>
+<line class="grid" x1="48" x2="546" y1="232.4" y2="232.4"/><text x="40" y="236.4" text-anchor="end">40%</text><text x="247.2" y="402" text-anchor="middle">40%</text>
+<line class="grid" x1="48" x2="546" y1="159.6" y2="159.6"/><text x="40" y="163.6" text-anchor="end">60%</text><text x="346.8" y="402" text-anchor="middle">60%</text>
+<line class="grid" x1="48" x2="546" y1="86.8" y2="86.8"/><text x="40" y="90.8" text-anchor="end">80%</text><text x="446.4" y="402" text-anchor="middle">80%</text>
+<line class="grid" x1="48" x2="546" y1="14.0" y2="14.0"/><text x="40" y="18.0" text-anchor="end">100%</text><text x="546.0" y="402" text-anchor="middle">100%</text>
+<text x="297.0" y="418" text-anchor="middle">share of customers, largest first</text>
+<path d="M48.0,378.0L546.0,14.0" stroke="var(--rule)" stroke-dasharray="4 4" fill="none"/>
+<path class="draw" pathLength="1" d="M48.0,378.0 L48.1,365.7 L48.2,354.3 L48.3,345.7 L48.5,340.0 L48.6,334.4 L48.7,329.2 L48.8,325.5 L48.9,322.7 L49.0,320.0 L49.2,317.2 L49.3,314.5 L49.4,312.1 L49.5,309.8 L49.6,307.5 L49.7,305.1 L49.8,302.8 L50.0,300.6 L50.1,298.5 L50.2,296.7 L50.3,295.0 L50.4,293.4 L50.5,291.8 L50.6,290.3 L50.8,288.7 L50.9,287.3 L51.0,285.9 L51.1,284.6 L51.2,283.3 L51.3,282.1 L51.5,280.9 L51.6,279.7 L51.7,278.5 L51.8,277.4 L51.9,276.3 L52.0,275.2 L52.1,274.3 L52.3,273.3 L52.4,272.4 L52.5,271.5 L52.6,270.6 L52.7,269.7 L52.8,268.9 L53.0,268.2 L53.1,267.4 L53.2,266.6 L53.3,265.9 L53.4,265.1 L53.5,264.4 L53.6,263.7 L53.8,263.0 L53.9,262.3 L54.0,261.6 L54.1,261.0 L54.2,260.3 L54.3,259.7 L54.5,259.0 L54.6,258.4 L54.7,257.8 L54.8,257.2 L54.9,256.6 L55.0,256.0 L55.1,255.4 L55.3,254.8 L55.4,254.3 L55.5,253.7 L55.6,253.1 L55.7,252.6 L55.8,252.0 L56.0,251.5 L56.1,251.0 L56.2,250.5 L56.3,249.9 L56.4,249.4 L56.5,248.9 L56.6,248.4 L56.8,247.9 L56.9,247.4 L57.0,246.9 L57.1,246.4 L57.2,245.9 L57.3,245.4 L57.5,245.0 L57.6,244.5 L57.7,244.0 L57.8,243.5 L57.9,243.1 L58.0,242.6 L58.1,242.1 L58.3,241.6 L58.4,241.2 L58.5,240.7 L58.6,240.2 L58.7,239.8 L58.8,239.3 L59.0,238.9 L59.1,238.4 L59.2,238.0 L59.3,237.6 L59.4,237.2 L59.5,236.7 L59.6,236.3 L59.8,235.9 L59.9,235.5 L60.0,235.1 L60.1,234.7 L60.2,234.2 L60.3,233.8 L60.4,233.4 L60.6,233.0 L60.7,232.6 L60.8,232.3 L60.9,231.9 L61.0,231.5 L61.1,231.1 L61.3,230.7 L61.4,230.3 L61.5,229.9 L61.6,229.6 L61.7,229.2 L61.8,228.8 L63.7,223.2 L65.5,218.0 L67.4,213.2 L69.2,208.6 L71.1,204.3 L72.9,200.2 L74.7,196.3 L76.6,192.5 L78.4,189.0 L80.3,185.6 L82.1,182.4 L84.0,179.3 L85.8,176.3 L87.6,173.4 L89.5,170.6 L91.3,167.9 L93.2,165.2 L95.0,162.7 L96.9,160.2 L98.7,157.7 L100.6,155.3 L102.4,153.0 L104.2,150.7 L106.1,148.5 L107.9,146.3 L109.8,144.2 L111.6,142.1 L113.5,140.1 L115.3,138.2 L117.2,136.2 L119.0,134.3 L120.8,132.4 L122.7,130.6 L124.5,128.8 L126.4,127.1 L128.2,125.4 L130.1,123.7 L131.9,122.0 L133.7,120.4 L135.6,118.8 L137.4,117.3 L139.3,115.7 L141.1,114.2 L143.0,112.8 L144.8,111.3 L146.7,109.9 L148.5,108.5 L150.3,107.1 L152.2,105.8 L154.0,104.5 L155.9,103.2 L157.7,101.9 L159.6,100.7 L161.4,99.4 L163.3,98.2 L165.1,97.0 L166.9,95.8 L168.8,94.7 L170.6,93.5 L172.5,92.4 L174.3,91.3 L176.2,90.2 L178.0,89.1 L179.8,88.0 L181.7,87.0 L183.5,85.9 L185.4,84.9 L187.2,83.9 L189.1,82.9 L190.9,81.9 L192.8,80.9 L194.6,80.0 L196.4,79.0 L198.3,78.1 L200.1,77.2 L202.0,76.3 L203.8,75.4 L205.7,74.5 L207.5,73.7 L209.4,72.8 L211.2,72.0 L213.0,71.2 L214.9,70.4 L216.7,69.6 L218.6,68.8 L220.4,68.0 L222.3,67.2 L224.1,66.5 L225.9,65.7 L227.8,65.0 L229.6,64.3 L231.5,63.5 L233.3,62.8 L235.2,62.1 L237.0,61.4 L238.9,60.7 L240.7,60.1 L242.5,59.4 L244.4,58.7 L246.2,58.1 L248.1,57.4 L249.9,56.8 L251.8,56.2 L253.6,55.6 L255.5,55.0 L257.3,54.4 L259.1,53.8 L261.0,53.2 L262.8,52.6 L264.7,52.0 L266.5,51.5 L268.4,50.9 L270.2,50.4 L272.1,49.8 L273.9,49.3 L275.7,48.8 L277.6,48.3 L279.4,47.8 L281.3,47.3 L283.1,46.8 L285.0,46.3 L286.8,45.8 L288.6,45.3 L290.5,44.8 L292.3,44.3 L294.2,43.9 L296.0,43.4 L297.9,42.9 L299.7,42.5 L301.6,42.0 L303.4,41.6 L305.2,41.1 L307.1,40.7 L308.9,40.3 L310.8,39.8 L312.6,39.4 L314.5,39.0 L316.3,38.6 L318.2,38.2 L320.0,37.8 L321.8,37.4 L323.7,37.0 L325.5,36.6 L327.4,36.2 L329.2,35.8 L331.1,35.5 L332.9,35.1 L334.7,34.7 L336.6,34.4 L338.4,34.0 L340.3,33.7 L342.1,33.3 L344.0,33.0 L345.8,32.7 L347.7,32.3 L349.5,32.0 L351.3,31.7 L353.2,31.4 L355.0,31.1 L356.9,30.7 L358.7,30.4 L360.6,30.1 L362.4,29.8 L364.2,29.5 L366.1,29.3 L367.9,29.0 L369.8,28.7 L371.6,28.4 L373.5,28.1 L375.3,27.8 L377.2,27.6 L379.0,27.3 L380.8,27.0 L382.7,26.8 L384.5,26.5 L386.4,26.3 L388.2,26.0 L390.1,25.7 L391.9,25.5 L393.8,25.3 L395.6,25.0 L397.4,24.8 L399.3,24.5 L401.1,24.3 L403.0,24.1 L404.8,23.8 L406.7,23.6 L408.5,23.4 L410.3,23.1 L412.2,22.9 L414.0,22.7 L415.9,22.5 L417.7,22.2 L419.6,22.0 L421.4,21.8 L423.3,21.6 L425.1,21.4 L426.9,21.2 L428.8,21.0 L430.6,20.8 L432.5,20.6 L434.3,20.4 L436.2,20.2 L438.0,20.0 L439.9,19.9 L441.7,19.7 L443.5,19.5 L445.4,19.3 L447.2,19.2 L449.1,19.0 L450.9,18.8 L452.8,18.7 L454.6,18.5 L456.4,18.4 L458.3,18.2 L460.1,18.0 L462.0,17.9 L463.8,17.8 L465.7,17.6 L467.5,17.5 L469.4,17.3 L471.2,17.2 L473.0,17.1 L474.9,16.9 L476.7,16.8 L478.6,16.7 L480.4,16.5 L482.3,16.4 L484.1,16.3 L486.0,16.2 L487.8,16.1 L489.6,16.0 L491.5,15.8 L493.3,15.7 L495.2,15.6 L497.0,15.5 L498.9,15.4 L500.7,15.3 L502.5,15.2 L504.4,15.1 L506.2,15.0 L508.1,14.9 L509.9,14.8 L511.8,14.8 L513.6,14.7 L515.5,14.6 L517.3,14.5 L519.1,14.4 L521.0,14.4 L522.8,14.3 L524.7,14.2 L526.5,14.2 L528.4,14.1 L530.2,14.0 L532.1,14.0 L533.9,14.0 L535.7,14.0 L537.6,14.0 L539.4,14.0 L541.3,14.0 L543.1,14.0 L545.0,14.0 L546.0,14.0" fill="none" stroke="var(--teal)" stroke-width="3"/>
+<circle class="fade" style="transition-delay:1.4s" cx="53.0" cy="268.2" r="4.5" fill="var(--paper)" stroke="var(--teal)" stroke-width="2" data-tip="Top 1%: 43 customers&#10;30.2% of identified revenue"/>
+<text class="lbl fade" style="transition-delay:1.4s" x="63.0" y="284.2">1% → 30%</text>
+<circle class="fade" style="transition-delay:1.6s" cx="97.8" cy="158.9" r="4.5" fill="var(--paper)" stroke="var(--teal)" stroke-width="2" data-tip="Top 10%: 432 customers&#10;60.2% of identified revenue"/>
+<text class="lbl fade" style="transition-delay:1.6s" x="107.8" y="174.9">10% → 60%</text>
+<circle class="fade" style="transition-delay:1.8s" cx="147.6" cy="109.2" r="4.5" fill="var(--paper)" stroke="var(--teal)" stroke-width="2" data-tip="Top 20%: 864 customers&#10;73.9% of identified revenue"/>
+<text class="lbl fade" style="transition-delay:1.8s" x="157.6" y="125.2">20% → 74%</text>
+<path id="pguide" d="" stroke="var(--ink)" stroke-dasharray="2 3" fill="none"/>
+<circle id="pdot" cx="53.0" cy="268.2" r="7" fill="var(--ink)" stroke="var(--paper)" stroke-width="2"/>
+</svg>
+        <div class="slider"><label class="mono muted" for="pct" style="font-size:12px">Top share of customers</label>
+          <input id="pct" type="range" min="0.5" max="100" step="0.5" value="1"></div>
+        <p class="readout" id="readout">The top <b>1%</b> of customers (<b>43</b> of 4,321) bring <b>30.2%</b> of identified revenue.</p>
+        <p class="src">results/q2.json · concentration_year_b (the marked points are the exact figures)</p>
+      </div>
+      <div class="card chart" data-chart>
+        <h3>Do new customers come back within 90 days?</h3>
+        <p class="sub">Customers first seen between Mar 2010 and Aug 2011; a second order on a later day, within 90 days of the first.</p>
+        <div class="big">38.8%<small>1,368 of 3,530</small></div>
+<svg viewBox="0 0 560 190" role="img" aria-label="90-day repeat rate by acquisition cohort" style="margin-top:14px">
+<line class="grid" x1="40" x2="552" y1="160.0" y2="160.0"/><text x="34" y="164.0" text-anchor="end">0%</text>
+<line class="grid" x1="40" x2="552" y1="86.0" y2="86.0"/><text x="34" y="90.0" text-anchor="end">30%</text>
+<line class="grid" x1="40" x2="552" y1="12.0" y2="12.0"/><text x="34" y="16.0" text-anchor="end">60%</text>
+<rect class="grow-y hot" style="transition-delay:0.10s" x="44.6" y="58.2" width="19.3" height="101.8" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Mar 2010 cohort&#10;441 new customers&#10;41.3% ordered again within 90 days"/>
+<text x="54.2" y="180" text-anchor="middle">Mar 10</text>
+<rect class="grow-y hot" style="transition-delay:0.15s" x="73.0" y="66.0" width="19.3" height="94.0" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Apr 2010 cohort&#10;294 new customers&#10;38.1% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.20s" x="101.4" y="76.8" width="19.3" height="83.2" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="May 2010 cohort&#10;255 new customers&#10;33.7% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.25s" x="129.9" y="75.0" width="19.3" height="85.0" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Jun 2010 cohort&#10;267 new customers&#10;34.5% ordered again within 90 days"/>
+<text x="139.6" y="180" text-anchor="middle">Jun 10</text>
+<rect class="grow-y hot" style="transition-delay:0.30s" x="158.3" y="53.3" width="19.3" height="106.7" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Jul 2010 cohort&#10;185 new customers&#10;43.2% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.35s" x="186.8" y="37.4" width="19.3" height="122.6" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Aug 2010 cohort&#10;163 new customers&#10;49.7% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.40s" x="215.2" y="53.7" width="19.3" height="106.3" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Sep 2010 cohort&#10;239 new customers&#10;43.1% ordered again within 90 days"/>
+<text x="224.9" y="180" text-anchor="middle">Sep 10</text>
+<rect class="grow-y hot" style="transition-delay:0.45s" x="243.7" y="65.3" width="19.3" height="94.7" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Oct 2010 cohort&#10;375 new customers&#10;38.4% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.50s" x="272.1" y="85.9" width="19.3" height="74.1" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Nov 2010 cohort&#10;326 new customers&#10;30.1% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.55s" x="300.6" y="121.1" width="19.3" height="38.9" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Dec 2010 cohort&#10;76 new customers&#10;15.8% ordered again within 90 days"/>
+<text x="310.2" y="180" text-anchor="middle">Dec 10</text>
+<rect class="grow-y hot" style="transition-delay:0.60s" x="329.0" y="60.6" width="19.3" height="99.4" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Jan 2011 cohort&#10;72 new customers&#10;40.3% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.65s" x="357.4" y="81.1" width="19.3" height="78.9" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Feb 2011 cohort&#10;125 new customers&#10;32.0% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.70s" x="385.9" y="62.2" width="19.3" height="97.8" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Mar 2011 cohort&#10;179 new customers&#10;39.7% ordered again within 90 days"/>
+<text x="395.6" y="180" text-anchor="middle">Mar 11</text>
+<rect class="grow-y hot" style="transition-delay:0.75s" x="414.3" y="66.9" width="19.3" height="93.1" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Apr 2011 cohort&#10;106 new customers&#10;37.7% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.80s" x="442.8" y="62.2" width="19.3" height="97.8" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="May 2011 cohort&#10;111 new customers&#10;39.6% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.85s" x="471.2" y="43.5" width="19.3" height="116.5" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Jun 2011 cohort&#10;108 new customers&#10;47.2% ordered again within 90 days"/>
+<text x="480.9" y="180" text-anchor="middle">Jun 11</text>
+<rect class="grow-y hot" style="transition-delay:0.90s" x="499.7" y="35.4" width="19.3" height="124.6" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Jul 2011 cohort&#10;101 new customers&#10;50.5% ordered again within 90 days"/>
+<rect class="grow-y hot" style="transition-delay:0.95s" x="528.1" y="40.1" width="19.3" height="119.9" rx="1.5" fill="var(--teal)" fill-opacity=".8" data-tip="Aug 2011 cohort&#10;107 new customers&#10;48.6% ordered again within 90 days"/>
+<line class="fade" style="transition-delay:1.2s" x1="40" x2="552" y1="64.4" y2="64.4" stroke="var(--ink)" stroke-dasharray="5 4"/><text class="lbl fade" style="transition-delay:1.2s;paint-order:stroke;stroke:var(--paper);stroke-width:5px" x="552" y="57.4" text-anchor="end">pooled 38.8%</text>
+</svg>
+        <p class="src">Cohorts before March 2010 are left out: the data starts in December 2009, so some “new” customers there are old ones.</p>
+      </div>
+    </div>
+    <div class="card chart" data-chart style="margin-top:26px">
+      <h3>Monthly retention by acquisition cohort</h3>
+      <p class="sub">Share of each month's new customers who ordered again 1–12 months later. Blank cells lie beyond the last full month.</p>
+<div class="scroll"><svg class="wide" viewBox="0 0 960 460" role="img" aria-label="Retention matrix by cohort and month offset">
+<text x="114.6" y="14" text-anchor="middle">+1</text>
+<text x="187.8" y="14" text-anchor="middle">+2</text>
+<text x="260.9" y="14" text-anchor="middle">+3</text>
+<text x="334.1" y="14" text-anchor="middle">+4</text>
+<text x="407.2" y="14" text-anchor="middle">+5</text>
+<text x="480.4" y="14" text-anchor="middle">+6</text>
+<text x="553.6" y="14" text-anchor="middle">+7</text>
+<text x="626.8" y="14" text-anchor="middle">+8</text>
+<text x="699.9" y="14" text-anchor="middle">+9</text>
+<text x="773.1" y="14" text-anchor="middle">+10</text>
+<text x="846.3" y="14" text-anchor="middle">+11</text>
+<text x="919.4" y="14" text-anchor="middle">+12</text>
+<text x="68" y="39" text-anchor="end">Mar 2010</text>
+<g class="fade" style="transition-delay:0.04s" data-tip="Mar 2010 cohort, month +1&#10;19.1% ordered"><rect x="79.0" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.577"/><text x="114.6" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<g class="fade" style="transition-delay:0.07s" data-tip="Mar 2010 cohort, month +2&#10;23.1% ordered"><rect x="152.2" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.687"/><text x="187.8" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.11s" data-tip="Mar 2010 cohort, month +3&#10;24.3% ordered"><rect x="225.3" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.718"/><text x="260.9" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">24</text></g>
+<g class="fade" style="transition-delay:0.14s" data-tip="Mar 2010 cohort, month +4&#10;23.1% ordered"><rect x="298.5" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.687"/><text x="334.1" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.18s" data-tip="Mar 2010 cohort, month +5&#10;20.4% ordered"><rect x="371.7" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.614"/><text x="407.2" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.21s" data-tip="Mar 2010 cohort, month +6&#10;24.7% ordered"><rect x="444.8" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.731"/><text x="480.4" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="Mar 2010 cohort, month +7&#10;30.6% ordered"><rect x="518.0" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.890"/><text x="553.6" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">31</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Mar 2010 cohort, month +8&#10;27.7% ordered"><rect x="591.2" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.810"/><text x="626.8" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">28</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Mar 2010 cohort, month +9&#10;10.9% ordered"><rect x="664.3" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.355"/><text x="699.9" y="39" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Mar 2010 cohort, month +10&#10;11.6% ordered"><rect x="737.5" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.374"/><text x="773.1" y="39" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Mar 2010 cohort, month +11&#10;14.5% ordered"><rect x="810.7" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.454"/><text x="846.3" y="39" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Mar 2010 cohort, month +12&#10;20.0% ordered"><rect x="883.8" y="24" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.601"/><text x="919.4" y="39" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<text x="68" y="63" text-anchor="end">Apr 2010</text>
+<g class="fade" style="transition-delay:0.07s" data-tip="Apr 2010 cohort, month +1&#10;19.1% ordered"><rect x="79.0" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.577"/><text x="114.6" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<g class="fade" style="transition-delay:0.11s" data-tip="Apr 2010 cohort, month +2&#10;19.1% ordered"><rect x="152.2" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.577"/><text x="187.8" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<g class="fade" style="transition-delay:0.14s" data-tip="Apr 2010 cohort, month +3&#10;16.0% ordered"><rect x="225.3" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.494"/><text x="260.9" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.18s" data-tip="Apr 2010 cohort, month +4&#10;18.4% ordered"><rect x="298.5" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.558"/><text x="334.1" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.21s" data-tip="Apr 2010 cohort, month +5&#10;22.1% ordered"><rect x="371.7" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.660"/><text x="407.2" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="Apr 2010 cohort, month +6&#10;27.6% ordered"><rect x="444.8" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.807"/><text x="480.4" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">28</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Apr 2010 cohort, month +7&#10;26.5% ordered"><rect x="518.0" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.780"/><text x="553.6" y="63" text-anchor="middle" style="fill:var(--paper);font-size:11px">27</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Apr 2010 cohort, month +8&#10;10.5% ordered"><rect x="591.2" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.346"/><text x="626.8" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Apr 2010 cohort, month +9&#10;10.9% ordered"><rect x="664.3" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.355"/><text x="699.9" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Apr 2010 cohort, month +10&#10;7.5% ordered"><rect x="737.5" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.263"/><text x="773.1" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">7</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Apr 2010 cohort, month +11&#10;14.0% ordered"><rect x="810.7" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.438"/><text x="846.3" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Apr 2010 cohort, month +12&#10;14.3% ordered"><rect x="883.8" y="48" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.448"/><text x="919.4" y="63" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<text x="68" y="87" text-anchor="end">May 2010</text>
+<g class="fade" style="transition-delay:0.11s" data-tip="May 2010 cohort, month +1&#10;15.7% ordered"><rect x="79.0" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.486"/><text x="114.6" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.14s" data-tip="May 2010 cohort, month +2&#10;16.9% ordered"><rect x="152.2" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.517"/><text x="187.8" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">17</text></g>
+<g class="fade" style="transition-delay:0.18s" data-tip="May 2010 cohort, month +3&#10;17.6% ordered"><rect x="225.3" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.539"/><text x="260.9" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.21s" data-tip="May 2010 cohort, month +4&#10;17.6% ordered"><rect x="298.5" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.539"/><text x="334.1" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="May 2010 cohort, month +5&#10;25.5% ordered"><rect x="371.7" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.752"/><text x="407.2" y="87" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="May 2010 cohort, month +6&#10;21.2% ordered"><rect x="444.8" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.635"/><text x="480.4" y="87" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="May 2010 cohort, month +7&#10;12.6% ordered"><rect x="518.0" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.400"/><text x="553.6" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="May 2010 cohort, month +8&#10;5.9% ordered"><rect x="591.2" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.220"/><text x="626.8" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">6</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="May 2010 cohort, month +9&#10;8.2% ordered"><rect x="664.3" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.284"/><text x="699.9" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">8</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="May 2010 cohort, month +10&#10;11.4% ordered"><rect x="737.5" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.368"/><text x="773.1" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="May 2010 cohort, month +11&#10;13.3% ordered"><rect x="810.7" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.422"/><text x="846.3" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="May 2010 cohort, month +12&#10;15.3% ordered"><rect x="883.8" y="72" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.475"/><text x="919.4" y="87" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<text x="68" y="111" text-anchor="end">Jun 2010</text>
+<g class="fade" style="transition-delay:0.14s" data-tip="Jun 2010 cohort, month +1&#10;17.6% ordered"><rect x="79.0" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.537"/><text x="114.6" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.18s" data-tip="Jun 2010 cohort, month +2&#10;18.7% ordered"><rect x="152.2" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.568"/><text x="187.8" y="111" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<g class="fade" style="transition-delay:0.21s" data-tip="Jun 2010 cohort, month +3&#10;20.6% ordered"><rect x="225.3" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.619"/><text x="260.9" y="111" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="Jun 2010 cohort, month +4&#10;23.2% ordered"><rect x="298.5" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.690"/><text x="334.1" y="111" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Jun 2010 cohort, month +5&#10;28.5% ordered"><rect x="371.7" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.832"/><text x="407.2" y="111" text-anchor="middle" style="fill:var(--paper);font-size:11px">28</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Jun 2010 cohort, month +6&#10;12.7% ordered"><rect x="444.8" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.405"/><text x="480.4" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Jun 2010 cohort, month +7&#10;9.0% ordered"><rect x="518.0" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.304"/><text x="553.6" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Jun 2010 cohort, month +8&#10;8.2% ordered"><rect x="591.2" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.284"/><text x="626.8" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">8</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Jun 2010 cohort, month +9&#10;11.2% ordered"><rect x="664.3" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.365"/><text x="699.9" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Jun 2010 cohort, month +10&#10;10.5% ordered"><rect x="737.5" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.345"/><text x="773.1" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Jun 2010 cohort, month +11&#10;13.9% ordered"><rect x="810.7" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.436"/><text x="846.3" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Jun 2010 cohort, month +12&#10;15.0% ordered"><rect x="883.8" y="96" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.466"/><text x="919.4" y="111" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<text x="68" y="135" text-anchor="end">Jul 2010</text>
+<g class="fade" style="transition-delay:0.18s" data-tip="Jul 2010 cohort, month +1&#10;15.7% ordered"><rect x="79.0" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.485"/><text x="114.6" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.21s" data-tip="Jul 2010 cohort, month +2&#10;18.4% ordered"><rect x="152.2" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.559"/><text x="187.8" y="135" text-anchor="middle" style="fill:var(--paper);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="Jul 2010 cohort, month +3&#10;29.7% ordered"><rect x="225.3" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.867"/><text x="260.9" y="135" text-anchor="middle" style="fill:var(--paper);font-size:11px">30</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Jul 2010 cohort, month +4&#10;29.2% ordered"><rect x="298.5" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.852"/><text x="334.1" y="135" text-anchor="middle" style="fill:var(--paper);font-size:11px">29</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Jul 2010 cohort, month +5&#10;14.1% ordered"><rect x="371.7" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.441"/><text x="407.2" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Jul 2010 cohort, month +6&#10;11.3% ordered"><rect x="444.8" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.368"/><text x="480.4" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Jul 2010 cohort, month +7&#10;14.6% ordered"><rect x="518.0" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.456"/><text x="553.6" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Jul 2010 cohort, month +8&#10;14.6% ordered"><rect x="591.2" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.456"/><text x="626.8" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Jul 2010 cohort, month +9&#10;11.3% ordered"><rect x="664.3" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.368"/><text x="699.9" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Jul 2010 cohort, month +10&#10;13.5% ordered"><rect x="737.5" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.427"/><text x="773.1" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Jul 2010 cohort, month +11&#10;14.6% ordered"><rect x="810.7" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.456"/><text x="846.3" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Jul 2010 cohort, month +12&#10;13.0% ordered"><rect x="883.8" y="120" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.412"/><text x="919.4" y="135" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<text x="68" y="159" text-anchor="end">Aug 2010</text>
+<g class="fade" style="transition-delay:0.21s" data-tip="Aug 2010 cohort, month +1&#10;19.6% ordered"><rect x="79.0" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.593"/><text x="114.6" y="159" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.25s" data-tip="Aug 2010 cohort, month +2&#10;28.8% ordered"><rect x="152.2" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.842"/><text x="187.8" y="159" text-anchor="middle" style="fill:var(--paper);font-size:11px">29</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Aug 2010 cohort, month +3&#10;32.5% ordered"><rect x="225.3" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.942"/><text x="260.9" y="159" text-anchor="middle" style="fill:var(--paper);font-size:11px">33</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Aug 2010 cohort, month +4&#10;16.6% ordered"><rect x="298.5" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.509"/><text x="334.1" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">17</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Aug 2010 cohort, month +5&#10;11.7% ordered"><rect x="371.7" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.376"/><text x="407.2" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Aug 2010 cohort, month +6&#10;9.8% ordered"><rect x="444.8" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.326"/><text x="480.4" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Aug 2010 cohort, month +7&#10;12.9% ordered"><rect x="518.0" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.409"/><text x="553.6" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Aug 2010 cohort, month +8&#10;13.5% ordered"><rect x="591.2" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.426"/><text x="626.8" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Aug 2010 cohort, month +9&#10;12.9% ordered"><rect x="664.3" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.409"/><text x="699.9" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Aug 2010 cohort, month +10&#10;12.9% ordered"><rect x="737.5" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.409"/><text x="773.1" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Aug 2010 cohort, month +11&#10;11.7% ordered"><rect x="810.7" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.376"/><text x="846.3" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Aug 2010 cohort, month +12&#10;14.7% ordered"><rect x="883.8" y="144" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.459"/><text x="919.4" y="159" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<text x="68" y="183" text-anchor="end">Sep 2010</text>
+<g class="fade" style="transition-delay:0.25s" data-tip="Sep 2010 cohort, month +1&#10;23.0% ordered"><rect x="79.0" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.684"/><text x="114.6" y="183" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.28s" data-tip="Sep 2010 cohort, month +2&#10;23.4% ordered"><rect x="152.2" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.696"/><text x="187.8" y="183" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Sep 2010 cohort, month +3&#10;13.0% ordered"><rect x="225.3" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.412"/><text x="260.9" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Sep 2010 cohort, month +4&#10;8.8% ordered"><rect x="298.5" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.298"/><text x="334.1" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Sep 2010 cohort, month +5&#10;10.5% ordered"><rect x="371.7" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.344"/><text x="407.2" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Sep 2010 cohort, month +6&#10;13.8% ordered"><rect x="444.8" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.435"/><text x="480.4" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Sep 2010 cohort, month +7&#10;9.6% ordered"><rect x="518.0" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.321"/><text x="553.6" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Sep 2010 cohort, month +8&#10;13.0% ordered"><rect x="591.2" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.412"/><text x="626.8" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Sep 2010 cohort, month +9&#10;13.0% ordered"><rect x="664.3" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.412"/><text x="699.9" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Sep 2010 cohort, month +10&#10;12.1% ordered"><rect x="737.5" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.389"/><text x="773.1" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Sep 2010 cohort, month +11&#10;10.0% ordered"><rect x="810.7" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.332"/><text x="846.3" y="183" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Sep 2010 cohort, month +12&#10;22.6% ordered"><rect x="883.8" y="168" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.673"/><text x="919.4" y="183" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<text x="68" y="207" text-anchor="end">Oct 2010</text>
+<g class="fade" style="transition-delay:0.28s" data-tip="Oct 2010 cohort, month +1&#10;25.9% ordered"><rect x="79.0" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.762"/><text x="114.6" y="207" text-anchor="middle" style="fill:var(--paper);font-size:11px">26</text></g>
+<g class="fade" style="transition-delay:0.32s" data-tip="Oct 2010 cohort, month +2&#10;14.7% ordered"><rect x="152.2" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.458"/><text x="187.8" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Oct 2010 cohort, month +3&#10;12.5% ordered"><rect x="225.3" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.400"/><text x="260.9" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Oct 2010 cohort, month +4&#10;8.8% ordered"><rect x="298.5" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.299"/><text x="334.1" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Oct 2010 cohort, month +5&#10;8.3% ordered"><rect x="371.7" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.284"/><text x="407.2" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">8</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Oct 2010 cohort, month +6&#10;13.1% ordered"><rect x="444.8" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.415"/><text x="480.4" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Oct 2010 cohort, month +7&#10;13.9% ordered"><rect x="518.0" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.436"/><text x="553.6" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">14</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Oct 2010 cohort, month +8&#10;10.7% ordered"><rect x="591.2" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.349"/><text x="626.8" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Oct 2010 cohort, month +9&#10;9.3% ordered"><rect x="664.3" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.313"/><text x="699.9" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Oct 2010 cohort, month +10&#10;10.7% ordered"><rect x="737.5" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.349"/><text x="773.1" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Oct 2010 cohort, month +11&#10;12.8% ordered"><rect x="810.7" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.407"/><text x="846.3" y="207" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Oct 2010 cohort, month +12&#10;19.2% ordered"><rect x="883.8" y="192" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.581"/><text x="919.4" y="207" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<text x="68" y="231" text-anchor="end">Nov 2010</text>
+<g class="fade" style="transition-delay:0.32s" data-tip="Nov 2010 cohort, month +1&#10;17.5% ordered"><rect x="79.0" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.534"/><text x="114.6" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">17</text></g>
+<g class="fade" style="transition-delay:0.35s" data-tip="Nov 2010 cohort, month +2&#10;9.5% ordered"><rect x="152.2" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.318"/><text x="187.8" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Nov 2010 cohort, month +3&#10;9.5% ordered"><rect x="225.3" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.318"/><text x="260.9" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Nov 2010 cohort, month +4&#10;7.7% ordered"><rect x="298.5" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.268"/><text x="334.1" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">8</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Nov 2010 cohort, month +5&#10;8.9% ordered"><rect x="371.7" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.301"/><text x="407.2" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Nov 2010 cohort, month +6&#10;12.9% ordered"><rect x="444.8" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.409"/><text x="480.4" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">13</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Nov 2010 cohort, month +7&#10;10.1% ordered"><rect x="518.0" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.335"/><text x="553.6" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">10</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Nov 2010 cohort, month +8&#10;8.6% ordered"><rect x="591.2" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.293"/><text x="626.8" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Nov 2010 cohort, month +9&#10;9.2% ordered"><rect x="664.3" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.310"/><text x="699.9" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Nov 2010 cohort, month +10&#10;11.0% ordered"><rect x="737.5" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.359"/><text x="773.1" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Nov 2010 cohort, month +11&#10;14.7% ordered"><rect x="810.7" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.459"/><text x="846.3" y="231" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Nov 2010 cohort, month +12&#10;25.1% ordered"><rect x="883.8" y="216" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.742"/><text x="919.4" y="231" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<text x="68" y="255" text-anchor="end">Dec 2010</text>
+<g class="fade" style="transition-delay:0.35s" data-tip="Dec 2010 cohort, month +1&#10;9.2% ordered"><rect x="79.0" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.310"/><text x="114.6" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.39s" data-tip="Dec 2010 cohort, month +2&#10;5.3% ordered"><rect x="152.2" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.203"/><text x="187.8" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">5</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Dec 2010 cohort, month +3&#10;9.2% ordered"><rect x="225.3" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.310"/><text x="260.9" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Dec 2010 cohort, month +4&#10;11.8% ordered"><rect x="298.5" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.381"/><text x="334.1" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Dec 2010 cohort, month +5&#10;6.6% ordered"><rect x="371.7" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.239"/><text x="407.2" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">7</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Dec 2010 cohort, month +6&#10;5.3% ordered"><rect x="444.8" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.203"/><text x="480.4" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">5</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Dec 2010 cohort, month +7&#10;9.2% ordered"><rect x="518.0" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.310"/><text x="553.6" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Dec 2010 cohort, month +8&#10;5.3% ordered"><rect x="591.2" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.203"/><text x="626.8" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">5</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Dec 2010 cohort, month +9&#10;2.6% ordered"><rect x="664.3" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.131"/><text x="699.9" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">3</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Dec 2010 cohort, month +10&#10;9.2% ordered"><rect x="737.5" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.310"/><text x="773.1" y="255" text-anchor="middle" style="fill:var(--ink);font-size:11px">9</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Dec 2010 cohort, month +11&#10;19.7% ordered"><rect x="810.7" y="240" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.596"/><text x="846.3" y="255" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<rect x="883.8" y="240" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="279" text-anchor="end">Jan 2011</text>
+<g class="fade" style="transition-delay:0.39s" data-tip="Jan 2011 cohort, month +1&#10;16.7% ordered"><rect x="79.0" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.512"/><text x="114.6" y="279" text-anchor="middle" style="fill:var(--ink);font-size:11px">17</text></g>
+<g class="fade" style="transition-delay:0.42s" data-tip="Jan 2011 cohort, month +2&#10;22.2% ordered"><rect x="152.2" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.663"/><text x="187.8" y="279" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Jan 2011 cohort, month +3&#10;19.4% ordered"><rect x="225.3" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.587"/><text x="260.9" y="279" text-anchor="middle" style="fill:var(--paper);font-size:11px">19</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Jan 2011 cohort, month +4&#10;22.2% ordered"><rect x="298.5" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.663"/><text x="334.1" y="279" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Jan 2011 cohort, month +5&#10;15.3% ordered"><rect x="371.7" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.475"/><text x="407.2" y="279" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Jan 2011 cohort, month +6&#10;15.3% ordered"><rect x="444.8" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.475"/><text x="480.4" y="279" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Jan 2011 cohort, month +7&#10;12.5% ordered"><rect x="518.0" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.399"/><text x="553.6" y="279" text-anchor="middle" style="fill:var(--ink);font-size:11px">12</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Jan 2011 cohort, month +8&#10;11.1% ordered"><rect x="591.2" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.361"/><text x="626.8" y="279" text-anchor="middle" style="fill:var(--ink);font-size:11px">11</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Jan 2011 cohort, month +9&#10;20.8% ordered"><rect x="664.3" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.625"/><text x="699.9" y="279" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Jan 2011 cohort, month +10&#10;25.0% ordered"><rect x="737.5" y="264" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.738"/><text x="773.1" y="279" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<rect x="810.7" y="264" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="264" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="303" text-anchor="end">Feb 2011</text>
+<g class="fade" style="transition-delay:0.42s" data-tip="Feb 2011 cohort, month +1&#10;16.0% ordered"><rect x="79.0" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.494"/><text x="114.6" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.46s" data-tip="Feb 2011 cohort, month +2&#10;16.0% ordered"><rect x="152.2" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.494"/><text x="187.8" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Feb 2011 cohort, month +3&#10;18.4% ordered"><rect x="225.3" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.559"/><text x="260.9" y="303" text-anchor="middle" style="fill:var(--paper);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Feb 2011 cohort, month +4&#10;21.6% ordered"><rect x="298.5" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.646"/><text x="334.1" y="303" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Feb 2011 cohort, month +5&#10;16.0% ordered"><rect x="371.7" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.494"/><text x="407.2" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Feb 2011 cohort, month +6&#10;16.0% ordered"><rect x="444.8" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.494"/><text x="480.4" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Feb 2011 cohort, month +7&#10;15.2% ordered"><rect x="518.0" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.472"/><text x="553.6" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Feb 2011 cohort, month +8&#10;15.2% ordered"><rect x="591.2" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.472"/><text x="626.8" y="303" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Feb 2011 cohort, month +9&#10;18.4% ordered"><rect x="664.3" y="288" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.559"/><text x="699.9" y="303" text-anchor="middle" style="fill:var(--paper);font-size:11px">18</text></g>
+<rect x="737.5" y="288" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="288" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="288" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="327" text-anchor="end">Mar 2011</text>
+<g class="fade" style="transition-delay:0.46s" data-tip="Mar 2011 cohort, month +1&#10;17.9% ordered"><rect x="79.0" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.545"/><text x="114.6" y="327" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.49s" data-tip="Mar 2011 cohort, month +2&#10;21.8% ordered"><rect x="152.2" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.651"/><text x="187.8" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Mar 2011 cohort, month +3&#10;20.1% ordered"><rect x="225.3" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.606"/><text x="260.9" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Mar 2011 cohort, month +4&#10;22.4% ordered"><rect x="298.5" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.666"/><text x="334.1" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Mar 2011 cohort, month +5&#10;15.1% ordered"><rect x="371.7" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.469"/><text x="407.2" y="327" text-anchor="middle" style="fill:var(--ink);font-size:11px">15</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Mar 2011 cohort, month +6&#10;20.7% ordered"><rect x="444.8" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.621"/><text x="480.4" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Mar 2011 cohort, month +7&#10;20.1% ordered"><rect x="518.0" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.606"/><text x="553.6" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Mar 2011 cohort, month +8&#10;24.0% ordered"><rect x="591.2" y="312" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.712"/><text x="626.8" y="327" text-anchor="middle" style="fill:var(--paper);font-size:11px">24</text></g>
+<rect x="664.3" y="312" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="312" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="312" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="312" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="351" text-anchor="end">Apr 2011</text>
+<g class="fade" style="transition-delay:0.49s" data-tip="Apr 2011 cohort, month +1&#10;24.5% ordered"><rect x="79.0" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.725"/><text x="114.6" y="351" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<g class="fade" style="transition-delay:0.53s" data-tip="Apr 2011 cohort, month +2&#10;19.8% ordered"><rect x="152.2" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.597"/><text x="187.8" y="351" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="Apr 2011 cohort, month +3&#10;19.8% ordered"><rect x="225.3" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.597"/><text x="260.9" y="351" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Apr 2011 cohort, month +4&#10;17.9% ordered"><rect x="298.5" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.546"/><text x="334.1" y="351" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Apr 2011 cohort, month +5&#10;23.6% ordered"><rect x="371.7" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.700"/><text x="407.2" y="351" text-anchor="middle" style="fill:var(--paper);font-size:11px">24</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Apr 2011 cohort, month +6&#10;17.9% ordered"><rect x="444.8" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.546"/><text x="480.4" y="351" text-anchor="middle" style="fill:var(--ink);font-size:11px">18</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Apr 2011 cohort, month +7&#10;25.5% ordered"><rect x="518.0" y="336" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.751"/><text x="553.6" y="351" text-anchor="middle" style="fill:var(--paper);font-size:11px">25</text></g>
+<rect x="591.2" y="336" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="664.3" y="336" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="336" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="336" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="336" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="375" text-anchor="end">May 2011</text>
+<g class="fade" style="transition-delay:0.53s" data-tip="May 2011 cohort, month +1&#10;23.4% ordered"><rect x="79.0" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.695"/><text x="114.6" y="375" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.56s" data-tip="May 2011 cohort, month +2&#10;24.3% ordered"><rect x="152.2" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.720"/><text x="187.8" y="375" text-anchor="middle" style="fill:var(--paper);font-size:11px">24</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="May 2011 cohort, month +3&#10;16.2% ordered"><rect x="225.3" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.500"/><text x="260.9" y="375" text-anchor="middle" style="fill:var(--ink);font-size:11px">16</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="May 2011 cohort, month +4&#10;21.6% ordered"><rect x="298.5" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.647"/><text x="334.1" y="375" text-anchor="middle" style="fill:var(--paper);font-size:11px">22</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="May 2011 cohort, month +5&#10;20.7% ordered"><rect x="371.7" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.622"/><text x="407.2" y="375" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="May 2011 cohort, month +6&#10;26.1% ordered"><rect x="444.8" y="360" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.769"/><text x="480.4" y="375" text-anchor="middle" style="fill:var(--paper);font-size:11px">26</text></g>
+<rect x="518.0" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="591.2" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="664.3" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="360" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="399" text-anchor="end">Jun 2011</text>
+<g class="fade" style="transition-delay:0.56s" data-tip="Jun 2011 cohort, month +1&#10;23.2% ordered"><rect x="79.0" y="384" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.688"/><text x="114.6" y="399" text-anchor="middle" style="fill:var(--paper);font-size:11px">23</text></g>
+<g class="fade" style="transition-delay:0.60s" data-tip="Jun 2011 cohort, month +2&#10;21.3% ordered"><rect x="152.2" y="384" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.638"/><text x="187.8" y="399" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Jun 2011 cohort, month +3&#10;26.9% ordered"><rect x="225.3" y="384" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.788"/><text x="260.9" y="399" text-anchor="middle" style="fill:var(--paper);font-size:11px">27</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Jun 2011 cohort, month +4&#10;20.4% ordered"><rect x="298.5" y="384" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.613"/><text x="334.1" y="399" text-anchor="middle" style="fill:var(--paper);font-size:11px">20</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Jun 2011 cohort, month +5&#10;27.8% ordered"><rect x="371.7" y="384" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.814"/><text x="407.2" y="399" text-anchor="middle" style="fill:var(--paper);font-size:11px">28</text></g>
+<rect x="444.8" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="518.0" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="591.2" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="664.3" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="384" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="423" text-anchor="end">Jul 2011</text>
+<g class="fade" style="transition-delay:0.60s" data-tip="Jul 2011 cohort, month +1&#10;20.8% ordered"><rect x="79.0" y="408" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.624"/><text x="114.6" y="423" text-anchor="middle" style="fill:var(--paper);font-size:11px">21</text></g>
+<g class="fade" style="transition-delay:0.63s" data-tip="Jul 2011 cohort, month +2&#10;29.7% ordered"><rect x="152.2" y="408" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.866"/><text x="187.8" y="423" text-anchor="middle" style="fill:var(--paper);font-size:11px">30</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Jul 2011 cohort, month +3&#10;27.7% ordered"><rect x="225.3" y="408" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.812"/><text x="260.9" y="423" text-anchor="middle" style="fill:var(--paper);font-size:11px">28</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Jul 2011 cohort, month +4&#10;34.6% ordered"><rect x="298.5" y="408" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="1.000"/><text x="334.1" y="423" text-anchor="middle" style="fill:var(--paper);font-size:11px">35</text></g>
+<rect x="371.7" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="444.8" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="518.0" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="591.2" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="664.3" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="408" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<text x="68" y="447" text-anchor="end">Aug 2011</text>
+<g class="fade" style="transition-delay:0.63s" data-tip="Aug 2011 cohort, month +1&#10;26.2% ordered"><rect x="79.0" y="432" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.770"/><text x="114.6" y="447" text-anchor="middle" style="fill:var(--paper);font-size:11px">26</text></g>
+<g class="fade" style="transition-delay:0.67s" data-tip="Aug 2011 cohort, month +2&#10;29.9% ordered"><rect x="152.2" y="432" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.871"/><text x="187.8" y="447" text-anchor="middle" style="fill:var(--paper);font-size:11px">30</text></g>
+<g class="fade" style="transition-delay:0.70s" data-tip="Aug 2011 cohort, month +3&#10;26.2% ordered"><rect x="225.3" y="432" width="71.2" height="22" rx="2" fill="var(--teal)" fill-opacity="0.770"/><text x="260.9" y="447" text-anchor="middle" style="fill:var(--paper);font-size:11px">26</text></g>
+<rect x="298.5" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="371.7" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="444.8" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="518.0" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="591.2" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="664.3" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="737.5" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="810.7" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+<rect x="883.8" y="432" width="71.2" height="22" fill="none" stroke="var(--soft)" stroke-dasharray="2 3"/>
+</svg></div>
+      <div class="legend-scale">0%<span></span>35%</div>
+      <p class="src">results/q2.json · retention_matrix</p>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>Concentration is measured on customers with an ID; 15.0% of Year B revenue has none and sits outside it. “New” means first seen in this data. A large account is not a risk by itself; the report shows the dependency, not its cost.</p></div>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q3</span><br>Cancellations</div>
+      <div>
+        <h2>How much revenue is lost to cancellations?</h2>
+        <p class="answer"><b class="coral">3.1%</b> of Year B product sales were cancelled, up from 2.6% in Year A. The rise is not a trend: 7 of the 10 largest single cancellation lines fall in Year B, and without those ten lines the rate went from 2.5% to <b class="teal">2.1%</b>.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart id="cancel-card">
+        <h3>Cancelled value per month</h3>
+        <div class="toggle" role="group" aria-label="Largest lines">
+          <button type="button" aria-pressed="true" data-top="show">All cancellations</button>
+          <button type="button" aria-pressed="false" data-top="hide">Without the 10 largest lines</button>
+        </div>
+        <div class="ratio-row">
+          <div>Year A cancelled / sold<b id="ra">2.6%</b></div>
+          <div>Year B cancelled / sold<b id="rb">3.1%</b></div>
+        </div>
+<div class="scroll"><svg class="wide" viewBox="0 0 640 300" role="img" aria-label="Cancelled value per month">
+<line class="grid" x1="56" x2="632" y1="266.0" y2="266.0"/><text x="50" y="270.0" text-anchor="end">£0k</text>
+<line class="grid" x1="56" x2="632" y1="229.7" y2="229.7"/><text x="50" y="233.7" text-anchor="end">£25k</text>
+<line class="grid" x1="56" x2="632" y1="193.4" y2="193.4"/><text x="50" y="197.4" text-anchor="end">£50k</text>
+<line class="grid" x1="56" x2="632" y1="157.1" y2="157.1"/><text x="50" y="161.1" text-anchor="end">£75k</text>
+<line class="grid" x1="56" x2="632" y1="120.9" y2="120.9"/><text x="50" y="124.9" text-anchor="end">£100k</text>
+<line class="grid" x1="56" x2="632" y1="84.6" y2="84.6"/><text x="50" y="88.6" text-anchor="end">£125k</text>
+<line class="grid" x1="56" x2="632" y1="48.3" y2="48.3"/><text x="50" y="52.3" text-anchor="end">£150k</text>
+<line class="grid" x1="56" x2="632" y1="12.0" y2="12.0"/><text x="50" y="16.0" text-anchor="end">£175k</text>
+<g data-tip="Dec 2009&#10;cancelled £19,558 (2.5% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.05s" x="59.5" y="237.6" width="16.1" height="28.4" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="67.5" y="288" text-anchor="middle">Dec 09</text>
+<g data-tip="Jan 2010&#10;cancelled £7,466 (1.2% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.09s" x="82.5" y="255.2" width="16.1" height="10.8" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Feb 2010&#10;cancelled £12,575 (2.3% of sales)&#10;of which 10 largest lines £3,631" class="hot"><rect class="grow-y" style="transition-delay:0.13s" x="105.5" y="253.0" width="16.1" height="13.0" fill="var(--coral)" fill-opacity="0.55"/>
+<rect class="grow-y cut" style="transition-delay:0.13s" x="105.5" y="247.7" width="16.1" height="5.3" fill="var(--coral)"/>
+</g>
+<g data-tip="Mar 2010&#10;cancelled £9,604 (1.3% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.17s" x="128.6" y="252.1" width="16.1" height="13.9" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="136.6" y="288" text-anchor="middle">Mar 10</text>
+<g data-tip="Apr 2010&#10;cancelled £10,025 (1.6% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.21s" x="151.6" y="251.4" width="16.1" height="14.6" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="May 2010&#10;cancelled £37,193 (5.8% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.25s" x="174.7" y="212.0" width="16.1" height="54.0" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Jun 2010&#10;cancelled £26,373 (3.8% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.29s" x="197.7" y="227.7" width="16.1" height="38.3" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="205.8" y="288" text-anchor="middle">Jun 10</text>
+<g data-tip="Jul 2010&#10;cancelled £17,133 (2.7% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.33s" x="220.7" y="241.1" width="16.1" height="24.9" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Aug 2010&#10;cancelled £12,398 (1.8% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.37s" x="243.8" y="248.0" width="16.1" height="18.0" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Sep 2010&#10;cancelled £27,686 (3.2% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.41s" x="266.8" y="225.8" width="16.1" height="40.2" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="274.9" y="288" text-anchor="middle">Sep 10</text>
+<g data-tip="Oct 2010&#10;cancelled £25,451 (2.3% of sales)&#10;of which 10 largest lines £3,168" class="hot"><rect class="grow-y" style="transition-delay:0.45s" x="289.9" y="233.7" width="16.1" height="32.3" fill="var(--coral)" fill-opacity="0.55"/>
+<rect class="grow-y cut" style="transition-delay:0.45s" x="289.9" y="229.1" width="16.1" height="4.6" fill="var(--coral)"/>
+</g>
+<g data-tip="Nov 2010&#10;cancelled £35,099 (2.5% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.49s" x="312.9" y="215.1" width="16.1" height="50.9" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Dec 2010&#10;cancelled £17,548 (2.3% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.53s" x="335.9" y="240.5" width="16.1" height="25.5" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="344.0" y="288" text-anchor="middle">Dec 10</text>
+<g data-tip="Jan 2011&#10;cancelled £91,525 (13.7% of sales)&#10;of which 10 largest lines £77,184" class="hot"><rect class="grow-y" style="transition-delay:0.57s" x="359.0" y="245.2" width="16.1" height="20.8" fill="var(--coral)" fill-opacity="0.55"/>
+<rect class="grow-y cut" style="transition-delay:0.57s" x="359.0" y="133.2" width="16.1" height="112.0" fill="var(--coral)"/>
+</g>
+<g data-tip="Feb 2011&#10;cancelled £8,336 (1.6% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.61s" x="382.0" y="253.9" width="16.1" height="12.1" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Mar 2011&#10;cancelled £10,504 (1.5% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.65s" x="405.1" y="250.8" width="16.1" height="15.2" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="413.1" y="288" text-anchor="middle">Mar 11</text>
+<g data-tip="Apr 2011&#10;cancelled £33,316 (6.5% of sales)&#10;of which 10 largest lines £22,998" class="hot"><rect class="grow-y" style="transition-delay:0.69s" x="428.1" y="251.0" width="16.1" height="15.0" fill="var(--coral)" fill-opacity="0.55"/>
+<rect class="grow-y cut" style="transition-delay:0.69s" x="428.1" y="217.6" width="16.1" height="33.4" fill="var(--coral)"/>
+</g>
+<g data-tip="May 2011&#10;cancelled £8,948 (1.2% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.73s" x="451.1" y="253.0" width="16.1" height="13.0" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Jun 2011&#10;cancelled £13,714 (1.9% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.77s" x="474.2" y="246.1" width="16.1" height="19.9" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<text x="482.2" y="288" text-anchor="middle">Jun 11</text>
+<g data-tip="Jul 2011&#10;cancelled £11,407 (1.7% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.81s" x="497.2" y="249.4" width="16.1" height="16.6" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Aug 2011&#10;cancelled £22,927 (3.2% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.85s" x="520.3" y="232.7" width="16.1" height="33.3" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Sep 2011&#10;cancelled £16,981 (1.7% of sales)&#10;of which 10 largest lines £3,825" class="hot"><rect class="grow-y" style="transition-delay:0.89s" x="543.3" y="246.9" width="16.1" height="19.1" fill="var(--coral)" fill-opacity="0.55"/>
+<rect class="grow-y cut" style="transition-delay:0.89s" x="543.3" y="241.4" width="16.1" height="5.6" fill="var(--coral)"/>
+</g>
+<text x="551.4" y="288" text-anchor="middle">Sep 11</text>
+<g data-tip="Oct 2011&#10;cancelled £41,613 (3.8% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.93s" x="566.3" y="205.6" width="16.1" height="60.4" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Nov 2011&#10;cancelled £24,991 (1.7% of sales)" class="hot"><rect class="grow-y" style="transition-delay:0.97s" x="589.4" y="229.7" width="16.1" height="36.3" fill="var(--coral)" fill-opacity="0.55"/>
+</g>
+<g data-tip="Dec 2011 (1–9 Dec)&#10;cancelled £174,091 (28.3% of sales)&#10;of which 10 largest lines £168,470" class="hot"><rect class="grow-y" style="transition-delay:1.01s" x="612.4" y="257.8" width="16.1" height="8.2" fill="var(--coral)" fill-opacity="0.3"/>
+<rect class="grow-y cut" style="transition-delay:1.01s" x="612.4" y="13.3" width="16.1" height="244.5" fill="var(--coral)"/>
+</g>
+<text x="620.5" y="288" text-anchor="middle">Dec 11</text>
+</svg></div>
+        <div class="chips"><span><i style="background:var(--coral);opacity:.55"></i>All other cancellation lines</span><span><i style="background:var(--coral)"></i>The 10 largest lines</span></div>
+        <p class="src">results/q3.json · monthly, top10_cancellation_lines</p>
+      </div>
+      <div class="stack">
+        <div class="card chart" data-chart>
+          <h3>The ten largest cancellation lines</h3>
+          <p class="sub">Together £279,276: 39.0% of all cancelled value over the two years. The largest, 80,995 units of “Paper Craft , Little Birdie”, reverses an order of 80,995 units placed 12 minutes earlier.</p>
+          <div class="stubs">
+            <div class="stub"><span>2011-12-09</span><span>Paper Craft , Little Birdie <small>C581484 · 80,995 units</small></span><span class="v">£168,470</span></div>
+            <div class="stub"><span>2011-01-18</span><span>Medium Ceramic Top Storage Jar <small>C541433 · 74,215 units</small></span><span class="v">£77,184</span></div>
+            <div class="stub"><span>2011-04-18</span><span>Fairy Cake Flannel Assorted Colour <small>C550456 · 3,114 units</small></span><span class="v">£6,539</span></div>
+            <div class="stub"><span>2011-04-18</span><span>White Hanging Heart T-Light Holder <small>C550456 · 1,930 units</small></span><span class="v">£4,922</span></div>
+            <div class="stub"><span>2011-04-18</span><span>Doormat Fairy Cake <small>C550456 · 670 units</small></span><span class="v">£4,522</span></div>
+            <div class="stub"><span>2011-09-21</span><span>Pantry Chopping Board <small>C567527 · 756 units</small></span><span class="v">£3,825</span></div>
+            <div class="stub"><span>2011-04-18</span><span>Gin + Tonic Diet Metal Sign <small>C550456 · 2,000 units</small></span><span class="v">£3,700</span></div>
+            <div class="stub"><span>2010-02-17</span><span>Small Fairy Cake Fridge Magnets <small>C498151 · 2,504 units</small></span><span class="v">£3,631</span></div>
+            <div class="stub"><span>2011-04-18</span><span>Tea Time Party Bunting <small>C550456 · 1,300 units</small></span><span class="v">£3,315</span></div>
+            <div class="stub"><span>2010-10-28</span><span>Colour Glass. Star T-Light Holder <small>C529352 · 1,152 units</small></span><span class="v">£3,168</span></div>
+          </div>
+        </div>
+        <div class="card chart" data-chart>
+          <h3>Can each cancellation be traced to an order?</h3>
+          <p class="sub">Same customer, product and price on an earlier sale line.</p>
+          <div class="trace"><span class="grow-x" style="width:92.90%;background:var(--teal)" data-tip="traceable&#10;15,348 lines, £665,597">93%</span><span class="grow-x" style="width:6.20%;background:var(--slate)" data-tip="no matching sale&#10;2,239 lines, £44,393">6%</span><span class="grow-x" style="width:0.90%;background:var(--mustard)" data-tip="no ID&#10;328 lines, £6,473"></span></div>
+          <p style="margin:0;font-size:14px" class="muted">92.9% of cancelled value (85.7% of lines) matches an earlier sale. 6.2% has a customer but no matching sale; 0.9% has no customer ID. The traceable share of lines is 79.2% in Year A and 92.5% in Year B, consistent with orders placed before the data starts.</p>
+        </div>
+      </div>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>A cancellation is not necessarily lost margin or a refund: the data has no cost or payment information. Very large lines look like order-entry corrections, but the data cannot confirm that.</p></div>
+  </div>
+</section>
+
+<section class="proof" id="proof">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">✓</span><br>How we know</div>
+      <div>
+        <h2>Every row accounted for, every number checked twice</h2>
+        <p class="answer">The raw export has 1,067,371 lines worth £19,287,250.568. The row ledger puts each line in exactly one bucket, and the buckets add back to the raw total to a thousandth of a pound. A second implementation, written from the analysis plan and the raw file alone, assigns the same bucket to all 1,067,371 lines and reproduces 118 numbers exactly.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart>
+        <h3>Row ledger: where 1,067,371 raw lines went</h3>
+        <p class="sub">Each raw line gets exactly one disposition; rules run in a fixed, pre-registered order.</p>
+        <div class="scroll"><table class="ledger">
+          <thead><tr><th>Disposition</th><th class="r">Lines</th><th class="r">Value £</th><th class="barcell">Lines (log scale)</th></tr></thead>
+          <tbody>
+            <tr><td>Product sale</td><td class="r">1,003,357</td><td class="r">19,643,861.637</td><td class="barcell"><div class="b grow-x" style="width:100.0%;transition-delay:0.10s"></div></td></tr>
+            <tr><td>Postage, fees, manual lines</td><td class="r">4,555</td><td class="r">821,336.751</td><td class="barcell"><div class="b grow-x" style="width:61.0%;transition-delay:0.16s"></div></td></tr>
+            <tr><td>Cancelled product line</td><td class="r">17,915</td><td class="r">-716,462.570</td><td class="barcell"><div class="b grow-x" style="width:70.9%;transition-delay:0.22s"></div></td></tr>
+            <tr><td>Cancelled fee / manual line</td><td class="r">1,189</td><td class="r">-745,588.040</td><td class="barcell"><div class="b grow-x" style="width:51.2%;transition-delay:0.28s"></div></td></tr>
+            <tr><td>Stock movement (qty ≤ 0, £0)</td><td class="r">3,393</td><td class="r">0.000</td><td class="barcell"><div class="b grow-x" style="width:58.8%;transition-delay:0.34s"></div></td></tr>
+            <tr><td>Zero price</td><td class="r">2,621</td><td class="r">0.000</td><td class="barcell"><div class="b grow-x" style="width:57.0%;transition-delay:0.40s"></div></td></tr>
+            <tr><td>Exact duplicate line</td><td class="r">11,812</td><td class="r">54,228.420</td><td class="barcell"><div class="b grow-x" style="width:67.9%;transition-delay:0.46s"></div></td></tr>
+            <tr><td>Copy across the two sheets</td><td class="r">22,523</td><td class="r">377,488.450</td><td class="barcell"><div class="b grow-x" style="width:72.5%;transition-delay:0.52s"></div></td></tr>
+            <tr><td>Accounting adjustment</td><td class="r">6</td><td class="r">-147,614.080</td><td class="barcell"><div class="b grow-x" style="width:14.1%;transition-delay:0.58s"></div></td></tr>
+            <tr><td>Unclassified</td><td class="r">0</td><td class="r">0.000</td><td class="barcell"><span class="muted">none</span></td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td>Sum = raw export</td><td class="r">1,067,371</td><td class="r">19,287,250.568</td><td><span class="ok">✓ exact, both</span></td></tr>
+          </tfoot>
+        </table></div>
+      </div>
+      <div class="card chart" data-chart>
+        <h3>Written before the numbers existed</h3>
+        <p class="sub">The analysis plan was committed first. Later decisions are dated amendments, not edits.</p>
+        <ol class="timeline">
+          <li><span class="h">29 Sep 2026, 17:08 · 1c14367</span>Pre-register analysis plan and project scaffold</li>
+          <li><span class="h">29 Sep 2026, 17:16 · 59ee2d3</span>Row ledger: every raw row gets one disposition, reconciled to the milli-pound</li>
+          <li><span class="h">29 Sep 2026, 17:22 · 27307bb</span>Independent check: second ledger implementation agrees on all 1,067,371 rows</li>
+          <li><span class="h">29 Sep 2026, 17:32 · 6fbde10</span>Q1-Q3 results, cross-checked against an independent implementation</li>
+          <li><span class="h">29 Sep 2026, 17:33 · a68cfcc</span>Plan amendment 4: state the measured size of the stock-code spelling issue</li>
+          <li><span class="h">ANALYSIS_PLAN.md</span>9 dated amendments, each with its reason</li>
+        </ol>
+      </div>
+    </div>
+    <div class="twin">
+      <div class="impl"><h3>Main pipeline</h3><p>pandas, tested (<span class="mono">45</span> tests), builds the ledger and answers Q1–Q3.</p></div>
+      <div class="meet"><span><b>1,067,371</b>rows agree</span><span style="margin-top:10px"><b>118/118</b>numbers agree</span></div>
+      <div class="impl"><h3>Independent check</h3><p>Standard-library Python written from the plan and the raw export alone, without reading the main code.</p></div>
+    </div>
+    <div class="ticker" aria-label="Names of the numbers compared"><ul><li>year_a.gps</li><li>year_a.cpv</li><li>year_a.npr</li><li>year_a.orders</li><li>year_a.identified_customers</li><li>year_b.gps</li><li>year_b.cpv</li><li>year_b.npr</li><li>year_b.orders</li><li>year_b.identified_customers</li><li>2009-12.gps</li><li>2009-12.cpv</li><li>2009-12.npr</li><li>2010-01.gps</li><li>2010-01.cpv</li><li>2010-01.npr</li><li>2010-02.gps</li><li>2010-02.cpv</li><li>2010-02.npr</li><li>2010-03.gps</li><li>2010-03.cpv</li><li>2010-03.npr</li><li>2010-04.gps</li><li>2010-04.cpv</li><li>2010-04.npr</li><li>2010-05.gps</li><li>2010-05.cpv</li><li>2010-05.npr</li><li>2010-06.gps</li><li>2010-06.cpv</li><li>2010-06.npr</li><li>2010-07.gps</li><li>2010-07.cpv</li><li>2010-07.npr</li><li>2010-08.gps</li><li>2010-08.cpv</li><li>2010-08.npr</li><li>2010-09.gps</li><li>2010-09.cpv</li><li>2010-09.npr</li><li>2010-10.gps</li><li>2010-10.cpv</li><li>2010-10.npr</li><li>2010-11.gps</li><li>2010-11.cpv</li><li>2010-11.npr</li><li>2010-12.gps</li><li>2010-12.cpv</li><li>2010-12.npr</li><li>2011-01.gps</li><li>2011-01.cpv</li><li>2011-01.npr</li><li>2011-02.gps</li><li>2011-02.cpv</li><li>2011-02.npr</li><li>2011-03.gps</li><li>2011-03.cpv</li><li>2011-03.npr</li><li>2011-04.gps</li><li>2011-04.cpv</li><li>2011-04.npr</li><li>2011-05.gps</li><li>2011-05.cpv</li><li>2011-05.npr</li><li>2011-06.gps</li><li>2011-06.cpv</li><li>2011-06.npr</li><li>2011-07.gps</li><li>2011-07.cpv</li><li>2011-07.npr</li><li>2011-08.gps</li><li>2011-08.cpv</li><li>2011-08.npr</li><li>2011-09.gps</li><li>2011-09.cpv</li><li>2011-09.npr</li><li>2011-10.gps</li><li>2011-10.cpv</li><li>2011-10.npr</li><li>2011-11.gps</li><li>2011-11.cpv</li><li>2011-11.npr</li><li>2011-12.gps</li><li>2011-12.cpv</li><li>2011-12.npr</li><li>q1.delta_npr</li><li>q1.country.United Kingdom</li><li>q1.country.Netherlands</li><li>q1.country.EIRE</li><li>q1.country.Germany</li><li>q1.country.France</li><li>q1.country.Australia</li><li>q1.country.other</li><li>q1.status.retained</li><li>q1.status.new_in_B</li><li>q1.status.lost</li><li>q1.status.no_customer_ID</li><li>q1.status.cancel_only</li><li>q1.product.gross_movement</li><li>q1.product.top10</li><li>q1.bridge.year_a</li><li>q1.bridge.year_b</li><li>q2.population</li><li>q2.top_1pct</li><li>q2.top_10pct</li><li>q2.top_20pct</li><li>q2.top_10_customers</li><li>q2.repeat_pooled</li><li>q3.with_top10_lines.cpv</li><li>q3.with_top10_lines.top20_products</li><li>q3.with_top10_lines.top20_customers</li><li>q3.with_top10_lines.no_id</li><li>q3.with_top10_lines.traceable</li><li>q3.without_top10_lines.cpv</li><li>q3.without_top10_lines.top20_products</li><li>q3.without_top10_lines.top20_customers</li><li>q3.without_top10_lines.no_id</li><li>q3.without_top10_lines.traceable</li><li>year_a.gps</li><li>year_a.cpv</li><li>year_a.npr</li><li>year_a.orders</li><li>year_a.identified_customers</li><li>year_b.gps</li><li>year_b.cpv</li><li>year_b.npr</li><li>year_b.orders</li><li>year_b.identified_customers</li><li>2009-12.gps</li><li>2009-12.cpv</li><li>2009-12.npr</li><li>2010-01.gps</li><li>2010-01.cpv</li><li>2010-01.npr</li><li>2010-02.gps</li><li>2010-02.cpv</li><li>2010-02.npr</li><li>2010-03.gps</li><li>2010-03.cpv</li><li>2010-03.npr</li><li>2010-04.gps</li><li>2010-04.cpv</li><li>2010-04.npr</li><li>2010-05.gps</li><li>2010-05.cpv</li><li>2010-05.npr</li><li>2010-06.gps</li><li>2010-06.cpv</li><li>2010-06.npr</li><li>2010-07.gps</li><li>2010-07.cpv</li><li>2010-07.npr</li><li>2010-08.gps</li><li>2010-08.cpv</li><li>2010-08.npr</li><li>2010-09.gps</li><li>2010-09.cpv</li><li>2010-09.npr</li><li>2010-10.gps</li><li>2010-10.cpv</li><li>2010-10.npr</li><li>2010-11.gps</li><li>2010-11.cpv</li><li>2010-11.npr</li><li>2010-12.gps</li><li>2010-12.cpv</li><li>2010-12.npr</li><li>2011-01.gps</li><li>2011-01.cpv</li><li>2011-01.npr</li><li>2011-02.gps</li><li>2011-02.cpv</li><li>2011-02.npr</li><li>2011-03.gps</li><li>2011-03.cpv</li><li>2011-03.npr</li><li>2011-04.gps</li><li>2011-04.cpv</li><li>2011-04.npr</li><li>2011-05.gps</li><li>2011-05.cpv</li><li>2011-05.npr</li><li>2011-06.gps</li><li>2011-06.cpv</li><li>2011-06.npr</li><li>2011-07.gps</li><li>2011-07.cpv</li><li>2011-07.npr</li><li>2011-08.gps</li><li>2011-08.cpv</li><li>2011-08.npr</li><li>2011-09.gps</li><li>2011-09.cpv</li><li>2011-09.npr</li><li>2011-10.gps</li><li>2011-10.cpv</li><li>2011-10.npr</li><li>2011-11.gps</li><li>2011-11.cpv</li><li>2011-11.npr</li><li>2011-12.gps</li><li>2011-12.cpv</li><li>2011-12.npr</li><li>q1.delta_npr</li><li>q1.country.United Kingdom</li><li>q1.country.Netherlands</li><li>q1.country.EIRE</li><li>q1.country.Germany</li><li>q1.country.France</li><li>q1.country.Australia</li><li>q1.country.other</li><li>q1.status.retained</li><li>q1.status.new_in_B</li><li>q1.status.lost</li><li>q1.status.no_customer_ID</li><li>q1.status.cancel_only</li><li>q1.product.gross_movement</li><li>q1.product.top10</li><li>q1.bridge.year_a</li><li>q1.bridge.year_b</li><li>q2.population</li><li>q2.top_1pct</li><li>q2.top_10pct</li><li>q2.top_20pct</li><li>q2.top_10_customers</li><li>q2.repeat_pooled</li><li>q3.with_top10_lines.cpv</li><li>q3.with_top10_lines.top20_products</li><li>q3.with_top10_lines.top20_customers</li><li>q3.with_top10_lines.no_id</li><li>q3.with_top10_lines.traceable</li><li>q3.without_top10_lines.cpv</li><li>q3.without_top10_lines.top20_products</li><li>q3.without_top10_lines.top20_customers</li><li>q3.without_top10_lines.no_id</li><li>q3.without_top10_lines.traceable</li></ul></div>
+  </div>
+</section>
+
+<section class="q" id="limits" style="border-top:0">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">!</span><br>Limits</div>
+      <div><h2>Assumptions and limitations</h2><p class="answer">Read these before acting on any number above.</p></div>
+    </div>
+    <div class="limits">
+      <div><b>Two years of one shop, ending in 2011.</b><p>The data stops on 9 December 2011 and covers a single retailer. It describes these customers; it is not a benchmark for the market or for the business today.</p></div>
+      <div><b>Revenue only, no cost.</b><p>There is no cost or margin column, so nothing here says which products or customers are profitable.</p></div>
+      <div><b>Missing customer IDs are not random.</b><p>15.0% of Year B revenue (£1.40M) has no customer ID, and it grew 32% year on year. Who those buyers are cannot be told from this data.</p></div>
+      <div><b>History starts in December 2009.</b><p>A customer who is “new” here may have bought before. Cohorts before March 2010 are therefore left out of the repeat rates.</p></div>
+      <div><b>Duplicates were set aside, not deleted.</b><p>11,812 exact duplicate lines (£54k) are excluded. Some may be real repeat scans; the ledger keeps them visible so the choice can be reversed.</p></div>
+      <div><b>Cancellations are not refunds.</b><p>There is no payment data. “Traceable” means an earlier order exists for the same customer, product and price, not that it covered the whole cancelled quantity.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="files">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">↓</span><br>Files</div>
+      <div><h2>What a client receives</h2><p class="answer">The same analysis in the formats people actually use, all rebuilt from one command.</p></div>
+    </div>
+    <div class="files">
+      <a class="file" href="files/retail-sales-report.xlsx"><span class="ext">XLSX</span><b>Excel workbook</b><span>Every table behind this page, with charts and formats, ready to filter.</span></a>
+      <a class="file" href="files/summary-slide.pdf"><span class="ext">PDF</span><b>One-page summary</b><span>The three findings on a single slide for a manager.</span></a>
+      <a class="file" href="https://github.com/kulieff21/retail-sales-report-demo/blob/main/notebooks/report.ipynb"><span class="ext">IPYNB</span><b>Notebook</b><span>The whole analysis, run top to bottom, outputs included.</span></a>
+      <a class="file" href="https://github.com/kulieff21/retail-sales-report-demo"><span class="ext">GIT</span><b>Code and plan</b><span>Pre-registered plan, tests, the independent check, one command to rebuild.</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><b>Data:</b> Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5CG6D. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The raw file is not modified; cleaning rules are documented in the analysis plan.</p>
+      <p>This is a demo analysis on public data, not work for the retailer. AI-assisted, human-reviewed.</p>
+    </div>
+    <div>
+      <p>© 2026 Elmar Guliyev · code MIT</p>
+      <p>Built 2026-09-29 from commit <span class="mono">a68cfcc</span>.</p>
+    </div>
+  </div>
+</footer>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const DATA = {"rawRows":1067371,"sampleRows":13,"pareto":[[0.0,0.0],[0.023,3.369],[0.046,6.499],[0.069,8.871],[0.093,10.431],[0.116,11.969],[0.139,13.403],[0.162,14.422],[0.185,15.185],[0.208,15.947],[0.231,16.701],[0.255,17.436],[0.278,18.1],[0.301,18.742],[0.324,19.378],[0.347,20.014],[0.37,20.649],[0.393,21.26],[0.417,21.839],[0.44,22.339],[0.463,22.81],[0.486,23.245],[0.509,23.678],[0.532,24.101],[0.555,24.522],[0.579,24.911],[0.602,25.291],[0.625,25.655],[0.648,26.008],[0.671,26.348],[0.694,26.682],[0.717,27.014],[0.741,27.335],[0.764,27.651],[0.787,27.945],[0.81,28.231],[0.833,28.502],[0.856,28.769],[0.879,29.021],[0.903,29.268],[0.926,29.506],[0.949,29.742],[0.972,29.962],[0.995,30.173],[1.018,30.383],[1.041,30.591],[1.065,30.798],[1.088,31.003],[1.111,31.206],[1.134,31.402],[1.157,31.597],[1.18,31.782],[1.203,31.965],[1.227,32.148],[1.25,32.329],[1.273,32.508],[1.296,32.686],[1.319,32.859],[1.342,33.03],[1.365,33.199],[1.389,33.364],[1.412,33.526],[1.435,33.686],[1.458,33.842],[1.481,33.997],[1.504,34.152],[1.527,34.305],[1.551,34.456],[1.574,34.603],[1.597,34.749],[1.62,34.895],[1.643,35.04],[1.666,35.181],[1.689,35.322],[1.713,35.463],[1.736,35.603],[1.759,35.742],[1.782,35.878],[1.805,36.014],[1.828,36.149],[1.851,36.284],[1.875,36.418],[1.898,36.55],[1.921,36.681],[1.944,36.812],[1.967,36.943],[1.99,37.074],[2.013,37.204],[2.037,37.333],[2.06,37.461],[2.083,37.59],[2.106,37.718],[2.129,37.845],[2.152,37.972],[2.175,38.095],[2.199,38.218],[2.222,38.339],[2.245,38.458],[2.268,38.576],[2.291,38.693],[2.314,38.809],[2.337,38.924],[2.361,39.04],[2.384,39.155],[2.407,39.268],[2.43,39.381],[2.453,39.493],[2.476,39.605],[2.499,39.717],[2.523,39.825],[2.546,39.933],[2.569,40.04],[2.592,40.148],[2.615,40.255],[2.638,40.361],[2.661,40.466],[2.685,40.571],[2.708,40.675],[2.731,40.778],[2.754,40.878],[2.777,40.978],[3.147,42.524],[3.518,43.943],[3.888,45.278],[4.258,46.528],[4.629,47.712],[4.999,48.852],[5.369,49.929],[5.739,50.952],[6.11,51.923],[6.48,52.854],[6.85,53.74],[7.221,54.596],[7.591,55.418],[7.961,56.211],[8.331,56.98],[8.702,57.723],[9.072,58.449],[9.442,59.154],[9.813,59.841],[10.183,60.514],[10.553,61.171],[10.923,61.81],[11.294,62.435],[11.664,63.05],[12.034,63.648],[12.405,64.229],[12.775,64.794],[13.145,65.347],[13.515,65.891],[13.886,66.425],[14.256,66.948],[14.626,67.464],[14.997,67.966],[15.367,68.457],[15.737,68.936],[16.107,69.406],[16.478,69.867],[16.848,70.321],[17.218,70.766],[17.589,71.204],[17.959,71.632],[18.329,72.053],[18.699,72.465],[19.07,72.87],[19.44,73.268],[19.81,73.656],[20.181,74.037],[20.551,74.411],[20.921,74.779],[21.291,75.14],[21.662,75.496],[22.032,75.847],[22.402,76.191],[22.773,76.531],[23.143,76.864],[23.513,77.193],[23.883,77.518],[24.254,77.838],[24.624,78.153],[24.994,78.464],[25.364,78.771],[25.735,79.073],[26.105,79.371],[26.475,79.664],[26.846,79.953],[27.216,80.239],[27.586,80.52],[27.956,80.798],[28.327,81.071],[28.697,81.341],[29.067,81.608],[29.438,81.871],[29.808,82.131],[30.178,82.387],[30.548,82.639],[30.919,82.888],[31.289,83.131],[31.659,83.37],[32.03,83.604],[32.4,83.835],[32.77,84.063],[33.14,84.288],[33.511,84.51],[33.881,84.73],[34.251,84.947],[34.622,85.161],[34.992,85.372],[35.362,85.581],[35.732,85.787],[36.103,85.991],[36.473,86.193],[36.843,86.393],[37.214,86.59],[37.584,86.783],[37.954,86.974],[38.324,87.161],[38.695,87.346],[39.065,87.53],[39.435,87.71],[39.806,87.889],[40.176,88.064],[40.546,88.238],[40.916,88.411],[41.287,88.581],[41.657,88.749],[42.027,88.914],[42.398,89.077],[42.768,89.237],[43.138,89.394],[43.508,89.55],[43.879,89.703],[44.249,89.855],[44.619,90.005],[44.99,90.153],[45.36,90.3],[45.73,90.444],[46.1,90.586],[46.471,90.726],[46.841,90.864],[47.211,91.001],[47.582,91.137],[47.952,91.27],[48.322,91.403],[48.692,91.535],[49.063,91.665],[49.433,91.794],[49.803,91.922],[50.174,92.048],[50.544,92.174],[50.914,92.298],[51.284,92.421],[51.655,92.542],[52.025,92.663],[52.395,92.782],[52.766,92.9],[53.136,93.017],[53.506,93.132],[53.876,93.245],[54.247,93.357],[54.617,93.467],[54.987,93.576],[55.358,93.683],[55.728,93.79],[56.098,93.894],[56.468,93.998],[56.839,94.1],[57.209,94.201],[57.579,94.3],[57.95,94.399],[58.32,94.496],[58.69,94.592],[59.06,94.686],[59.431,94.78],[59.801,94.872],[60.171,94.963],[60.542,95.054],[60.912,95.142],[61.282,95.229],[61.652,95.315],[62.023,95.399],[62.393,95.483],[62.763,95.566],[63.134,95.648],[63.504,95.729],[63.874,95.809],[64.244,95.888],[64.615,95.966],[64.985,96.043],[65.355,96.12],[65.726,96.196],[66.096,96.271],[66.466,96.345],[66.836,96.418],[67.207,96.491],[67.577,96.563],[67.947,96.633],[68.318,96.704],[68.688,96.773],[69.058,96.842],[69.428,96.909],[69.799,96.976],[70.169,97.043],[70.539,97.109],[70.91,97.174],[71.28,97.238],[71.65,97.302],[72.02,97.366],[72.391,97.428],[72.761,97.491],[73.131,97.553],[73.502,97.614],[73.872,97.674],[74.242,97.734],[74.612,97.794],[74.983,97.852],[75.353,97.91],[75.723,97.967],[76.093,98.024],[76.464,98.079],[76.834,98.133],[77.204,98.186],[77.575,98.239],[77.945,98.29],[78.315,98.341],[78.685,98.391],[79.056,98.44],[79.426,98.488],[79.796,98.535],[80.167,98.582],[80.537,98.628],[80.907,98.673],[81.277,98.717],[81.648,98.761],[82.018,98.804],[82.388,98.846],[82.759,98.888],[83.129,98.929],[83.499,98.969],[83.869,99.009],[84.24,99.048],[84.61,99.086],[84.98,99.123],[85.351,99.16],[85.721,99.196],[86.091,99.231],[86.461,99.266],[86.832,99.3],[87.202,99.334],[87.572,99.367],[87.943,99.399],[88.313,99.431],[88.683,99.462],[89.053,99.493],[89.424,99.524],[89.794,99.553],[90.164,99.582],[90.535,99.611],[90.905,99.639],[91.275,99.666],[91.645,99.692],[92.016,99.718],[92.386,99.743],[92.756,99.767],[93.127,99.791],[93.497,99.814],[93.867,99.836],[94.237,99.858],[94.608,99.88],[94.978,99.901],[95.348,99.921],[95.719,99.94],[96.089,99.958],[96.459,99.975],[96.829,99.991],[97.2,100.006],[97.57,100.02],[97.94,100.032],[98.311,100.042],[98.681,100.049],[99.051,100.052],[99.421,100.052],[99.792,100.044],[100.0,100.0]],"paretoGeom":{"x0":48,"x1":546,"y0":378,"y1":14},"customers":4321,"ratio":{"aWith":"2.6%","bWith":"3.1%","aWithout":"2.5%","bWithout":"2.1%"}};
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* reveal charts when they enter the viewport */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold: .25});
+document.querySelectorAll('[data-chart]').forEach(el => reduce ? el.classList.add('in') : io.observe(el));
+
+/* tooltips */
+const tip = document.getElementById('tip');
+function place(ev){ const x = ev.clientX, y = ev.clientY, w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, x + 14)) + 'px';
+  tip.style.top = (y + h + 24 > innerHeight ? y - h - 14 : y + 16) + 'px'; }
+document.addEventListener('pointerover', ev => { const t = ev.target.closest('[data-tip]'); if (!t) return;
+  tip.textContent = t.dataset.tip; tip.classList.add('on'); place(ev); });
+document.addEventListener('pointermove', ev => { if (tip.classList.contains('on')) place(ev); });
+document.addEventListener('pointerout', ev => { if (ev.target.closest('[data-tip]')) tip.classList.remove('on'); });
+
+/* the till roll: print real lines, fast-forward the rest, then the totals */
+(function(){
+  const roll = document.getElementById('roll'), win = document.getElementById('rw'),
+        stamp = document.getElementById('stamp'), led = document.getElementById('led'),
+        count = document.getElementById('lines'), replay = document.getElementById('replay');
+  const items = [...roll.children];
+  const total = DATA.rawRows, sample = DATA.sampleRows;
+  let timer = null;
+  function offset(){}
+  function fmt(n){ return n.toLocaleString('en-GB'); }
+  function run(){
+    clearTimeout(timer); items.forEach(el => el.hidden = true); stamp.classList.remove('on');
+    let i = 0, read = 0; count.textContent = '0'; led.classList.add('on');
+    const step = () => {
+      if (i >= items.length) { led.classList.remove('on'); stamp.classList.add('on'); return; }
+      const el = items[i++]; el.hidden = false; el.classList.remove('feed'); void el.offsetWidth; el.classList.add('feed');
+      if (el.dataset.row) { read += 1; count.textContent = fmt(read); }
+      if (el.classList.contains('r-skip')) {
+        const t0 = performance.now(), from = read, dur = 1500;
+        const ff = now => { const k = Math.min(1, (now - t0) / dur); count.textContent = fmt(Math.round(from + (total - from) * k * k));
+          if (k < 1) requestAnimationFrame(ff); else { read = total; offset(); timer = setTimeout(step, 250); } };
+        requestAnimationFrame(ff); offset(); return;
+      }
+      offset(); timer = setTimeout(step, el.dataset.row ? 210 : 120);
+    };
+    step();
+  }
+  if (reduce) { offset(); stamp.classList.add('on'); return; }
+  run(); replay.addEventListener('click', run);
+})();
+
+/* pareto slider */
+(function(){
+  const input = document.getElementById('pct'), out = document.getElementById('readout'),
+        dot = document.getElementById('pdot'), guide = document.getElementById('pguide');
+  if (!input || !dot) return;
+  const pts = DATA.pareto, g = DATA.paretoGeom;
+  function at(x){ // x in percent of customers -> percent of revenue (linear between points)
+    let lo = pts[0], hi = pts[pts.length - 1];
+    for (let i = 1; i < pts.length; i++) if (pts[i][0] >= x) { lo = pts[i - 1]; hi = pts[i]; break; }
+    const k = hi[0] === lo[0] ? 0 : (x - lo[0]) / (hi[0] - lo[0]); return lo[1] + (hi[1] - lo[1]) * k; }
+  function upd(){
+    const x = +input.value, y = at(x), n = Math.max(1, Math.floor(DATA.customers * x / 100));
+    const px = g.x0 + (g.x1 - g.x0) * x / 100, py = g.y0 - (g.y0 - g.y1) * Math.min(y, 100) / 100;
+    dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+    guide.setAttribute('d', `M${px},${g.y0}V${py}H${g.x0}`);
+    out.innerHTML = `The top <b>${x.toFixed(1).replace('.0','')}%</b> of customers (<b>${n.toLocaleString('en-GB')}</b> of ${DATA.customers.toLocaleString('en-GB')}) bring <b>${y.toFixed(1)}%</b> of identified revenue.`;
+  }
+  input.addEventListener('input', upd); upd();
+})();
+
+/* cancellations toggle */
+(function(){
+  const card = document.getElementById('cancel-card'); if (!card) return;
+  const ra = document.getElementById('ra'), rb = document.getElementById('rb');
+  card.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => {
+    const hide = b.dataset.top === 'hide';
+    card.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    card.classList.toggle('hide-top', hide);
+    ra.textContent = hide ? DATA.ratio.aWithout : DATA.ratio.aWith;
+    rb.textContent = hide ? DATA.ratio.bWithout : DATA.ratio.bWith;
+    rb.style.color = hide ? 'var(--teal)' : 'var(--coral)';
+  }));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail sales report: where the growth came from</title>
+<meta name="description" content="{{META_DESCRIPTION}}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%273%27 fill=%27%2314161a%27/%3E%3Cpath d=%27M9 8h14M9 13h14M9 18h9M9 23h5%27 stroke=%27%23fffefb%27 stroke-width=%272.2%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#e7eaee; --paper:#fffefb; --ink:#14161a; --muted:#5d6570; --rule:#c5ccd4; --soft:#d9dee4;
+  --teal:#0f7b6c; --coral:#d0452f; --mustard:#b98a12; --slate:#4a5563; --a:#9aa4af;
+  --mono:"DM Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--sans);font-stretch:100%}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+.teal{color:var(--teal)} .coral{color:var(--coral)} .mustard{color:var(--mustard)}
+
+/* top bar */
+.bar{border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 86%,white)}
+.bar .wrap{display:flex;gap:18px;align-items:center;justify-content:space-between;min-height:54px;flex-wrap:wrap}
+.brand{font:600 13px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.brand b{display:inline-block;background:var(--ink);color:var(--paper);padding:4px 7px;margin-right:8px;border-radius:2px}
+.bar nav{display:flex;gap:16px;font:500 13px/1 var(--mono)}
+.bar nav a{text-decoration:none;border-bottom:1px solid transparent;padding:6px 0}
+.bar nav a:hover{border-bottom-color:var(--ink)}
+
+/* hero */
+.hero{padding:56px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr);gap:56px;align-items:start}
+.kicker{font:500 12.5px/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 18px}
+h1{font:850 clamp(38px,5.4vw,68px)/.95 var(--sans);font-stretch:72%;letter-spacing:-.01em;margin:0 0 22px;text-transform:uppercase}
+h1 .l2{display:block;color:var(--coral)}
+.lede{font-size:19px;max-width:560px;margin:0 0 26px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--mono);padding:13px 16px;border:1.5px solid var(--ink);border-radius:3px;text-decoration:none;background:var(--ink);color:var(--paper);transition:transform .15s ease,box-shadow .15s ease}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:3px 3px 0 var(--ink)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:34px;border-top:1.5px solid var(--ink)}
+.facts div{padding:14px 14px 0 0}
+.facts b{display:block;font:500 24px/1.1 var(--mono);letter-spacing:-.02em}
+.facts span{font-size:13.5px;color:var(--muted)}
+
+/* receipt */
+.till{position:relative}
+.till-head{display:flex;justify-content:space-between;font:500 12px/1 var(--mono);color:var(--muted);margin-bottom:8px}
+.till-head .count{color:var(--ink)}
+.receipt-window{position:relative;height:560px;overflow:hidden;border-radius:4px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 70px,#000 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 70px,#000 100%)}
+.roll{position:absolute;left:14px;right:14px;bottom:30px;background:var(--paper);font:400 12.3px/1.5 var(--mono);color:#23262b;
+  padding:18px 18px 74px;box-shadow:0 1px 0 var(--rule),0 18px 30px -18px rgba(20,22,26,.35)}
+.roll [hidden]{display:none!important}
+.feed{animation:feed .26s ease-out both;overflow:hidden}
+@keyframes feed{from{max-height:0;opacity:0}to{max-height:64px;opacity:1}}
+.roll:after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;
+  background:linear-gradient(-45deg,transparent 5px,var(--paper) 0) 0 0/10px 8px,linear-gradient(45deg,transparent 5px,var(--paper) 0) 0 0/10px 8px}
+.slot{position:absolute;left:0;right:0;bottom:0;height:34px;background:var(--ink);border-radius:6px 6px 4px 4px;
+  box-shadow:inset 0 6px 0 #2b2f36}
+.slot:before{content:"";position:absolute;left:10px;right:10px;top:9px;height:4px;background:#000;border-radius:3px}
+.slot .led{position:absolute;right:14px;bottom:8px;width:7px;height:7px;border-radius:50%;background:#3a3f46}
+.slot .led.on{background:#39d3a4;box-shadow:0 0 8px #39d3a4}
+.r-title{text-align:center;font-weight:500;letter-spacing:.12em;margin-bottom:2px}
+.r-sub{text-align:center;color:#6b7078;font-size:11px;margin-bottom:10px}
+.r-dash{border-top:1.5px dashed #9aa1aa;margin:8px 0}
+.r-line{display:grid;grid-template-columns:1fr auto;column-gap:10px;padding:1px 0}
+.r-line .d{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-line .v{text-align:right}
+.r-line .meta{grid-column:1/-1;display:flex;gap:8px;align-items:center;font-size:10.5px;color:#7a8089;margin-bottom:3px}
+.tag{display:inline-block;font-size:9.5px;font-weight:500;letter-spacing:.06em;padding:1px 5px;border-radius:2px;border:1px solid currentColor}
+.t-sale{color:var(--teal)} .t-cancel{color:var(--coral)} .t-dup{color:#7b4bb3} .t-np{color:var(--mustard)} .t-zero{color:var(--slate)} .t-adj{color:#8a2c68}
+.r-line.void .d,.r-line.void .v{text-decoration:line-through;text-decoration-color:#7b4bb3}
+.r-skip{text-align:center;color:#6b7078;font-size:11px;padding:6px 0}
+.r-tot{display:grid;grid-template-columns:1fr auto auto;column-gap:12px;padding:1px 0}
+.r-tot .n{text-align:right;color:#6b7078}
+.r-tot .v{text-align:right;min-width:112px}
+.r-grand{font-weight:500;border-top:1.5px solid #23262b;margin-top:6px;padding-top:6px}
+.stamp{position:absolute;right:34px;bottom:52px;font:600 13px/1.15 var(--mono);color:var(--teal);border:2.5px solid var(--teal);
+  padding:7px 10px;border-radius:4px;transform:rotate(-8deg) scale(1);text-align:center;letter-spacing:.08em;background:rgba(255,254,251,.85);opacity:1}
+.js .stamp{opacity:0;transform:rotate(-8deg) scale(1.6)}
+.js .stamp.on{opacity:1;transform:rotate(-8deg) scale(1);transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+.replay{margin-top:10px;background:none;border:0;font:500 12px/1 var(--mono);color:var(--muted);cursor:pointer;padding:6px 0;text-decoration:underline;display:none}
+.js .replay{display:inline-block}
+
+/* sections */
+section.q{padding:72px 0 30px;border-top:1.5px solid var(--ink)}
+.q-head{display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px;margin-bottom:34px}
+.q-label{font:500 12.5px/1.3 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.q-label .num{display:inline-block;font-size:30px;letter-spacing:0;border:1.5px dashed var(--ink);padding:6px 10px 4px;margin-bottom:10px}
+h2{font:800 clamp(28px,3.6vw,44px)/1.02 var(--sans);font-stretch:78%;margin:0 0 14px;text-transform:uppercase;letter-spacing:-.005em}
+.answer{font-size:20px;line-height:1.45;max-width:780px;margin:0}
+.answer b{font-weight:700}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:26px}
+.grid2.even{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--paper);border-radius:4px;padding:22px 22px 16px;box-shadow:0 1px 0 var(--rule)}
+.card h3{font:700 16px/1.25 var(--sans);margin:0 0 4px}
+.card .sub{font-size:13.5px;color:var(--muted);margin:0 0 14px}
+.card .src{font:400 11px/1.4 var(--mono);color:var(--muted);margin-top:10px}
+.card + .card{margin-top:0}
+.stack{display:grid;gap:26px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--mono);fill:var(--muted);font-size:12px}
+svg .lbl{fill:var(--ink);font-weight:500}
+svg .axis{stroke:var(--rule);stroke-width:1}
+svg .grid{stroke:var(--soft);stroke-width:1}
+.not{margin-top:24px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:28px}
+.not p{margin:0;font-size:15px;color:var(--muted);max-width:780px}
+.not .q-label{color:var(--muted)}
+
+/* bars & motion (only when JS is on; without JS everything is drawn) */
+.js .grow-y{transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%}
+.js .grow-y.down{transform-origin:50% 0}
+.js .grow-x{transform:scaleX(0);transform-box:fill-box;transform-origin:0 50%}
+.js .grow-x.left{transform-origin:100% 50%}
+.js .fade{opacity:0}
+.js .draw{stroke-dasharray:1;stroke-dashoffset:1}
+.js .in .grow-y,.js .in .grow-x{transform:none;transition:transform .8s cubic-bezier(.2,.7,.2,1)}
+.js .in .fade{opacity:1;transition:opacity .6s ease}
+.js .in .draw{stroke-dashoffset:0;transition:stroke-dashoffset 1.8s cubic-bezier(.4,.1,.2,1)}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hot{cursor:default}
+.hot:hover{filter:brightness(1.12)}
+
+/* waterfall legend chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px 16px;font:500 12px/1 var(--mono);margin-top:12px}
+.chips i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+
+/* product shelf */
+.shelf{display:grid;gap:7px}
+.shelf .row{display:grid;grid-template-columns:minmax(0,1fr) 110px 86px;gap:10px;align-items:center;font-size:13.5px}
+.shelf .row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shelf .row .nm small{font-family:var(--mono);color:var(--muted);margin-right:6px}
+.shelf .track{position:relative;height:10px;background:var(--soft);border-radius:2px}
+.shelf .track span{position:absolute;top:0;bottom:0;border-radius:2px}
+.shelf .val{font:500 12.5px/1 var(--mono);text-align:right}
+
+/* pareto slider */
+.slider{margin-top:12px}
+.slider input{width:100%;accent-color:var(--ink)}
+.readout{font-size:18px;line-height:1.35;margin:10px 0 0;min-height:52px}
+.readout b{font-family:var(--mono);font-weight:500}
+
+/* big stat */
+.big{font:850 76px/1 var(--sans);font-stretch:72%;letter-spacing:-.01em}
+.big small{font:500 16px/1 var(--mono);color:var(--muted);margin-left:10px}
+
+/* heatmap */
+.heat td{width:calc(100%/13)}
+.legend-scale{display:flex;align-items:center;gap:8px;font:400 11px/1 var(--mono);color:var(--muted);margin-top:8px}
+.legend-scale span{display:block;width:120px;height:8px;border-radius:2px;background:linear-gradient(90deg,rgba(15,123,108,.06),rgba(15,123,108,1))}
+
+/* toggle */
+.toggle{display:inline-flex;border:1.5px solid var(--ink);border-radius:3px;overflow:hidden;font:500 12.5px/1 var(--mono);margin-bottom:14px}
+.toggle button{background:none;border:0;padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink)}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.ratio-row{display:flex;gap:26px;flex-wrap:wrap;margin:4px 0 12px}
+.ratio-row div{font-size:13px;color:var(--muted)}
+.ratio-row b{display:block;font:500 28px/1.1 var(--mono);color:var(--ink);transition:color .3s}
+.js .cut{transition:transform .6s cubic-bezier(.2,.7,.2,1),opacity .4s}
+.hide-top .cut{transform:scaleY(0)!important;opacity:.2}
+
+/* voided stubs */
+.stubs{display:grid;gap:6px;font:400 12px/1.35 var(--mono)}
+.stub{display:grid;grid-template-columns:78px minmax(0,1fr) 100px;gap:10px;padding:7px 10px;background:#fbf7f5;border-left:3px solid var(--coral);position:relative}
+.stub .v{text-align:right;font-weight:500}
+.stub .v{position:relative;align-self:start}
+.stub .v:after{content:"";position:absolute;left:-4px;right:-2px;top:52%;height:2px;background:var(--coral);transform-origin:0 50%}
+.js .stub .v:after{transform:scaleX(0)}
+.js .in .stub .v:after{transform:scaleX(1);transition:transform .45s ease}
+.stub small{color:var(--muted)}
+
+/* trace bar */
+.trace{display:flex;height:34px;border-radius:3px;overflow:hidden;margin:6px 0 10px}
+.trace span{display:flex;align-items:center;justify-content:flex-start;padding-left:8px;color:#fff;font:500 12px/1 var(--mono);white-space:nowrap}
+
+/* proof */
+.proof{background:var(--ink);color:var(--paper);padding:78px 0 70px;margin-top:60px}
+.proof h2{color:var(--paper)}
+.proof .answer{color:#d8dce1}
+.proof .q-label{color:#aeb5bd}
+.proof .q-label .num{border-color:#aeb5bd}
+.ledger{width:100%;border-collapse:collapse;font:400 13px/1.3 var(--mono)}
+.ledger th{font-weight:500;text-align:left;color:#aeb5bd;border-bottom:1px solid #3a3f46;padding:8px 6px}
+.ledger td{border-bottom:1px solid #2a2e34;padding:8px 6px;vertical-align:middle}
+.ledger td.r{text-align:right}
+.ledger .barcell{width:34%}
+.ledger .b{height:8px;background:#39d3a4;border-radius:2px;min-width:2px}
+.ledger tfoot td{border-bottom:0;color:#fff;font-weight:500}
+.ok{color:#39d3a4}
+.twin{display:grid;grid-template-columns:minmax(0,1fr) 170px minmax(0,1fr);gap:14px;align-items:stretch;margin-top:10px}
+.impl{border:1px solid #3a3f46;border-radius:4px;padding:16px}
+.impl h3{font:700 15px/1.2 var(--sans);margin:0 0 6px;color:#fff}
+.impl p{margin:0;font-size:13.5px;color:#aeb5bd}
+.meet{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;font:500 13px/1.35 var(--mono)}
+.meet b{font-size:30px;color:#39d3a4;display:block}
+.ticker{height:210px;overflow:hidden;border:1px solid #3a3f46;border-radius:4px;margin-top:14px;position:relative;
+  -webkit-mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(transparent,#000 22%,#000 78%,transparent)}
+.ticker ul{list-style:none;margin:0;padding:10px 16px;columns:3 220px;column-gap:24px;font:400 12px/1.9 var(--mono);color:#cfd4da}
+.js .ticker ul{animation:tick 38s linear infinite}
+.ticker li:before{content:"✓ ";color:#39d3a4}
+@keyframes tick{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+.timeline{list-style:none;margin:0;padding:0;border-left:1.5px solid #3a3f46}
+.timeline li{position:relative;padding:0 0 18px 20px;font-size:14.5px}
+.timeline li:before{content:"";position:absolute;left:-6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--ink);border:2px solid #39d3a4}
+.timeline .h{font:500 12px/1.3 var(--mono);color:#aeb5bd;display:block}
+.proof .card{background:#1d2026;box-shadow:none;border:1px solid #2f343b}
+.proof .card h3{color:#fff}
+.proof .card .sub,.proof .card .src{color:#aeb5bd}
+
+/* limits & files */
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;counter-reset:l}
+.limits div{border-top:1px solid var(--rule);padding:14px 0 16px 40px;position:relative;counter-increment:l}
+.limits div:before{content:counter(l,decimal-leading-zero);position:absolute;left:0;top:15px;font:500 13px/1 var(--mono);color:var(--muted)}
+.limits b{display:block;font-weight:700;margin-bottom:2px}
+.limits p{margin:0;font-size:15px;color:var(--muted)}
+.files{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.file{display:block;background:var(--paper);border-radius:4px;padding:18px 16px 16px;text-decoration:none;box-shadow:0 1px 0 var(--rule);transition:transform .15s ease,box-shadow .15s ease;position:relative;overflow:hidden}
+.file:hover{transform:translateY(-3px);box-shadow:0 10px 22px -12px rgba(20,22,26,.45)}
+.file .ext{font:500 11px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.file b{display:block;font:700 17px/1.2 var(--sans);margin:8px 0 6px}
+.file span{font-size:13.5px;color:var(--muted)}
+footer{padding:40px 0 60px;font-size:13.5px;color:var(--muted)}
+footer .wrap{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:30px}
+footer p{margin:0 0 8px}
+
+/* tooltip */
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--ink);color:var(--paper);font:400 12px/1.45 var(--mono);padding:8px 10px;border-radius:3px;max-width:280px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;white-space:pre-line}
+.tip.on{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero .wrap,.grid2,.grid2.even,.twin,footer .wrap{grid-template-columns:minmax(0,1fr)}
+  .q-head,.not{grid-template-columns:minmax(0,1fr);gap:10px}
+  .files{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .limits{grid-template-columns:minmax(0,1fr)}
+  .receipt-window{height:480px}
+  .meet{padding:8px 0}
+}
+@media (max-width:520px){
+  .wrap{padding:0 16px}
+  body{font-size:16px}
+  .facts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .files{grid-template-columns:minmax(0,1fr)}
+  .shelf .row{grid-template-columns:minmax(0,1fr) 70px 74px}
+  .bar nav{gap:12px}
+  .stub{grid-template-columns:64px minmax(0,1fr) 84px}
+  .big{font-size:60px}
+  .scroll svg.wide{min-width:620px}
+  .scroll .ledger{min-width:520px}
+  .kicker{letter-spacing:.04em}
+  .answer{font-size:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*:before,*:after{transition:none!important;animation:none!important}
+}
+@media print{
+  .bar nav,.cta,.replay,.toggle,.slider,.ticker{display:none}
+  body{background:#fff}
+  .proof{background:#fff;color:#000}
+  section.q,.proof{break-inside:avoid-page}
+}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <div class="brand"><b>DEMO</b>Retail sales report</div>
+    <nav aria-label="Sections">
+      <a href="#q1">Growth</a><a href="#q2">Customers</a><a href="#q3">Cancellations</a><a href="#proof">Proof</a><a href="#files">Files</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <p class="kicker">Sales analysis · UK online gift retailer · {{PERIOD}}</p>
+      <h1>Revenue grew {{GROWTH_PCT}}.<span class="l2">Existing customers spent {{RETAINED_DROP_PCT}} less.</span></h1>
+      <p class="lede">{{LEDE}}</p>
+      <div class="cta">
+        <a class="btn" href="#q1">Read the answers ↓</a>
+        <a class="btn ghost" href="files/retail-sales-report.xlsx">Excel workbook</a>
+      </div>
+      <div class="facts">
+        <div><b>{{RAW_ROWS}}</b><span>raw lines read</span></div>
+        <div><b>{{MISMATCH_ROWS}}</b><span>rows unaccounted for</span></div>
+        <div><b>{{CHECKS_OK}}</b><span>numbers re-derived independently</span></div>
+      </div>
+    </div>
+    <div class="till" aria-label="The raw export printed as a till roll: real lines, then the reconciled totals">
+      <div class="till-head"><span>raw export → row ledger</span><span class="count"><span id="lines">{{RAW_ROWS}}</span> lines</span></div>
+      <div class="receipt-window" id="rw">
+        <div class="roll" id="roll">
+{{RECEIPT}}
+        </div>
+        <div class="stamp" id="stamp">RECONCILED<br>TO £0.001</div>
+        <div class="slot"><span class="led" id="led"></span></div>
+      </div>
+      <button class="replay" id="replay" type="button">↻ print again</button>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="bridge">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">A→B</span><br>The answer in one picture</div>
+      <div>
+        <h2>The headline hides a swap of customers</h2>
+        <p class="answer">{{BRIDGE_ANSWER}}</p>
+      </div>
+    </div>
+    <div class="card chart" data-chart>
+      <h3>Net product revenue, Year A to Year B, by customer status</h3>
+      <p class="sub">{{YEAR_DEFS}}</p>
+<div class="scroll">{{WATERFALL_SVG}}</div>
+      <div class="chips">{{WATERFALL_CHIPS}}</div>
+      <p class="src">Hover a bar for the exact figure. Source: UCI Online Retail II (CC BY 4.0); results/q1.json.</p>
+    </div>
+  </div>
+</section>
+
+<section class="q" id="q1">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q1</span><br>Growth</div>
+      <div>
+        <h2>Where did revenue growth come from?</h2>
+        <p class="answer">{{Q1_ANSWER}}</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart>
+        <h3>Monthly net product revenue</h3>
+        <p class="sub">{{MONTHLY_SUB}}</p>
+<div class="scroll">{{MONTHLY_SVG}}</div>
+        <div class="chips"><span><i style="background:var(--a)"></i>Year A</span><span><i style="background:var(--ink)"></i>Year B</span><span><i style="background:var(--ink);opacity:.35"></i>Dec 2011 (1–9 only, not compared)</span></div>
+        <p class="src">results/q1.json · monthly</p>
+      </div>
+      <div class="stack">
+        <div class="card chart" data-chart>
+          <h3>Change by country group</h3>
+          <p class="sub">{{COUNTRY_SUB}}</p>
+{{COUNTRY_SVG}}
+          <p class="src">Five largest non-UK countries by Year B revenue, named; the rest is “Other”.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card chart" data-chart style="margin-top:26px">
+      <h3>The ten products that moved most</h3>
+      <p class="sub">{{PRODUCT_SUB}}</p>
+      <div class="shelf">
+{{PRODUCT_ROWS}}
+      </div>
+      <p class="src">Product key = stock code, case and spaces normalised (plan amendment 4).</p>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>{{Q1_NOT}}</p></div>
+  </div>
+</section>
+
+<section class="q" id="q2">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q2</span><br>Customers</div>
+      <div>
+        <h2>How dependent is revenue on a few customers?</h2>
+        <p class="answer">{{Q2_ANSWER}}</p>
+      </div>
+    </div>
+    <div class="grid2 even">
+      <div class="card chart" data-chart>
+        <h3>Share of Year B revenue by share of customers</h3>
+        <p class="sub">Identified customers ranked by net revenue. Drag the slider.</p>
+{{PARETO_SVG}}
+        <div class="slider"><label class="mono muted" for="pct" style="font-size:12px">Top share of customers</label>
+          <input id="pct" type="range" min="0.5" max="100" step="0.5" value="1"></div>
+        <p class="readout" id="readout">{{PARETO_READOUT}}</p>
+        <p class="src">results/q2.json · concentration_year_b (the marked points are the exact figures)</p>
+      </div>
+      <div class="card chart" data-chart>
+        <h3>Do new customers come back within 90 days?</h3>
+        <p class="sub">{{REPEAT_SUB}}</p>
+        <div class="big">{{REPEAT_RATE}}<small>{{REPEAT_N}}</small></div>
+{{COHORT_SVG}}
+        <p class="src">Cohorts before March 2010 are left out: the data starts in December 2009, so some “new” customers there are old ones.</p>
+      </div>
+    </div>
+    <div class="card chart" data-chart style="margin-top:26px">
+      <h3>Monthly retention by acquisition cohort</h3>
+      <p class="sub">Share of each month's new customers who ordered again 1–12 months later. Blank cells lie beyond the last full month.</p>
+<div class="scroll">{{HEAT_SVG}}</div>
+      <div class="legend-scale">0%<span></span>{{HEAT_MAX}}</div>
+      <p class="src">results/q2.json · retention_matrix</p>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>{{Q2_NOT}}</p></div>
+  </div>
+</section>
+
+<section class="q" id="q3">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">Q3</span><br>Cancellations</div>
+      <div>
+        <h2>How much revenue is lost to cancellations?</h2>
+        <p class="answer">{{Q3_ANSWER}}</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart id="cancel-card">
+        <h3>Cancelled value per month</h3>
+        <div class="toggle" role="group" aria-label="Largest lines">
+          <button type="button" aria-pressed="true" data-top="show">All cancellations</button>
+          <button type="button" aria-pressed="false" data-top="hide">Without the 10 largest lines</button>
+        </div>
+        <div class="ratio-row">
+          <div>Year A cancelled / sold<b id="ra">{{RATIO_A}}</b></div>
+          <div>Year B cancelled / sold<b id="rb">{{RATIO_B}}</b></div>
+        </div>
+<div class="scroll">{{CANCEL_SVG}}</div>
+        <div class="chips"><span><i style="background:var(--coral);opacity:.55"></i>All other cancellation lines</span><span><i style="background:var(--coral)"></i>The 10 largest lines</span></div>
+        <p class="src">results/q3.json · monthly, top10_cancellation_lines</p>
+      </div>
+      <div class="stack">
+        <div class="card chart" data-chart>
+          <h3>The ten largest cancellation lines</h3>
+          <p class="sub">{{STUBS_SUB}}</p>
+          <div class="stubs">
+{{STUBS}}
+          </div>
+        </div>
+        <div class="card chart" data-chart>
+          <h3>Can each cancellation be traced to an order?</h3>
+          <p class="sub">Same customer, product and price on an earlier sale line.</p>
+          <div class="trace">{{TRACE_BAR}}</div>
+          <p style="margin:0;font-size:14px" class="muted">{{TRACE_TEXT}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="not"><div class="q-label">What this does not say</div><p>{{Q3_NOT}}</p></div>
+  </div>
+</section>
+
+<section class="proof" id="proof">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">✓</span><br>How we know</div>
+      <div>
+        <h2>Every row accounted for, every number checked twice</h2>
+        <p class="answer">{{PROOF_ANSWER}}</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card chart" data-chart>
+        <h3>Row ledger: where {{RAW_ROWS}} raw lines went</h3>
+        <p class="sub">Each raw line gets exactly one disposition; rules run in a fixed, pre-registered order.</p>
+        <div class="scroll"><table class="ledger">
+          <thead><tr><th>Disposition</th><th class="r">Lines</th><th class="r">Value £</th><th class="barcell">Lines (log scale)</th></tr></thead>
+          <tbody>
+{{LEDGER_ROWS}}
+          </tbody>
+          <tfoot>
+{{LEDGER_FOOT}}
+          </tfoot>
+        </table></div>
+      </div>
+      <div class="card chart" data-chart>
+        <h3>Written before the numbers existed</h3>
+        <p class="sub">The analysis plan was committed first. Later decisions are dated amendments, not edits.</p>
+        <ol class="timeline">
+{{TIMELINE}}
+        </ol>
+      </div>
+    </div>
+    <div class="twin">
+      <div class="impl"><h3>Main pipeline</h3><p>pandas, tested (<span class="mono">{{TEST_COUNT}}</span> tests), builds the ledger and answers Q1–Q3.</p></div>
+      <div class="meet"><span><b>{{ROWS_AGREE}}</b>rows agree</span><span style="margin-top:10px"><b>{{NUMS_AGREE}}</b>numbers agree</span></div>
+      <div class="impl"><h3>Independent check</h3><p>Standard-library Python written from the plan and the raw export alone, without reading the main code.</p></div>
+    </div>
+    <div class="ticker" aria-label="Names of the numbers compared"><ul>{{CHECK_LIST}}{{CHECK_LIST}}</ul></div>
+  </div>
+</section>
+
+<section class="q" id="limits" style="border-top:0">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">!</span><br>Limits</div>
+      <div><h2>Assumptions and limitations</h2><p class="answer">Read these before acting on any number above.</p></div>
+    </div>
+    <div class="limits">
+{{LIMITS}}
+    </div>
+  </div>
+</section>
+
+<section class="q" id="files">
+  <div class="wrap">
+    <div class="q-head">
+      <div class="q-label"><span class="num">↓</span><br>Files</div>
+      <div><h2>What a client receives</h2><p class="answer">The same analysis in the formats people actually use, all rebuilt from one command.</p></div>
+    </div>
+    <div class="files">
+{{FILES}}
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><b>Data:</b> {{CITATION}} Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The raw file is not modified; cleaning rules are documented in the analysis plan.</p>
+      <p>This is a demo analysis on public data, not work for the retailer. AI-assisted, human-reviewed.</p>
+    </div>
+    <div>
+      <p>© 2026 Elmar Guliyev · code MIT</p>
+      <p>Built {{BUILT}} from commit <span class="mono">{{COMMIT}}</span>.</p>
+    </div>
+  </div>
+</footer>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const DATA = {{DATA_JSON}};
+document.documentElement.classList.add('js');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* reveal charts when they enter the viewport */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+}), {threshold: .25});
+document.querySelectorAll('[data-chart]').forEach(el => reduce ? el.classList.add('in') : io.observe(el));
+
+/* tooltips */
+const tip = document.getElementById('tip');
+function place(ev){ const x = ev.clientX, y = ev.clientY, w = tip.offsetWidth, h = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(innerWidth - w - 8, x + 14)) + 'px';
+  tip.style.top = (y + h + 24 > innerHeight ? y - h - 14 : y + 16) + 'px'; }
+document.addEventListener('pointerover', ev => { const t = ev.target.closest('[data-tip]'); if (!t) return;
+  tip.textContent = t.dataset.tip; tip.classList.add('on'); place(ev); });
+document.addEventListener('pointermove', ev => { if (tip.classList.contains('on')) place(ev); });
+document.addEventListener('pointerout', ev => { if (ev.target.closest('[data-tip]')) tip.classList.remove('on'); });
+
+/* the till roll: print real lines, fast-forward the rest, then the totals */
+(function(){
+  const roll = document.getElementById('roll'), win = document.getElementById('rw'),
+        stamp = document.getElementById('stamp'), led = document.getElementById('led'),
+        count = document.getElementById('lines'), replay = document.getElementById('replay');
+  const items = [...roll.children];
+  const total = DATA.rawRows, sample = DATA.sampleRows;
+  let timer = null;
+  function offset(){}
+  function fmt(n){ return n.toLocaleString('en-GB'); }
+  function run(){
+    clearTimeout(timer); items.forEach(el => el.hidden = true); stamp.classList.remove('on');
+    let i = 0, read = 0; count.textContent = '0'; led.classList.add('on');
+    const step = () => {
+      if (i >= items.length) { led.classList.remove('on'); stamp.classList.add('on'); return; }
+      const el = items[i++]; el.hidden = false; el.classList.remove('feed'); void el.offsetWidth; el.classList.add('feed');
+      if (el.dataset.row) { read += 1; count.textContent = fmt(read); }
+      if (el.classList.contains('r-skip')) {
+        const t0 = performance.now(), from = read, dur = 1500;
+        const ff = now => { const k = Math.min(1, (now - t0) / dur); count.textContent = fmt(Math.round(from + (total - from) * k * k));
+          if (k < 1) requestAnimationFrame(ff); else { read = total; offset(); timer = setTimeout(step, 250); } };
+        requestAnimationFrame(ff); offset(); return;
+      }
+      offset(); timer = setTimeout(step, el.dataset.row ? 210 : 120);
+    };
+    step();
+  }
+  if (reduce) { offset(); stamp.classList.add('on'); return; }
+  run(); replay.addEventListener('click', run);
+})();
+
+/* pareto slider */
+(function(){
+  const input = document.getElementById('pct'), out = document.getElementById('readout'),
+        dot = document.getElementById('pdot'), guide = document.getElementById('pguide');
+  if (!input || !dot) return;
+  const pts = DATA.pareto, g = DATA.paretoGeom;
+  function at(x){ // x in percent of customers -> percent of revenue (linear between points)
+    let lo = pts[0], hi = pts[pts.length - 1];
+    for (let i = 1; i < pts.length; i++) if (pts[i][0] >= x) { lo = pts[i - 1]; hi = pts[i]; break; }
+    const k = hi[0] === lo[0] ? 0 : (x - lo[0]) / (hi[0] - lo[0]); return lo[1] + (hi[1] - lo[1]) * k; }
+  function upd(){
+    const x = +input.value, y = at(x), n = Math.max(1, Math.floor(DATA.customers * x / 100));
+    const px = g.x0 + (g.x1 - g.x0) * x / 100, py = g.y0 - (g.y0 - g.y1) * Math.min(y, 100) / 100;
+    dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+    guide.setAttribute('d', `M${px},${g.y0}V${py}H${g.x0}`);
+    out.innerHTML = `The top <b>${x.toFixed(1).replace('.0','')}%</b> of customers (<b>${n.toLocaleString('en-GB')}</b> of ${DATA.customers.toLocaleString('en-GB')}) bring <b>${y.toFixed(1)}%</b> of identified revenue.`;
+  }
+  input.addEventListener('input', upd); upd();
+})();
+
+/* cancellations toggle */
+(function(){
+  const card = document.getElementById('cancel-card'); if (!card) return;
+  const ra = document.getElementById('ra'), rb = document.getElementById('rb');
+  card.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => {
+    const hide = b.dataset.top === 'hide';
+    card.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    card.classList.toggle('hide-top', hide);
+    ra.textContent = hide ? DATA.ratio.aWithout : DATA.ratio.aWith;
+    rb.textContent = hide ? DATA.ratio.bWithout : DATA.ratio.bWith;
+    rb.style.color = hide ? 'var(--teal)' : 'var(--coral)';
+  }));
+})();
+</script>
+</body>
+</html>
