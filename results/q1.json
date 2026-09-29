@@ -1,0 +1,388 @@
+{
+  "definitions": {
+    "npr": "NPR = GPS - CPV; sum of signed value_milli over sale_product and cancel_product lines, each dated on its own InvoiceDate.",
+    "year_a_b": "Year A = 2009-12..2010-11, Year B = 2010-12..2011-11; 2011-12 (1-9 Dec) is partial, shown in the monthly table, excluded from every comparison.",
+    "delta": "delta_npr = NPR(B) - NPR(A). Every decomposition entry is NPR(B) - NPR(A) for its members and the entries sum to delta_npr exactly in milli-GBP (asserted).",
+    "country_group": "Country = raw Country of the line (a cancellation is grouped by its own country). Groups: United Kingdom, the five largest non-UK countries by Year B NPR (named), Other.",
+    "customer_status": "Status is set from sale_product lines of identified customers in each year: retained = sale in A and in B; new_in_b = sale in B only; lost = sale in A only. A customer's contribution is (all its product lines in B) - (all its product lines in A), so its cancellations count toward it whatever its status. cancel_only_no_sale_in_a_or_b = identified customers with product lines in A or B but no sale_product line in either year (only cancellations; their sales, if any, fall in the partial month or outside the years). This fifth bucket is not in the plan's list; it is kept separate so no cancellation is silently reassigned. no_customer_id = lines with missing Customer ID.",
+    "product": "Product key = stock code stripped and upper-cased (171 codes occur in two letter cases in the raw data). Delta per product = NPR(B) - NPR(A). Top 10 by |delta|; share = sum of their |delta| / sum over all products of |delta| (total gross movement).",
+    "bridge": "Identified-customer NPR = customers x orders per customer x NPR per order, for A and B, plus no-ID NPR. customers = distinct identified customers with a sale_product line in the year; orders = distinct invoices with a sale_product line of an identified customer in the year; identified NPR includes all identified product lines of the year (also cancellations of customers without a sale). Verified with exact fractions."
+  },
+  "monthly": {
+    "2009-12": {
+      "gps_gbp": "797901.160",
+      "cpv_gbp": "19558.080",
+      "npr_gbp": "778343.080",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-01": {
+      "gps_gbp": "612297.422",
+      "cpv_gbp": "7465.630",
+      "npr_gbp": "604831.792",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-02": {
+      "gps_gbp": "537909.676",
+      "cpv_gbp": "12575.440",
+      "npr_gbp": "525334.236",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-03": {
+      "gps_gbp": "761705.981",
+      "cpv_gbp": "9603.850",
+      "npr_gbp": "752102.131",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-04": {
+      "gps_gbp": "646340.932",
+      "cpv_gbp": "10025.260",
+      "npr_gbp": "636315.672",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-05": {
+      "gps_gbp": "643492.030",
+      "cpv_gbp": "37192.890",
+      "npr_gbp": "606299.140",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-06": {
+      "gps_gbp": "696583.190",
+      "cpv_gbp": "26373.460",
+      "npr_gbp": "670209.730",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-07": {
+      "gps_gbp": "632994.320",
+      "cpv_gbp": "17132.730",
+      "npr_gbp": "615861.590",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-08": {
+      "gps_gbp": "674037.720",
+      "cpv_gbp": "12397.600",
+      "npr_gbp": "661640.120",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-09": {
+      "gps_gbp": "869243.121",
+      "cpv_gbp": "27686.420",
+      "npr_gbp": "841556.701",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-10": {
+      "gps_gbp": "1094435.980",
+      "cpv_gbp": "25451.070",
+      "npr_gbp": "1068984.910",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-11": {
+      "gps_gbp": "1429700.782",
+      "cpv_gbp": "35098.980",
+      "npr_gbp": "1394601.802",
+      "partial": false,
+      "year": "A"
+    },
+    "2010-12": {
+      "gps_gbp": "775638.360",
+      "cpv_gbp": "17547.860",
+      "npr_gbp": "758090.500",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-01": {
+      "gps_gbp": "670380.240",
+      "cpv_gbp": "91525.050",
+      "npr_gbp": "578855.190",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-02": {
+      "gps_gbp": "507799.870",
+      "cpv_gbp": "8335.520",
+      "npr_gbp": "499464.350",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-03": {
+      "gps_gbp": "689833.510",
+      "cpv_gbp": "10504.300",
+      "npr_gbp": "679329.210",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-04": {
+      "gps_gbp": "515377.991",
+      "cpv_gbp": "33316.060",
+      "npr_gbp": "482061.931",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-05": {
+      "gps_gbp": "739953.000",
+      "cpv_gbp": "8948.230",
+      "npr_gbp": "731004.770",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-06": {
+      "gps_gbp": "737558.980",
+      "cpv_gbp": "13713.840",
+      "npr_gbp": "723845.140",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-07": {
+      "gps_gbp": "688219.341",
+      "cpv_gbp": "11407.260",
+      "npr_gbp": "676812.081",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-08": {
+      "gps_gbp": "724216.500",
+      "cpv_gbp": "22926.570",
+      "npr_gbp": "701289.930",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-09": {
+      "gps_gbp": "1028320.381",
+      "cpv_gbp": "16980.640",
+      "npr_gbp": "1011339.741",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-10": {
+      "gps_gbp": "1103314.250",
+      "cpv_gbp": "41613.030",
+      "npr_gbp": "1061701.220",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-11": {
+      "gps_gbp": "1452115.980",
+      "cpv_gbp": "24991.440",
+      "npr_gbp": "1427124.540",
+      "partial": false,
+      "year": "B"
+    },
+    "2011-12": {
+      "gps_gbp": "614490.920",
+      "cpv_gbp": "174091.360",
+      "npr_gbp": "440399.560",
+      "partial": true,
+      "year": null
+    }
+  },
+  "npr_a_gbp": "9156080.904",
+  "npr_b_gbp": "9330918.603",
+  "delta_npr_gbp": "174837.699",
+  "growth_rate": 0.0191,
+  "by_country_group": {
+    "top5_non_uk_by_year_b_npr": [
+      "Netherlands",
+      "EIRE",
+      "Germany",
+      "France",
+      "Australia"
+    ],
+    "entries": {
+      "United Kingdom": {
+        "npr_a_gbp": "7887515.583",
+        "npr_b_gbp": "7883043.823",
+        "delta_gbp": "-4471.760"
+      },
+      "Netherlands": {
+        "npr_a_gbp": "262615.890",
+        "npr_b_gbp": "271751.520",
+        "delta_gbp": "9135.630"
+      },
+      "EIRE": {
+        "npr_a_gbp": "343736.590",
+        "npr_b_gbp": "252256.980",
+        "delta_gbp": "-91479.610"
+      },
+      "Germany": {
+        "npr_a_gbp": "173953.851",
+        "npr_b_gbp": "193774.960",
+        "delta_gbp": "19821.109"
+      },
+      "France": {
+        "npr_a_gbp": "111354.600",
+        "npr_b_gbp": "175685.330",
+        "delta_gbp": "64330.730"
+      },
+      "Australia": {
+        "npr_a_gbp": "29359.650",
+        "npr_b_gbp": "136922.500",
+        "delta_gbp": "107562.850"
+      },
+      "Other": {
+        "npr_a_gbp": "347544.740",
+        "npr_b_gbp": "417483.490",
+        "delta_gbp": "69938.750"
+      }
+    },
+    "sum_delta_gbp": "174837.699"
+  },
+  "by_customer_status": {
+    "entries": {
+      "retained": {
+        "customers": 2708,
+        "npr_a_gbp": "7077548.191",
+        "npr_b_gbp": "6529203.622",
+        "delta_gbp": "-548344.569"
+      },
+      "new_in_b": {
+        "customers": 1585,
+        "npr_a_gbp": "-408.070",
+        "npr_b_gbp": "1402041.321",
+        "delta_gbp": "1402449.391"
+      },
+      "lost": {
+        "customers": 1531,
+        "npr_a_gbp": "1017380.533",
+        "npr_b_gbp": "-3918.780",
+        "delta_gbp": "-1021299.313"
+      },
+      "cancel_only_no_sale_in_a_or_b": {
+        "customers": 23,
+        "npr_a_gbp": "-1404.880",
+        "npr_b_gbp": "-1.250",
+        "delta_gbp": "1403.630"
+      },
+      "no_customer_id": {
+        "customers": null,
+        "npr_a_gbp": "1062965.130",
+        "npr_b_gbp": "1403593.690",
+        "delta_gbp": "340628.560"
+      }
+    },
+    "sum_delta_gbp": "174837.699"
+  },
+  "by_product": {
+    "products": 4738,
+    "sum_delta_gbp": "174837.699",
+    "total_gross_movement_gbp": "6456884.699",
+    "top10_abs_delta_gbp": "417153.740",
+    "top10_share_of_gross_movement": 0.0646,
+    "top10_net_delta_gbp": "307989.040",
+    "top10": [
+      {
+        "stock_code": "23084",
+        "description": "RABBIT NIGHT LIGHT",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "57058.180",
+        "delta_gbp": "57058.180"
+      },
+      {
+        "stock_code": "85123A",
+        "description": "WHITE HANGING HEART T-LIGHT HOLDER",
+        "npr_a_gbp": "151990.700",
+        "npr_b_gbp": "97408.350",
+        "delta_gbp": "-54582.350"
+      },
+      {
+        "stock_code": "47566",
+        "description": "PARTY BUNTING",
+        "npr_a_gbp": "48835.850",
+        "npr_b_gbp": "97325.400",
+        "delta_gbp": "48489.550"
+      },
+      {
+        "stock_code": "23298",
+        "description": "SPOTTY BUNTING",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "41900.510",
+        "delta_gbp": "41900.510"
+      },
+      {
+        "stock_code": "22502",
+        "description": "PICNIC BASKET WICKER SMALL",
+        "npr_a_gbp": "9420.360",
+        "npr_b_gbp": "51023.520",
+        "delta_gbp": "41603.160"
+      },
+      {
+        "stock_code": "23203",
+        "description": "JUMBO BAG VINTAGE DOILY ",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "39604.440",
+        "delta_gbp": "39604.440"
+      },
+      {
+        "stock_code": "22720",
+        "description": "SET OF 3 CAKE TINS PANTRY DESIGN ",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "36330.240",
+        "delta_gbp": "36330.240"
+      },
+      {
+        "stock_code": "23284",
+        "description": "DOORMAT KEEP CALM AND COME IN",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "34990.670",
+        "delta_gbp": "34990.670"
+      },
+      {
+        "stock_code": "22960",
+        "description": "JAM MAKING SET WITH JARS",
+        "npr_a_gbp": "1297.980",
+        "npr_b_gbp": "34826.810",
+        "delta_gbp": "33528.830"
+      },
+      {
+        "stock_code": "23245",
+        "description": "SET OF 3 REGENCY CAKE TINS",
+        "npr_a_gbp": "0.000",
+        "npr_b_gbp": "29065.810",
+        "delta_gbp": "29065.810"
+      }
+    ],
+    "codes_merged_by_case_or_space": 171
+  },
+  "bridge": {
+    "year_a": {
+      "customers": 4239,
+      "orders": 18192,
+      "orders_per_customer": 4.2916,
+      "npr_per_order_gbp": "444.872",
+      "identified_npr_gbp": "8093115.774",
+      "no_id_npr_gbp": "1062965.130",
+      "npr_gbp": "9156080.904"
+    },
+    "year_b": {
+      "customers": 4293,
+      "orders": 17626,
+      "orders_per_customer": 4.1058,
+      "npr_per_order_gbp": "449.752",
+      "identified_npr_gbp": "7927324.913",
+      "no_id_npr_gbp": "1403593.690",
+      "npr_gbp": "9330918.603"
+    },
+    "ratio_b_over_a": {
+      "customers": 1.0127,
+      "orders_per_customer": 0.9567,
+      "npr_per_order": 1.011,
+      "identified_npr": 0.9795
+    },
+    "reconciles_exactly": true
+  },
+  "identities": {
+    "country_group_sums_to_delta": true,
+    "customer_status_sums_to_delta": true,
+    "product_sums_to_delta": true,
+    "bridge_reconciles_to_identified_npr": true
+  }
+}

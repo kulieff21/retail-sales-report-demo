@@ -119,3 +119,26 @@ Each amendment is dated and was made before any Q1–Q3 number was computed unle
    pattern. Classed as products because the descriptions are merchandise: `DCGS*` (33 codes),
    `PADS`, `SP1002`, and `47503J ` (a product code with a trailing space). `B` (bad-debt adjustment)
    is class `other`; all 6 of its rows are on `A` invoices and land in `adjustment` either way.
+
+Amendments 4–9 were made **after** the first Q1–Q3 run, when the two independent implementations
+were compared. None changes a total, a year figure or a rule in section 2; they settle choices
+the plan left open, and both implementations now follow them.
+
+4. **2026-09-29, product key.** 171 stock codes appear in two letter cases (about 3,240 lines,
+   ~£52k), e.g. `85123A` / `85123a`. Product-level results (Q1 product Δ, Q3 top-20 products,
+   cancellation rates) group by the code stripped and upper-cased. Traceability (Q3) still matches
+   the raw code, which is the more conservative reading.
+5. **2026-09-29, top p% of customers.** The group is `floor(N × p)` customers, at least 1, so it
+   is never larger than p% and the share is not inflated (the alternative, ceiling, gives 44 instead
+   of 43 for the top 1% and a 0.2-point higher share).
+6. **2026-09-29, cancel-only customers.** Identified customers with product cancellations but no
+   sale order in Year A or B (23 customers) form a fifth status bucket in the Q1 customer
+   decomposition, so the decomposition still sums exactly.
+7. **2026-09-29, cohort window.** A cohort is included when the last day of its month plus 90 days
+   is on or before 2011-12-09 (cohorts 2010-03 to 2011-08). A second order on the same calendar
+   date as the first does not count; day 90 does.
+8. **2026-09-29, retention cells.** Cells in the partial December 2011 are null in the retention
+   matrix (their values are reported separately), like cells beyond the data end.
+9. **2026-09-29, traceability.** A cancellation is traceable when an earlier sale line has the same
+   customer, raw stock code and price. Quantity is not compared, so "traceable" means "an order
+   exists", not "fully covered".

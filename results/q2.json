@@ -1,0 +1,582 @@
+{
+  "definitions": {
+    "population": "Identified customers (Customer ID present) with at least one sale_product or cancel_product line in Year B (2010-12..2011-11). Customer NPR = sum of signed value of all its product lines in Year B, cancellations included. Customers with negative NPR stay in and are counted.",
+    "top_share": "Customers ranked by NPR descending (ties by customer ID). Top p% = the first floor(N * p) customers (at least 1), i.e. never more than p% of customers, so the share is not inflated by rounding up. Share = sum of their NPR / sum of NPR of all identified customers (negative customers included in the denominator). share_of_total_npr uses total Year B NPR including no-ID lines as denominator.",
+    "order": "Order = distinct Invoice with a sale_product line of an identified customer; its date = earliest InvoiceDate of the invoice (82 invoices have lines on two timestamps).",
+    "acquisition": "Acquisition month = month of the customer's first order in the data (first seen in this data, left-censored: data starts 2009-12).",
+    "repeat": "Repeater = has a second order (a distinct invoice) on a strictly later calendar date and at most 90 days after the calendar date of the first order (window inclusive of day 90). Several invoices on the first date do not count as a second order.",
+    "included_cohorts": "Cohorts from 2010-03 whose whole 90-day window is inside the data: last day of the cohort month + 90 days <= 2011-12-09. Cohorts before 2010-03 are shown separately and excluded from the pooled rate. pooled = total repeaters / total customers of included cohorts.",
+    "retention": "For each included cohort and offset 0..12: share of the cohort's customers with at least one order in calendar month cohort + offset. Cells whose month is after 2011-11 (last full month) are null, not 0; the partial month 2011-12 (1-9 Dec) is not shown in the matrix (null) and its values are listed in retention_partial_month_cells."
+  },
+  "concentration_year_b": {
+    "identified_customers": 4321,
+    "identified_npr_gbp": "7927324.913",
+    "no_id_npr_gbp": "1403593.690",
+    "total_npr_gbp": "9330918.603",
+    "negative_npr_customers": 30,
+    "negative_npr_total_gbp": "-4157.440",
+    "rounding_rule": "top p% = floor(N * p), at least 1",
+    "top_1pct": {
+      "customers": 43,
+      "npr_gbp": "2391928.120",
+      "share_of_identified_npr": 0.3017,
+      "share_of_total_npr": 0.2563
+    },
+    "top_10pct": {
+      "customers": 432,
+      "npr_gbp": "4770603.000",
+      "share_of_identified_npr": 0.6018,
+      "share_of_total_npr": 0.5113
+    },
+    "top_20pct": {
+      "customers": 864,
+      "npr_gbp": "5854146.151",
+      "share_of_identified_npr": 0.7385,
+      "share_of_total_npr": 0.6274
+    },
+    "top_10_customers": {
+      "customers": 10,
+      "npr_gbp": "1323978.040",
+      "share_of_identified_npr": 0.167,
+      "share_of_total_npr": 0.1419
+    }
+  },
+  "repeat_purchase": {
+    "window_days": 90,
+    "customers_total": 5852,
+    "cohorts": {
+      "2009-12": {
+        "customers": 951,
+        "repeaters": 564,
+        "rate": 0.5931,
+        "included": false,
+        "window_end_last_customer": "2010-03-31"
+      },
+      "2010-01": {
+        "customers": 368,
+        "repeaters": 193,
+        "rate": 0.5245,
+        "included": false,
+        "window_end_last_customer": "2010-05-01"
+      },
+      "2010-02": {
+        "customers": 375,
+        "repeaters": 179,
+        "rate": 0.4773,
+        "included": false,
+        "window_end_last_customer": "2010-05-29"
+      },
+      "2010-03": {
+        "customers": 441,
+        "repeaters": 182,
+        "rate": 0.4127,
+        "included": true,
+        "window_end_last_customer": "2010-06-29"
+      },
+      "2010-04": {
+        "customers": 294,
+        "repeaters": 112,
+        "rate": 0.381,
+        "included": true,
+        "window_end_last_customer": "2010-07-29"
+      },
+      "2010-05": {
+        "customers": 255,
+        "repeaters": 86,
+        "rate": 0.3373,
+        "included": true,
+        "window_end_last_customer": "2010-08-29"
+      },
+      "2010-06": {
+        "customers": 267,
+        "repeaters": 92,
+        "rate": 0.3446,
+        "included": true,
+        "window_end_last_customer": "2010-09-28"
+      },
+      "2010-07": {
+        "customers": 185,
+        "repeaters": 80,
+        "rate": 0.4324,
+        "included": true,
+        "window_end_last_customer": "2010-10-29"
+      },
+      "2010-08": {
+        "customers": 163,
+        "repeaters": 81,
+        "rate": 0.4969,
+        "included": true,
+        "window_end_last_customer": "2010-11-29"
+      },
+      "2010-09": {
+        "customers": 239,
+        "repeaters": 103,
+        "rate": 0.431,
+        "included": true,
+        "window_end_last_customer": "2010-12-29"
+      },
+      "2010-10": {
+        "customers": 375,
+        "repeaters": 144,
+        "rate": 0.384,
+        "included": true,
+        "window_end_last_customer": "2011-01-29"
+      },
+      "2010-11": {
+        "customers": 326,
+        "repeaters": 98,
+        "rate": 0.3006,
+        "included": true,
+        "window_end_last_customer": "2011-02-28"
+      },
+      "2010-12": {
+        "customers": 76,
+        "repeaters": 12,
+        "rate": 0.1579,
+        "included": true,
+        "window_end_last_customer": "2011-03-31"
+      },
+      "2011-01": {
+        "customers": 72,
+        "repeaters": 29,
+        "rate": 0.4028,
+        "included": true,
+        "window_end_last_customer": "2011-05-01"
+      },
+      "2011-02": {
+        "customers": 125,
+        "repeaters": 40,
+        "rate": 0.32,
+        "included": true,
+        "window_end_last_customer": "2011-05-29"
+      },
+      "2011-03": {
+        "customers": 179,
+        "repeaters": 71,
+        "rate": 0.3966,
+        "included": true,
+        "window_end_last_customer": "2011-06-29"
+      },
+      "2011-04": {
+        "customers": 106,
+        "repeaters": 40,
+        "rate": 0.3774,
+        "included": true,
+        "window_end_last_customer": "2011-07-29"
+      },
+      "2011-05": {
+        "customers": 111,
+        "repeaters": 44,
+        "rate": 0.3964,
+        "included": true,
+        "window_end_last_customer": "2011-08-29"
+      },
+      "2011-06": {
+        "customers": 108,
+        "repeaters": 51,
+        "rate": 0.4722,
+        "included": true,
+        "window_end_last_customer": "2011-09-28"
+      },
+      "2011-07": {
+        "customers": 101,
+        "repeaters": 51,
+        "rate": 0.505,
+        "included": true,
+        "window_end_last_customer": "2011-10-29"
+      },
+      "2011-08": {
+        "customers": 107,
+        "repeaters": 52,
+        "rate": 0.486,
+        "included": true,
+        "window_end_last_customer": "2011-11-29"
+      },
+      "2011-09": {
+        "customers": 188,
+        "repeaters": 102,
+        "rate": 0.5426,
+        "included": false,
+        "window_end_last_customer": "2011-12-29"
+      },
+      "2011-10": {
+        "customers": 221,
+        "repeaters": 90,
+        "rate": 0.4072,
+        "included": false,
+        "window_end_last_customer": "2012-01-29"
+      },
+      "2011-11": {
+        "customers": 191,
+        "repeaters": 49,
+        "rate": 0.2565,
+        "included": false,
+        "window_end_last_customer": "2012-02-28"
+      },
+      "2011-12": {
+        "customers": 28,
+        "repeaters": 0,
+        "rate": 0.0,
+        "included": false,
+        "window_end_last_customer": "2012-03-30"
+      }
+    },
+    "included_cohorts": [
+      "2010-03",
+      "2010-04",
+      "2010-05",
+      "2010-06",
+      "2010-07",
+      "2010-08",
+      "2010-09",
+      "2010-10",
+      "2010-11",
+      "2010-12",
+      "2011-01",
+      "2011-02",
+      "2011-03",
+      "2011-04",
+      "2011-05",
+      "2011-06",
+      "2011-07",
+      "2011-08"
+    ],
+    "pooled": {
+      "customers": 3530,
+      "repeaters": 1368,
+      "rate": 0.3875
+    },
+    "before_2010_03_shown_separately": {
+      "cohorts": {
+        "2009-12": {
+          "customers": 951,
+          "repeaters": 564,
+          "rate": 0.5931,
+          "included": false,
+          "window_end_last_customer": "2010-03-31"
+        },
+        "2010-01": {
+          "customers": 368,
+          "repeaters": 193,
+          "rate": 0.5245,
+          "included": false,
+          "window_end_last_customer": "2010-05-01"
+        },
+        "2010-02": {
+          "customers": 375,
+          "repeaters": 179,
+          "rate": 0.4773,
+          "included": false,
+          "window_end_last_customer": "2010-05-29"
+        }
+      },
+      "customers": 1694,
+      "repeaters": 936,
+      "pooled_rate": 0.5525
+    },
+    "excluded_window_not_complete": [
+      "2011-09",
+      "2011-10",
+      "2011-11",
+      "2011-12"
+    ]
+  },
+  "retention_offsets": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+  ],
+  "retention_matrix": {
+    "2010-03": [
+      1.0,
+      0.1905,
+      0.2313,
+      0.2426,
+      0.2313,
+      0.2041,
+      0.2472,
+      0.3061,
+      0.2766,
+      0.1088,
+      0.1156,
+      0.1451,
+      0.1995
+    ],
+    "2010-04": [
+      1.0,
+      0.1905,
+      0.1905,
+      0.1599,
+      0.1837,
+      0.2211,
+      0.2755,
+      0.2653,
+      0.1054,
+      0.1088,
+      0.0748,
+      0.1395,
+      0.1429
+    ],
+    "2010-05": [
+      1.0,
+      0.1569,
+      0.1686,
+      0.1765,
+      0.1765,
+      0.2549,
+      0.2118,
+      0.1255,
+      0.0588,
+      0.0824,
+      0.1137,
+      0.1333,
+      0.1529
+    ],
+    "2010-06": [
+      1.0,
+      0.176,
+      0.1873,
+      0.206,
+      0.2322,
+      0.2846,
+      0.1273,
+      0.0899,
+      0.0824,
+      0.1124,
+      0.1049,
+      0.1386,
+      0.1498
+    ],
+    "2010-07": [
+      1.0,
+      0.1568,
+      0.1838,
+      0.2973,
+      0.2919,
+      0.1405,
+      0.1135,
+      0.1459,
+      0.1459,
+      0.1135,
+      0.1351,
+      0.1459,
+      0.1297
+    ],
+    "2010-08": [
+      1.0,
+      0.1963,
+      0.2883,
+      0.3252,
+      0.1656,
+      0.1166,
+      0.0982,
+      0.1288,
+      0.135,
+      0.1288,
+      0.1288,
+      0.1166,
+      0.1472
+    ],
+    "2010-09": [
+      1.0,
+      0.2301,
+      0.2343,
+      0.1297,
+      0.0879,
+      0.1046,
+      0.1381,
+      0.0962,
+      0.1297,
+      0.1297,
+      0.1213,
+      0.1004,
+      0.2259
+    ],
+    "2010-10": [
+      1.0,
+      0.2587,
+      0.1467,
+      0.1253,
+      0.088,
+      0.0827,
+      0.1307,
+      0.1387,
+      0.1067,
+      0.0933,
+      0.1067,
+      0.128,
+      0.192
+    ],
+    "2010-11": [
+      1.0,
+      0.1748,
+      0.0951,
+      0.0951,
+      0.0767,
+      0.089,
+      0.1288,
+      0.1012,
+      0.0859,
+      0.092,
+      0.1104,
+      0.1472,
+      0.2515
+    ],
+    "2010-12": [
+      1.0,
+      0.0921,
+      0.0526,
+      0.0921,
+      0.1184,
+      0.0658,
+      0.0526,
+      0.0921,
+      0.0526,
+      0.0263,
+      0.0921,
+      0.1974,
+      null
+    ],
+    "2011-01": [
+      1.0,
+      0.1667,
+      0.2222,
+      0.1944,
+      0.2222,
+      0.1528,
+      0.1528,
+      0.125,
+      0.1111,
+      0.2083,
+      0.25,
+      null,
+      null
+    ],
+    "2011-02": [
+      1.0,
+      0.16,
+      0.16,
+      0.184,
+      0.216,
+      0.16,
+      0.16,
+      0.152,
+      0.152,
+      0.184,
+      null,
+      null,
+      null
+    ],
+    "2011-03": [
+      1.0,
+      0.1788,
+      0.2179,
+      0.2011,
+      0.2235,
+      0.1508,
+      0.2067,
+      0.2011,
+      0.2402,
+      null,
+      null,
+      null,
+      null
+    ],
+    "2011-04": [
+      1.0,
+      0.2453,
+      0.1981,
+      0.1981,
+      0.1792,
+      0.2358,
+      0.1792,
+      0.2547,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "2011-05": [
+      1.0,
+      0.2342,
+      0.2432,
+      0.1622,
+      0.2162,
+      0.2072,
+      0.2613,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "2011-06": [
+      1.0,
+      0.2315,
+      0.213,
+      0.2685,
+      0.2037,
+      0.2778,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "2011-07": [
+      1.0,
+      0.2079,
+      0.297,
+      0.2772,
+      0.3465,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "2011-08": [
+      1.0,
+      0.2617,
+      0.2991,
+      0.2617,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "retention_partial_month_cells": {
+    "2010-12+12": 0.0263,
+    "2011-01+11": 0.1111,
+    "2011-02+10": 0.064,
+    "2011-03+9": 0.095,
+    "2011-04+8": 0.1132,
+    "2011-05+7": 0.1171,
+    "2011-06+6": 0.0833,
+    "2011-07+5": 0.1584,
+    "2011-08+4": 0.1682
+  }
+}

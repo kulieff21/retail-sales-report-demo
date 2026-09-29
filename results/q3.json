@@ -1,0 +1,1846 @@
+{
+  "definitions": {
+    "cpv_gps": "CPV = sum |qty*price| over cancel_product; GPS = sum qty*price over sale_product; CPV/GPS = CPV divided by GPS of the same month / group / period. Cancellations are dated and grouped by their own line.",
+    "periods": "year_a = 2009-12..2010-11, year_b = 2010-12..2011-11, whole_period = 2009-12..2011-12 (includes the partial month 2011-12, 1-9 Dec). Monthly tables cover all 25 months.",
+    "country_group": "Same groups as Q1: United Kingdom, five largest non-UK countries by Year B NPR, Other.",
+    "top20_shares": "Top 20 products (product key = stock code stripped and upper-cased) and top 20 identified customers by CPV in the period. Share = their CPV / total CPV of the period (no-ID cancellations stay in the denominator); the customer share is also given over identified CPV only. no_id_share_of_cpv is reported separately.",
+    "cancellation_rate": "Cancelled units / sold units per product over the whole period 2009-12..2011-12, only products with >= 500 sold units and >= 20 distinct sale_product invoices in that period. Cancelled units = sum |quantity| of cancel_product lines. Rate is not capped (can exceed 1). Ranked by rate, ties by cancelled units then code.",
+    "top10_lines": "Ten cancel_product lines with the largest |qty*price| over the whole period (ties by row_id). 'without_top10_lines' removes exactly those ten lines from the cancellation side (sales untouched) and recomputes the headline.",
+    "traceability": "A cancel_product line is traceable if the same customer ID has an earlier sale_product line (InvoiceDate strictly earlier) with the same raw stock code (exact match, case and spaces as in the data) and the same price. Lines without Customer ID cannot be traced by definition and form their own bucket. Sale lines from the whole data are searched, so cancellations in the first months have no history to match (left-censoring). Quantity is not compared."
+  },
+  "monthly": {
+    "2009-12": {
+      "gps_gbp": "797901.160",
+      "cpv_gbp": "19558.080",
+      "cpv_over_gps": 0.0245,
+      "partial": false
+    },
+    "2010-01": {
+      "gps_gbp": "612297.422",
+      "cpv_gbp": "7465.630",
+      "cpv_over_gps": 0.0122,
+      "partial": false
+    },
+    "2010-02": {
+      "gps_gbp": "537909.676",
+      "cpv_gbp": "12575.440",
+      "cpv_over_gps": 0.0234,
+      "partial": false
+    },
+    "2010-03": {
+      "gps_gbp": "761705.981",
+      "cpv_gbp": "9603.850",
+      "cpv_over_gps": 0.0126,
+      "partial": false
+    },
+    "2010-04": {
+      "gps_gbp": "646340.932",
+      "cpv_gbp": "10025.260",
+      "cpv_over_gps": 0.0155,
+      "partial": false
+    },
+    "2010-05": {
+      "gps_gbp": "643492.030",
+      "cpv_gbp": "37192.890",
+      "cpv_over_gps": 0.0578,
+      "partial": false
+    },
+    "2010-06": {
+      "gps_gbp": "696583.190",
+      "cpv_gbp": "26373.460",
+      "cpv_over_gps": 0.0379,
+      "partial": false
+    },
+    "2010-07": {
+      "gps_gbp": "632994.320",
+      "cpv_gbp": "17132.730",
+      "cpv_over_gps": 0.0271,
+      "partial": false
+    },
+    "2010-08": {
+      "gps_gbp": "674037.720",
+      "cpv_gbp": "12397.600",
+      "cpv_over_gps": 0.0184,
+      "partial": false
+    },
+    "2010-09": {
+      "gps_gbp": "869243.121",
+      "cpv_gbp": "27686.420",
+      "cpv_over_gps": 0.0319,
+      "partial": false
+    },
+    "2010-10": {
+      "gps_gbp": "1094435.980",
+      "cpv_gbp": "25451.070",
+      "cpv_over_gps": 0.0233,
+      "partial": false
+    },
+    "2010-11": {
+      "gps_gbp": "1429700.782",
+      "cpv_gbp": "35098.980",
+      "cpv_over_gps": 0.0245,
+      "partial": false
+    },
+    "2010-12": {
+      "gps_gbp": "775638.360",
+      "cpv_gbp": "17547.860",
+      "cpv_over_gps": 0.0226,
+      "partial": false
+    },
+    "2011-01": {
+      "gps_gbp": "670380.240",
+      "cpv_gbp": "91525.050",
+      "cpv_over_gps": 0.1365,
+      "partial": false
+    },
+    "2011-02": {
+      "gps_gbp": "507799.870",
+      "cpv_gbp": "8335.520",
+      "cpv_over_gps": 0.0164,
+      "partial": false
+    },
+    "2011-03": {
+      "gps_gbp": "689833.510",
+      "cpv_gbp": "10504.300",
+      "cpv_over_gps": 0.0152,
+      "partial": false
+    },
+    "2011-04": {
+      "gps_gbp": "515377.991",
+      "cpv_gbp": "33316.060",
+      "cpv_over_gps": 0.0646,
+      "partial": false
+    },
+    "2011-05": {
+      "gps_gbp": "739953.000",
+      "cpv_gbp": "8948.230",
+      "cpv_over_gps": 0.0121,
+      "partial": false
+    },
+    "2011-06": {
+      "gps_gbp": "737558.980",
+      "cpv_gbp": "13713.840",
+      "cpv_over_gps": 0.0186,
+      "partial": false
+    },
+    "2011-07": {
+      "gps_gbp": "688219.341",
+      "cpv_gbp": "11407.260",
+      "cpv_over_gps": 0.0166,
+      "partial": false
+    },
+    "2011-08": {
+      "gps_gbp": "724216.500",
+      "cpv_gbp": "22926.570",
+      "cpv_over_gps": 0.0317,
+      "partial": false
+    },
+    "2011-09": {
+      "gps_gbp": "1028320.381",
+      "cpv_gbp": "16980.640",
+      "cpv_over_gps": 0.0165,
+      "partial": false
+    },
+    "2011-10": {
+      "gps_gbp": "1103314.250",
+      "cpv_gbp": "41613.030",
+      "cpv_over_gps": 0.0377,
+      "partial": false
+    },
+    "2011-11": {
+      "gps_gbp": "1452115.980",
+      "cpv_gbp": "24991.440",
+      "cpv_over_gps": 0.0172,
+      "partial": false
+    },
+    "2011-12": {
+      "gps_gbp": "614490.920",
+      "cpv_gbp": "174091.360",
+      "cpv_over_gps": 0.2833,
+      "partial": true
+    }
+  },
+  "by_country_group": {
+    "year_a": {
+      "United Kingdom": {
+        "gps_gbp": "8076575.713",
+        "cpv_gbp": "189060.130",
+        "cpv_over_gps": 0.0234
+      },
+      "Netherlands": {
+        "gps_gbp": "265884.070",
+        "cpv_gbp": "3268.180",
+        "cpv_over_gps": 0.0123
+      },
+      "EIRE": {
+        "gps_gbp": "352563.300",
+        "cpv_gbp": "8826.710",
+        "cpv_over_gps": 0.025
+      },
+      "Germany": {
+        "gps_gbp": "177907.851",
+        "cpv_gbp": "3954.000",
+        "cpv_over_gps": 0.0222
+      },
+      "France": {
+        "gps_gbp": "126597.290",
+        "cpv_gbp": "15242.690",
+        "cpv_over_gps": 0.1204
+      },
+      "Australia": {
+        "gps_gbp": "29696.200",
+        "cpv_gbp": "336.550",
+        "cpv_over_gps": 0.0113
+      },
+      "Other": {
+        "gps_gbp": "367417.890",
+        "cpv_gbp": "19873.150",
+        "cpv_over_gps": 0.0541
+      }
+    },
+    "year_b": {
+      "United Kingdom": {
+        "gps_gbp": "8153163.343",
+        "cpv_gbp": "270119.520",
+        "cpv_over_gps": 0.0331
+      },
+      "Netherlands": {
+        "gps_gbp": "272161.320",
+        "cpv_gbp": "409.800",
+        "cpv_over_gps": 0.0015
+      },
+      "EIRE": {
+        "gps_gbp": "263709.970",
+        "cpv_gbp": "11452.990",
+        "cpv_over_gps": 0.0434
+      },
+      "Germany": {
+        "gps_gbp": "198356.980",
+        "cpv_gbp": "4582.020",
+        "cpv_over_gps": 0.0231
+      },
+      "France": {
+        "gps_gbp": "177954.080",
+        "cpv_gbp": "2268.750",
+        "cpv_over_gps": 0.0127
+      },
+      "Australia": {
+        "gps_gbp": "138103.810",
+        "cpv_gbp": "1181.310",
+        "cpv_over_gps": 0.0086
+      },
+      "Other": {
+        "gps_gbp": "429278.900",
+        "cpv_gbp": "11795.410",
+        "cpv_over_gps": 0.0275
+      }
+    },
+    "whole_period": {
+      "United Kingdom": {
+        "gps_gbp": "16801019.386",
+        "cpv_gbp": "632113.440",
+        "cpv_over_gps": 0.0376
+      },
+      "Netherlands": {
+        "gps_gbp": "549773.410",
+        "cpv_gbp": "3677.980",
+        "cpv_over_gps": 0.0067
+      },
+      "EIRE": {
+        "gps_gbp": "623414.160",
+        "cpv_gbp": "20297.550",
+        "cpv_over_gps": 0.0326
+      },
+      "Germany": {
+        "gps_gbp": "383289.001",
+        "cpv_gbp": "8715.490",
+        "cpv_over_gps": 0.0227
+      },
+      "France": {
+        "gps_gbp": "311090.290",
+        "cpv_gbp": "17659.090",
+        "cpv_over_gps": 0.0568
+      },
+      "Australia": {
+        "gps_gbp": "167800.010",
+        "cpv_gbp": "1517.860",
+        "cpv_over_gps": 0.009
+      },
+      "Other": {
+        "gps_gbp": "807475.380",
+        "cpv_gbp": "32481.160",
+        "cpv_over_gps": 0.0402
+      }
+    }
+  },
+  "by_country_group_month": {
+    "United Kingdom": {
+      "2009-12": {
+        "gps_gbp": "726861.750",
+        "cpv_gbp": "17337.940",
+        "cpv_over_gps": 0.0239
+      },
+      "2010-01": {
+        "gps_gbp": "483095.792",
+        "cpv_gbp": "6194.190",
+        "cpv_over_gps": 0.0128
+      },
+      "2010-02": {
+        "gps_gbp": "446006.996",
+        "cpv_gbp": "7647.430",
+        "cpv_over_gps": 0.0171
+      },
+      "2010-03": {
+        "gps_gbp": "668400.291",
+        "cpv_gbp": "8298.610",
+        "cpv_over_gps": 0.0124
+      },
+      "2010-04": {
+        "gps_gbp": "555486.101",
+        "cpv_gbp": "9287.630",
+        "cpv_over_gps": 0.0167
+      },
+      "2010-05": {
+        "gps_gbp": "551010.230",
+        "cpv_gbp": "35966.380",
+        "cpv_over_gps": 0.0653
+      },
+      "2010-06": {
+        "gps_gbp": "600678.070",
+        "cpv_gbp": "25184.620",
+        "cpv_over_gps": 0.0419
+      },
+      "2010-07": {
+        "gps_gbp": "550303.290",
+        "cpv_gbp": "14645.650",
+        "cpv_over_gps": 0.0266
+      },
+      "2010-08": {
+        "gps_gbp": "580124.370",
+        "cpv_gbp": "11384.120",
+        "cpv_over_gps": 0.0196
+      },
+      "2010-09": {
+        "gps_gbp": "724904.561",
+        "cpv_gbp": "8627.300",
+        "cpv_over_gps": 0.0119
+      },
+      "2010-10": {
+        "gps_gbp": "943944.230",
+        "cpv_gbp": "18879.320",
+        "cpv_over_gps": 0.02
+      },
+      "2010-11": {
+        "gps_gbp": "1245760.032",
+        "cpv_gbp": "25606.940",
+        "cpv_over_gps": 0.0206
+      },
+      "2010-12": {
+        "gps_gbp": "705232.850",
+        "cpv_gbp": "14303.100",
+        "cpv_over_gps": 0.0203
+      },
+      "2011-01": {
+        "gps_gbp": "545853.460",
+        "cpv_gbp": "90128.280",
+        "cpv_over_gps": 0.1651
+      },
+      "2011-02": {
+        "gps_gbp": "417892.620",
+        "cpv_gbp": "4988.510",
+        "cpv_over_gps": 0.0119
+      },
+      "2011-03": {
+        "gps_gbp": "571453.630",
+        "cpv_gbp": "9550.480",
+        "cpv_over_gps": 0.0167
+      },
+      "2011-04": {
+        "gps_gbp": "465292.021",
+        "cpv_gbp": "30539.170",
+        "cpv_over_gps": 0.0656
+      },
+      "2011-05": {
+        "gps_gbp": "618181.680",
+        "cpv_gbp": "8561.620",
+        "cpv_over_gps": 0.0138
+      },
+      "2011-06": {
+        "gps_gbp": "605030.820",
+        "cpv_gbp": "11886.470",
+        "cpv_over_gps": 0.0196
+      },
+      "2011-07": {
+        "gps_gbp": "577148.911",
+        "cpv_gbp": "10562.510",
+        "cpv_over_gps": 0.0183
+      },
+      "2011-08": {
+        "gps_gbp": "578696.050",
+        "cpv_gbp": "17271.370",
+        "cpv_over_gps": 0.0298
+      },
+      "2011-09": {
+        "gps_gbp": "876051.281",
+        "cpv_gbp": "15832.310",
+        "cpv_over_gps": 0.0181
+      },
+      "2011-10": {
+        "gps_gbp": "911467.380",
+        "cpv_gbp": "34540.940",
+        "cpv_over_gps": 0.0379
+      },
+      "2011-11": {
+        "gps_gbp": "1280862.640",
+        "cpv_gbp": "21954.760",
+        "cpv_over_gps": 0.0171
+      },
+      "2011-12": {
+        "gps_gbp": "571280.330",
+        "cpv_gbp": "172933.790",
+        "cpv_over_gps": 0.3027
+      }
+    },
+    "Netherlands": {
+      "2009-12": {
+        "gps_gbp": "15045.730",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-01": {
+        "gps_gbp": "29167.770",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-02": {
+        "gps_gbp": "17210.390",
+        "cpv_gbp": "361.000",
+        "cpv_over_gps": 0.021
+      },
+      "2010-03": {
+        "gps_gbp": "24241.300",
+        "cpv_gbp": "210.000",
+        "cpv_over_gps": 0.0087
+      },
+      "2010-04": {
+        "gps_gbp": "6336.780",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-05": {
+        "gps_gbp": "22221.530",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-06": {
+        "gps_gbp": "24134.510",
+        "cpv_gbp": "122.500",
+        "cpv_over_gps": 0.0051
+      },
+      "2010-07": {
+        "gps_gbp": "5383.640",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-08": {
+        "gps_gbp": "24881.690",
+        "cpv_gbp": "226.200",
+        "cpv_over_gps": 0.0091
+      },
+      "2010-09": {
+        "gps_gbp": "44773.140",
+        "cpv_gbp": "51.000",
+        "cpv_over_gps": 0.0011
+      },
+      "2010-10": {
+        "gps_gbp": "16857.850",
+        "cpv_gbp": "28.400",
+        "cpv_over_gps": 0.0017
+      },
+      "2010-11": {
+        "gps_gbp": "35629.740",
+        "cpv_gbp": "2269.080",
+        "cpv_over_gps": 0.0637
+      },
+      "2010-12": {
+        "gps_gbp": "8754.480",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-01": {
+        "gps_gbp": "26596.160",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-02": {
+        "gps_gbp": "22831.910",
+        "cpv_gbp": "34.800",
+        "cpv_over_gps": 0.0015
+      },
+      "2011-03": {
+        "gps_gbp": "22206.490",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-04": {
+        "gps_gbp": "2886.560",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-05": {
+        "gps_gbp": "28942.880",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-06": {
+        "gps_gbp": "26753.090",
+        "cpv_gbp": "15.000",
+        "cpv_over_gps": 0.0006
+      },
+      "2011-07": {
+        "gps_gbp": "11.020",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-08": {
+        "gps_gbp": "40327.810",
+        "cpv_gbp": "360.000",
+        "cpv_over_gps": 0.0089
+      },
+      "2011-09": {
+        "gps_gbp": "26832.260",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-10": {
+        "gps_gbp": "40378.650",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-11": {
+        "gps_gbp": "25640.010",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-12": {
+        "gps_gbp": "11728.020",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      }
+    },
+    "EIRE": {
+      "2009-12": {
+        "gps_gbp": "18946.490",
+        "cpv_gbp": "168.550",
+        "cpv_over_gps": 0.0089
+      },
+      "2010-01": {
+        "gps_gbp": "58669.480",
+        "cpv_gbp": "620.450",
+        "cpv_over_gps": 0.0106
+      },
+      "2010-02": {
+        "gps_gbp": "20415.200",
+        "cpv_gbp": "55.950",
+        "cpv_over_gps": 0.0027
+      },
+      "2010-03": {
+        "gps_gbp": "21778.300",
+        "cpv_gbp": "224.320",
+        "cpv_over_gps": 0.0103
+      },
+      "2010-04": {
+        "gps_gbp": "23332.730",
+        "cpv_gbp": "238.780",
+        "cpv_over_gps": 0.0102
+      },
+      "2010-05": {
+        "gps_gbp": "18635.590",
+        "cpv_gbp": "93.620",
+        "cpv_over_gps": 0.005
+      },
+      "2010-06": {
+        "gps_gbp": "22449.210",
+        "cpv_gbp": "266.450",
+        "cpv_over_gps": 0.0119
+      },
+      "2010-07": {
+        "gps_gbp": "34595.970",
+        "cpv_gbp": "1187.650",
+        "cpv_over_gps": 0.0343
+      },
+      "2010-08": {
+        "gps_gbp": "25405.710",
+        "cpv_gbp": "101.730",
+        "cpv_over_gps": 0.004
+      },
+      "2010-09": {
+        "gps_gbp": "35872.120",
+        "cpv_gbp": "5097.090",
+        "cpv_over_gps": 0.1421
+      },
+      "2010-10": {
+        "gps_gbp": "42246.190",
+        "cpv_gbp": "214.950",
+        "cpv_over_gps": 0.0051
+      },
+      "2010-11": {
+        "gps_gbp": "30216.310",
+        "cpv_gbp": "557.170",
+        "cpv_over_gps": 0.0184
+      },
+      "2010-12": {
+        "gps_gbp": "9683.260",
+        "cpv_gbp": "1003.310",
+        "cpv_over_gps": 0.1036
+      },
+      "2011-01": {
+        "gps_gbp": "21704.190",
+        "cpv_gbp": "197.670",
+        "cpv_over_gps": 0.0091
+      },
+      "2011-02": {
+        "gps_gbp": "12038.740",
+        "cpv_gbp": "2574.600",
+        "cpv_over_gps": 0.2139
+      },
+      "2011-03": {
+        "gps_gbp": "18323.170",
+        "cpv_gbp": "39.940",
+        "cpv_over_gps": 0.0022
+      },
+      "2011-04": {
+        "gps_gbp": "7270.500",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-05": {
+        "gps_gbp": "17753.720",
+        "cpv_gbp": "87.410",
+        "cpv_over_gps": 0.0049
+      },
+      "2011-06": {
+        "gps_gbp": "20713.290",
+        "cpv_gbp": "1083.040",
+        "cpv_over_gps": 0.0523
+      },
+      "2011-07": {
+        "gps_gbp": "42238.850",
+        "cpv_gbp": "49.200",
+        "cpv_over_gps": 0.0012
+      },
+      "2011-08": {
+        "gps_gbp": "18044.200",
+        "cpv_gbp": "4640.590",
+        "cpv_over_gps": 0.2572
+      },
+      "2011-09": {
+        "gps_gbp": "42323.700",
+        "cpv_gbp": "441.550",
+        "cpv_over_gps": 0.0104
+      },
+      "2011-10": {
+        "gps_gbp": "23802.920",
+        "cpv_gbp": "1010.300",
+        "cpv_over_gps": 0.0424
+      },
+      "2011-11": {
+        "gps_gbp": "29813.430",
+        "cpv_gbp": "325.380",
+        "cpv_over_gps": 0.0109
+      },
+      "2011-12": {
+        "gps_gbp": "7140.890",
+        "cpv_gbp": "17.850",
+        "cpv_over_gps": 0.0025
+      }
+    },
+    "Germany": {
+      "2009-12": {
+        "gps_gbp": "8768.270",
+        "cpv_gbp": "314.230",
+        "cpv_over_gps": 0.0358
+      },
+      "2010-01": {
+        "gps_gbp": "11260.870",
+        "cpv_gbp": "508.520",
+        "cpv_over_gps": 0.0452
+      },
+      "2010-02": {
+        "gps_gbp": "7971.250",
+        "cpv_gbp": "253.000",
+        "cpv_over_gps": 0.0317
+      },
+      "2010-03": {
+        "gps_gbp": "15347.080",
+        "cpv_gbp": "321.250",
+        "cpv_over_gps": 0.0209
+      },
+      "2010-04": {
+        "gps_gbp": "21667.231",
+        "cpv_gbp": "182.740",
+        "cpv_over_gps": 0.0084
+      },
+      "2010-05": {
+        "gps_gbp": "8100.360",
+        "cpv_gbp": "369.450",
+        "cpv_over_gps": 0.0456
+      },
+      "2010-06": {
+        "gps_gbp": "14373.230",
+        "cpv_gbp": "239.240",
+        "cpv_over_gps": 0.0166
+      },
+      "2010-07": {
+        "gps_gbp": "18227.270",
+        "cpv_gbp": "259.100",
+        "cpv_over_gps": 0.0142
+      },
+      "2010-08": {
+        "gps_gbp": "8982.120",
+        "cpv_gbp": "135.050",
+        "cpv_over_gps": 0.015
+      },
+      "2010-09": {
+        "gps_gbp": "16160.680",
+        "cpv_gbp": "347.240",
+        "cpv_over_gps": 0.0215
+      },
+      "2010-10": {
+        "gps_gbp": "19380.980",
+        "cpv_gbp": "410.580",
+        "cpv_over_gps": 0.0212
+      },
+      "2010-11": {
+        "gps_gbp": "27668.510",
+        "cpv_gbp": "613.600",
+        "cpv_over_gps": 0.0222
+      },
+      "2010-12": {
+        "gps_gbp": "13243.740",
+        "cpv_gbp": "660.300",
+        "cpv_over_gps": 0.0499
+      },
+      "2011-01": {
+        "gps_gbp": "15296.840",
+        "cpv_gbp": "459.410",
+        "cpv_over_gps": 0.03
+      },
+      "2011-02": {
+        "gps_gbp": "8825.050",
+        "cpv_gbp": "575.810",
+        "cpv_over_gps": 0.0652
+      },
+      "2011-03": {
+        "gps_gbp": "12862.690",
+        "cpv_gbp": "222.670",
+        "cpv_over_gps": 0.0173
+      },
+      "2011-04": {
+        "gps_gbp": "10994.790",
+        "cpv_gbp": "129.420",
+        "cpv_over_gps": 0.0118
+      },
+      "2011-05": {
+        "gps_gbp": "23501.700",
+        "cpv_gbp": "161.850",
+        "cpv_over_gps": 0.0069
+      },
+      "2011-06": {
+        "gps_gbp": "12094.350",
+        "cpv_gbp": "157.080",
+        "cpv_over_gps": 0.013
+      },
+      "2011-07": {
+        "gps_gbp": "14743.300",
+        "cpv_gbp": "327.990",
+        "cpv_over_gps": 0.0222
+      },
+      "2011-08": {
+        "gps_gbp": "17636.770",
+        "cpv_gbp": "179.120",
+        "cpv_over_gps": 0.0102
+      },
+      "2011-09": {
+        "gps_gbp": "16549.470",
+        "cpv_gbp": "352.910",
+        "cpv_over_gps": 0.0213
+      },
+      "2011-10": {
+        "gps_gbp": "28412.920",
+        "cpv_gbp": "406.650",
+        "cpv_over_gps": 0.0143
+      },
+      "2011-11": {
+        "gps_gbp": "24195.360",
+        "cpv_gbp": "948.810",
+        "cpv_over_gps": 0.0392
+      },
+      "2011-12": {
+        "gps_gbp": "7024.170",
+        "cpv_gbp": "179.470",
+        "cpv_over_gps": 0.0256
+      }
+    },
+    "France": {
+      "2009-12": {
+        "gps_gbp": "5873.690",
+        "cpv_gbp": "876.650",
+        "cpv_over_gps": 0.1493
+      },
+      "2010-01": {
+        "gps_gbp": "7316.450",
+        "cpv_gbp": "116.620",
+        "cpv_over_gps": 0.0159
+      },
+      "2010-02": {
+        "gps_gbp": "8073.160",
+        "cpv_gbp": "43.150",
+        "cpv_over_gps": 0.0053
+      },
+      "2010-03": {
+        "gps_gbp": "8007.790",
+        "cpv_gbp": "226.370",
+        "cpv_over_gps": 0.0283
+      },
+      "2010-04": {
+        "gps_gbp": "7144.980",
+        "cpv_gbp": "40.070",
+        "cpv_over_gps": 0.0056
+      },
+      "2010-05": {
+        "gps_gbp": "13298.550",
+        "cpv_gbp": "511.650",
+        "cpv_over_gps": 0.0385
+      },
+      "2010-06": {
+        "gps_gbp": "8439.540",
+        "cpv_gbp": "120.000",
+        "cpv_over_gps": 0.0142
+      },
+      "2010-07": {
+        "gps_gbp": "7267.140",
+        "cpv_gbp": "32.400",
+        "cpv_over_gps": 0.0045
+      },
+      "2010-08": {
+        "gps_gbp": "16285.320",
+        "cpv_gbp": "421.400",
+        "cpv_over_gps": 0.0259
+      },
+      "2010-09": {
+        "gps_gbp": "12314.580",
+        "cpv_gbp": "12132.740",
+        "cpv_over_gps": 0.9852
+      },
+      "2010-10": {
+        "gps_gbp": "14394.570",
+        "cpv_gbp": "601.240",
+        "cpv_over_gps": 0.0418
+      },
+      "2010-11": {
+        "gps_gbp": "18181.520",
+        "cpv_gbp": "120.400",
+        "cpv_over_gps": 0.0066
+      },
+      "2010-12": {
+        "gps_gbp": "8530.310",
+        "cpv_gbp": "40.950",
+        "cpv_over_gps": 0.0048
+      },
+      "2011-01": {
+        "gps_gbp": "16174.120",
+        "cpv_gbp": "183.050",
+        "cpv_over_gps": 0.0113
+      },
+      "2011-02": {
+        "gps_gbp": "7687.960",
+        "cpv_gbp": "41.050",
+        "cpv_over_gps": 0.0053
+      },
+      "2011-03": {
+        "gps_gbp": "13684.950",
+        "cpv_gbp": "72.650",
+        "cpv_over_gps": 0.0053
+      },
+      "2011-04": {
+        "gps_gbp": "3899.310",
+        "cpv_gbp": "133.100",
+        "cpv_over_gps": 0.0341
+      },
+      "2011-05": {
+        "gps_gbp": "16166.480",
+        "cpv_gbp": "51.800",
+        "cpv_over_gps": 0.0032
+      },
+      "2011-06": {
+        "gps_gbp": "14962.410",
+        "cpv_gbp": "356.540",
+        "cpv_over_gps": 0.0238
+      },
+      "2011-07": {
+        "gps_gbp": "9171.190",
+        "cpv_gbp": "111.200",
+        "cpv_over_gps": 0.0121
+      },
+      "2011-08": {
+        "gps_gbp": "12630.960",
+        "cpv_gbp": "21.700",
+        "cpv_over_gps": 0.0017
+      },
+      "2011-09": {
+        "gps_gbp": "21898.040",
+        "cpv_gbp": "211.170",
+        "cpv_over_gps": 0.0096
+      },
+      "2011-10": {
+        "gps_gbp": "23993.930",
+        "cpv_gbp": "131.290",
+        "cpv_over_gps": 0.0055
+      },
+      "2011-11": {
+        "gps_gbp": "29154.420",
+        "cpv_gbp": "914.250",
+        "cpv_over_gps": 0.0314
+      },
+      "2011-12": {
+        "gps_gbp": "6538.920",
+        "cpv_gbp": "147.650",
+        "cpv_over_gps": 0.0226
+      }
+    },
+    "Australia": {
+      "2009-12": {
+        "gps_gbp": "271.100",
+        "cpv_gbp": "220.850",
+        "cpv_over_gps": 0.8146
+      },
+      "2010-01": {
+        "gps_gbp": "0.000",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": null
+      },
+      "2010-02": {
+        "gps_gbp": "1029.660",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-03": {
+        "gps_gbp": "429.390",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-04": {
+        "gps_gbp": "630.950",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-05": {
+        "gps_gbp": "1312.700",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-06": {
+        "gps_gbp": "3214.780",
+        "cpv_gbp": "25.500",
+        "cpv_over_gps": 0.0079
+      },
+      "2010-07": {
+        "gps_gbp": "631.120",
+        "cpv_gbp": "52.500",
+        "cpv_over_gps": 0.0832
+      },
+      "2010-08": {
+        "gps_gbp": "176.000",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-09": {
+        "gps_gbp": "785.830",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-10": {
+        "gps_gbp": "2979.150",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2010-11": {
+        "gps_gbp": "18235.520",
+        "cpv_gbp": "37.700",
+        "cpv_over_gps": 0.0021
+      },
+      "2010-12": {
+        "gps_gbp": "965.350",
+        "cpv_gbp": "27.750",
+        "cpv_over_gps": 0.0287
+      },
+      "2011-01": {
+        "gps_gbp": "9017.710",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-02": {
+        "gps_gbp": "14695.420",
+        "cpv_gbp": "67.950",
+        "cpv_over_gps": 0.0046
+      },
+      "2011-03": {
+        "gps_gbp": "17223.990",
+        "cpv_gbp": "168.700",
+        "cpv_over_gps": 0.0098
+      },
+      "2011-04": {
+        "gps_gbp": "421.600",
+        "cpv_gbp": "438.200",
+        "cpv_over_gps": 1.0394
+      },
+      "2011-05": {
+        "gps_gbp": "13638.410",
+        "cpv_gbp": "9.900",
+        "cpv_over_gps": 0.0007
+      },
+      "2011-06": {
+        "gps_gbp": "25187.770",
+        "cpv_gbp": "23.000",
+        "cpv_over_gps": 0.0009
+      },
+      "2011-07": {
+        "gps_gbp": "4964.380",
+        "cpv_gbp": "196.810",
+        "cpv_over_gps": 0.0396
+      },
+      "2011-08": {
+        "gps_gbp": "22489.200",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-09": {
+        "gps_gbp": "5106.730",
+        "cpv_gbp": "75.000",
+        "cpv_over_gps": 0.0147
+      },
+      "2011-10": {
+        "gps_gbp": "17150.530",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": 0.0
+      },
+      "2011-11": {
+        "gps_gbp": "7242.720",
+        "cpv_gbp": "174.000",
+        "cpv_over_gps": 0.024
+      },
+      "2011-12": {
+        "gps_gbp": "0.000",
+        "cpv_gbp": "0.000",
+        "cpv_over_gps": null
+      }
+    },
+    "Other": {
+      "2009-12": {
+        "gps_gbp": "22134.130",
+        "cpv_gbp": "639.860",
+        "cpv_over_gps": 0.0289
+      },
+      "2010-01": {
+        "gps_gbp": "22787.060",
+        "cpv_gbp": "25.850",
+        "cpv_over_gps": 0.0011
+      },
+      "2010-02": {
+        "gps_gbp": "37203.020",
+        "cpv_gbp": "4214.910",
+        "cpv_over_gps": 0.1133
+      },
+      "2010-03": {
+        "gps_gbp": "23501.830",
+        "cpv_gbp": "323.300",
+        "cpv_over_gps": 0.0138
+      },
+      "2010-04": {
+        "gps_gbp": "31742.160",
+        "cpv_gbp": "276.040",
+        "cpv_over_gps": 0.0087
+      },
+      "2010-05": {
+        "gps_gbp": "28913.070",
+        "cpv_gbp": "251.790",
+        "cpv_over_gps": 0.0087
+      },
+      "2010-06": {
+        "gps_gbp": "23293.850",
+        "cpv_gbp": "415.150",
+        "cpv_over_gps": 0.0178
+      },
+      "2010-07": {
+        "gps_gbp": "16585.890",
+        "cpv_gbp": "955.430",
+        "cpv_over_gps": 0.0576
+      },
+      "2010-08": {
+        "gps_gbp": "18182.510",
+        "cpv_gbp": "129.100",
+        "cpv_over_gps": 0.0071
+      },
+      "2010-09": {
+        "gps_gbp": "34432.210",
+        "cpv_gbp": "1431.050",
+        "cpv_over_gps": 0.0416
+      },
+      "2010-10": {
+        "gps_gbp": "54633.010",
+        "cpv_gbp": "5316.580",
+        "cpv_over_gps": 0.0973
+      },
+      "2010-11": {
+        "gps_gbp": "54009.150",
+        "cpv_gbp": "5894.090",
+        "cpv_over_gps": 0.1091
+      },
+      "2010-12": {
+        "gps_gbp": "29228.370",
+        "cpv_gbp": "1512.450",
+        "cpv_over_gps": 0.0517
+      },
+      "2011-01": {
+        "gps_gbp": "35737.760",
+        "cpv_gbp": "556.640",
+        "cpv_over_gps": 0.0156
+      },
+      "2011-02": {
+        "gps_gbp": "23828.170",
+        "cpv_gbp": "52.800",
+        "cpv_over_gps": 0.0022
+      },
+      "2011-03": {
+        "gps_gbp": "34078.590",
+        "cpv_gbp": "449.860",
+        "cpv_over_gps": 0.0132
+      },
+      "2011-04": {
+        "gps_gbp": "24613.210",
+        "cpv_gbp": "2076.170",
+        "cpv_over_gps": 0.0844
+      },
+      "2011-05": {
+        "gps_gbp": "21768.130",
+        "cpv_gbp": "75.650",
+        "cpv_over_gps": 0.0035
+      },
+      "2011-06": {
+        "gps_gbp": "32817.250",
+        "cpv_gbp": "192.710",
+        "cpv_over_gps": 0.0059
+      },
+      "2011-07": {
+        "gps_gbp": "39941.690",
+        "cpv_gbp": "159.550",
+        "cpv_over_gps": 0.004
+      },
+      "2011-08": {
+        "gps_gbp": "34391.510",
+        "cpv_gbp": "453.790",
+        "cpv_over_gps": 0.0132
+      },
+      "2011-09": {
+        "gps_gbp": "39558.900",
+        "cpv_gbp": "67.700",
+        "cpv_over_gps": 0.0017
+      },
+      "2011-10": {
+        "gps_gbp": "58107.920",
+        "cpv_gbp": "5523.850",
+        "cpv_over_gps": 0.0951
+      },
+      "2011-11": {
+        "gps_gbp": "55207.400",
+        "cpv_gbp": "674.240",
+        "cpv_over_gps": 0.0122
+      },
+      "2011-12": {
+        "gps_gbp": "10778.590",
+        "cpv_gbp": "812.600",
+        "cpv_over_gps": 0.0754
+      }
+    }
+  },
+  "top5_non_uk_by_year_b_npr": [
+    "Netherlands",
+    "EIRE",
+    "Germany",
+    "France",
+    "Australia"
+  ],
+  "headlines": {
+    "year_a": {
+      "with_top10_lines": {
+        "gps_gbp": "9396642.314",
+        "cpv_gbp": "240561.410",
+        "cpv_over_gps": 0.0256,
+        "cancel_lines": 9247,
+        "top20_products_cpv_gbp": "59551.770",
+        "top20_products_share_of_cpv": 0.2476,
+        "top20_customers_cpv_gbp": "99725.050",
+        "top20_customers_share_of_cpv": 0.4146,
+        "top20_customers_share_of_identified_cpv": 0.4186,
+        "no_id_cpv_gbp": "2322.090",
+        "no_id_share_of_cpv": 0.0097,
+        "traceability": {
+          "traceable": {
+            "lines": 7322,
+            "value_gbp": "207127.930",
+            "share_of_lines": 0.7918,
+            "share_of_value": 0.861
+          },
+          "identified_not_traceable": {
+            "lines": 1759,
+            "value_gbp": "31111.390",
+            "share_of_lines": 0.1902,
+            "share_of_value": 0.1293
+          },
+          "no_customer_id": {
+            "lines": 166,
+            "value_gbp": "2322.090",
+            "share_of_lines": 0.018,
+            "share_of_value": 0.0097
+          }
+        }
+      },
+      "without_top10_lines": {
+        "gps_gbp": "9396642.314",
+        "cpv_gbp": "233762.610",
+        "cpv_over_gps": 0.0249,
+        "cancel_lines": 9245,
+        "top20_products_cpv_gbp": "55359.070",
+        "top20_products_share_of_cpv": 0.2368,
+        "top20_customers_cpv_gbp": "94662.500",
+        "top20_customers_share_of_cpv": 0.405,
+        "top20_customers_share_of_identified_cpv": 0.409,
+        "no_id_cpv_gbp": "2322.090",
+        "no_id_share_of_cpv": 0.0099,
+        "traceability": {
+          "traceable": {
+            "lines": 7320,
+            "value_gbp": "200329.130",
+            "share_of_lines": 0.7918,
+            "share_of_value": 0.857
+          },
+          "identified_not_traceable": {
+            "lines": 1759,
+            "value_gbp": "31111.390",
+            "share_of_lines": 0.1903,
+            "share_of_value": 0.1331
+          },
+          "no_customer_id": {
+            "lines": 166,
+            "value_gbp": "2322.090",
+            "share_of_lines": 0.018,
+            "share_of_value": 0.0099
+          }
+        }
+      },
+      "top10_lines_in_period": 2
+    },
+    "year_b": {
+      "with_top10_lines": {
+        "gps_gbp": "9632728.403",
+        "cpv_gbp": "301809.800",
+        "cpv_over_gps": 0.0313,
+        "cancel_lines": 8321,
+        "top20_products_cpv_gbp": "142723.860",
+        "top20_products_share_of_cpv": 0.4729,
+        "top20_customers_cpv_gbp": "176750.710",
+        "top20_customers_share_of_cpv": 0.5856,
+        "top20_customers_share_of_identified_cpv": 0.5938,
+        "no_id_cpv_gbp": "4135.150",
+        "no_id_share_of_cpv": 0.0137,
+        "traceability": {
+          "traceable": {
+            "lines": 7698,
+            "value_gbp": "284744.300",
+            "share_of_lines": 0.9251,
+            "share_of_value": 0.9435
+          },
+          "identified_not_traceable": {
+            "lines": 462,
+            "value_gbp": "12930.350",
+            "share_of_lines": 0.0555,
+            "share_of_value": 0.0428
+          },
+          "no_customer_id": {
+            "lines": 161,
+            "value_gbp": "4135.150",
+            "share_of_lines": 0.0193,
+            "share_of_value": 0.0137
+          }
+        }
+      },
+      "without_top10_lines": {
+        "gps_gbp": "9632728.403",
+        "cpv_gbp": "197802.440",
+        "cpv_over_gps": 0.0205,
+        "cancel_lines": 8314,
+        "top20_products_cpv_gbp": "44566.320",
+        "top20_products_share_of_cpv": 0.2253,
+        "top20_customers_cpv_gbp": "76293.020",
+        "top20_customers_share_of_cpv": 0.3857,
+        "top20_customers_share_of_identified_cpv": 0.3939,
+        "no_id_cpv_gbp": "4135.150",
+        "no_id_share_of_cpv": 0.0209,
+        "traceability": {
+          "traceable": {
+            "lines": 7692,
+            "value_gbp": "184051.940",
+            "share_of_lines": 0.9252,
+            "share_of_value": 0.9305
+          },
+          "identified_not_traceable": {
+            "lines": 461,
+            "value_gbp": "9615.350",
+            "share_of_lines": 0.0554,
+            "share_of_value": 0.0486
+          },
+          "no_customer_id": {
+            "lines": 161,
+            "value_gbp": "4135.150",
+            "share_of_lines": 0.0194,
+            "share_of_value": 0.0209
+          }
+        }
+      },
+      "top10_lines_in_period": 7
+    },
+    "whole_period": {
+      "with_top10_lines": {
+        "gps_gbp": "19643861.637",
+        "cpv_gbp": "716462.570",
+        "cpv_over_gps": 0.0365,
+        "cancel_lines": 17915,
+        "top20_products_cpv_gbp": "343725.670",
+        "top20_products_share_of_cpv": 0.4798,
+        "top20_customers_cpv_gbp": "414398.570",
+        "top20_customers_share_of_cpv": 0.5784,
+        "top20_customers_share_of_identified_cpv": 0.5837,
+        "no_id_cpv_gbp": "6472.540",
+        "no_id_share_of_cpv": 0.009,
+        "traceability": {
+          "traceable": {
+            "lines": 15348,
+            "value_gbp": "665597.280",
+            "share_of_lines": 0.8567,
+            "share_of_value": 0.929
+          },
+          "identified_not_traceable": {
+            "lines": 2239,
+            "value_gbp": "44392.750",
+            "share_of_lines": 0.125,
+            "share_of_value": 0.062
+          },
+          "no_customer_id": {
+            "lines": 328,
+            "value_gbp": "6472.540",
+            "share_of_lines": 0.0183,
+            "share_of_value": 0.009
+          }
+        }
+      },
+      "without_top10_lines": {
+        "gps_gbp": "19643861.637",
+        "cpv_gbp": "437186.810",
+        "cpv_over_gps": 0.0223,
+        "cancel_lines": 17905,
+        "top20_products_cpv_gbp": "80178.960",
+        "top20_products_share_of_cpv": 0.1834,
+        "top20_customers_cpv_gbp": "149038.910",
+        "top20_customers_share_of_cpv": 0.3409,
+        "top20_customers_share_of_identified_cpv": 0.346,
+        "no_id_cpv_gbp": "6472.540",
+        "no_id_share_of_cpv": 0.0148,
+        "traceability": {
+          "traceable": {
+            "lines": 15339,
+            "value_gbp": "389636.520",
+            "share_of_lines": 0.8567,
+            "share_of_value": 0.8912
+          },
+          "identified_not_traceable": {
+            "lines": 2238,
+            "value_gbp": "41077.750",
+            "share_of_lines": 0.125,
+            "share_of_value": 0.094
+          },
+          "no_customer_id": {
+            "lines": 328,
+            "value_gbp": "6472.540",
+            "share_of_lines": 0.0183,
+            "share_of_value": 0.0148
+          }
+        }
+      },
+      "top10_lines_in_period": 10
+    }
+  },
+  "cancellation_rate": {
+    "period": "2009-12..2011-12",
+    "min_sold_units": 500,
+    "min_sale_invoices": 20,
+    "with_top10_lines": {
+      "eligible_products": 2523,
+      "pooled_rate_eligible_products": 0.0344,
+      "top20": [
+        {
+          "stock_code": "23166",
+          "description": "MEDIUM CERAMIC TOP STORAGE JAR",
+          "sold_units": 78033,
+          "cancelled_units": 74494,
+          "sale_invoices": 247,
+          "rate": 0.9546
+        },
+        {
+          "stock_code": "23113",
+          "description": "PANTRY CHOPPING BOARD",
+          "sold_units": 1154,
+          "cancelled_units": 946,
+          "sale_invoices": 57,
+          "rate": 0.8198
+        },
+        {
+          "stock_code": "23055",
+          "description": "IVORY CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 657,
+          "cancelled_units": 432,
+          "sale_invoices": 38,
+          "rate": 0.6575
+        },
+        {
+          "stock_code": "79341",
+          "description": "WILLOW BRANCH LIGHTS.",
+          "sold_units": 725,
+          "cancelled_units": 448,
+          "sale_invoices": 79,
+          "rate": 0.6179
+        },
+        {
+          "stock_code": "23056",
+          "description": "FLOWERS CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 963,
+          "cancelled_units": 579,
+          "sale_invoices": 39,
+          "rate": 0.6012
+        },
+        {
+          "stock_code": "23057",
+          "description": "BEADED CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 773,
+          "cancelled_units": 433,
+          "sale_invoices": 45,
+          "rate": 0.5602
+        },
+        {
+          "stock_code": "85160A",
+          "description": "WHITE BIRD GARDEN DESIGN MUG",
+          "sold_units": 8824,
+          "cancelled_units": 4320,
+          "sale_invoices": 35,
+          "rate": 0.4896
+        },
+        {
+          "stock_code": "37444B",
+          "description": "BLUE BREAKFAST CUP AND SAUCER ",
+          "sold_units": 2010,
+          "cancelled_units": 984,
+          "sale_invoices": 28,
+          "rate": 0.4896
+        },
+        {
+          "stock_code": "16202A",
+          "description": "PASTEL PINK PHOTO ALBUM ",
+          "sold_units": 662,
+          "cancelled_units": 324,
+          "sale_invoices": 21,
+          "rate": 0.4894
+        },
+        {
+          "stock_code": "16047",
+          "description": "POP ART PEN CASE & PENS",
+          "sold_units": 10612,
+          "cancelled_units": 5184,
+          "sale_invoices": 31,
+          "rate": 0.4885
+        },
+        {
+          "stock_code": "85006",
+          "description": "SET 4 NURSERY DES ROUND BOXES",
+          "sold_units": 3049,
+          "cancelled_units": 1480,
+          "sale_invoices": 37,
+          "rate": 0.4854
+        },
+        {
+          "stock_code": "85160B",
+          "description": "BLACK BIRD GARDEN DESIGN MUG",
+          "sold_units": 6156,
+          "cancelled_units": 2981,
+          "sale_invoices": 37,
+          "rate": 0.4842
+        },
+        {
+          "stock_code": "21392",
+          "description": "RED SPOTTY PUDDING BOWL",
+          "sold_units": 7545,
+          "cancelled_units": 3650,
+          "sale_invoices": 48,
+          "rate": 0.4838
+        },
+        {
+          "stock_code": "37444A",
+          "description": "YELLOW BREAKFAST CUP AND SAUCER",
+          "sold_units": 2709,
+          "cancelled_units": 1309,
+          "sale_invoices": 43,
+          "rate": 0.4832
+        },
+        {
+          "stock_code": "84847",
+          "description": "FLORAL BATHROOM SET",
+          "sold_units": 2330,
+          "cancelled_units": 1116,
+          "sale_invoices": 49,
+          "rate": 0.479
+        },
+        {
+          "stock_code": "37423",
+          "description": "WHITE WITH BLACK CATS PLATE",
+          "sold_units": 6168,
+          "cancelled_units": 2952,
+          "sale_invoices": 70,
+          "rate": 0.4786
+        },
+        {
+          "stock_code": "84842",
+          "description": "HELLO SAILOR BATHROOM SET",
+          "sold_units": 1505,
+          "cancelled_units": 720,
+          "sale_invoices": 35,
+          "rate": 0.4784
+        },
+        {
+          "stock_code": "21393",
+          "description": "BLUE  SPOTTY PUDDING BOWL",
+          "sold_units": 5244,
+          "cancelled_units": 2499,
+          "sale_invoices": 43,
+          "rate": 0.4765
+        },
+        {
+          "stock_code": "21336",
+          "description": "GOLD WASHBAG",
+          "sold_units": 1823,
+          "cancelled_units": 865,
+          "sale_invoices": 43,
+          "rate": 0.4745
+        },
+        {
+          "stock_code": "85184D",
+          "description": "S/4 BLUE ROUND DECOUPAGE BOXES",
+          "sold_units": 8312,
+          "cancelled_units": 3940,
+          "sale_invoices": 67,
+          "rate": 0.474
+        }
+      ]
+    },
+    "without_top10_lines": {
+      "eligible_products": 2523,
+      "pooled_rate_eligible_products": 0.0265,
+      "top20": [
+        {
+          "stock_code": "23055",
+          "description": "IVORY CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 657,
+          "cancelled_units": 432,
+          "sale_invoices": 38,
+          "rate": 0.6575
+        },
+        {
+          "stock_code": "79341",
+          "description": "WILLOW BRANCH LIGHTS.",
+          "sold_units": 725,
+          "cancelled_units": 448,
+          "sale_invoices": 79,
+          "rate": 0.6179
+        },
+        {
+          "stock_code": "23056",
+          "description": "FLOWERS CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 963,
+          "cancelled_units": 579,
+          "sale_invoices": 39,
+          "rate": 0.6012
+        },
+        {
+          "stock_code": "23057",
+          "description": "BEADED CHANDELIER T-LIGHT HOLDER",
+          "sold_units": 773,
+          "cancelled_units": 433,
+          "sale_invoices": 45,
+          "rate": 0.5602
+        },
+        {
+          "stock_code": "85160A",
+          "description": "WHITE BIRD GARDEN DESIGN MUG",
+          "sold_units": 8824,
+          "cancelled_units": 4320,
+          "sale_invoices": 35,
+          "rate": 0.4896
+        },
+        {
+          "stock_code": "37444B",
+          "description": "BLUE BREAKFAST CUP AND SAUCER ",
+          "sold_units": 2010,
+          "cancelled_units": 984,
+          "sale_invoices": 28,
+          "rate": 0.4896
+        },
+        {
+          "stock_code": "16202A",
+          "description": "PASTEL PINK PHOTO ALBUM ",
+          "sold_units": 662,
+          "cancelled_units": 324,
+          "sale_invoices": 21,
+          "rate": 0.4894
+        },
+        {
+          "stock_code": "16047",
+          "description": "POP ART PEN CASE & PENS",
+          "sold_units": 10612,
+          "cancelled_units": 5184,
+          "sale_invoices": 31,
+          "rate": 0.4885
+        },
+        {
+          "stock_code": "85006",
+          "description": "SET 4 NURSERY DES ROUND BOXES",
+          "sold_units": 3049,
+          "cancelled_units": 1480,
+          "sale_invoices": 37,
+          "rate": 0.4854
+        },
+        {
+          "stock_code": "85160B",
+          "description": "BLACK BIRD GARDEN DESIGN MUG",
+          "sold_units": 6156,
+          "cancelled_units": 2981,
+          "sale_invoices": 37,
+          "rate": 0.4842
+        },
+        {
+          "stock_code": "21392",
+          "description": "RED SPOTTY PUDDING BOWL",
+          "sold_units": 7545,
+          "cancelled_units": 3650,
+          "sale_invoices": 48,
+          "rate": 0.4838
+        },
+        {
+          "stock_code": "37444A",
+          "description": "YELLOW BREAKFAST CUP AND SAUCER",
+          "sold_units": 2709,
+          "cancelled_units": 1309,
+          "sale_invoices": 43,
+          "rate": 0.4832
+        },
+        {
+          "stock_code": "84847",
+          "description": "FLORAL BATHROOM SET",
+          "sold_units": 2330,
+          "cancelled_units": 1116,
+          "sale_invoices": 49,
+          "rate": 0.479
+        },
+        {
+          "stock_code": "37423",
+          "description": "WHITE WITH BLACK CATS PLATE",
+          "sold_units": 6168,
+          "cancelled_units": 2952,
+          "sale_invoices": 70,
+          "rate": 0.4786
+        },
+        {
+          "stock_code": "84842",
+          "description": "HELLO SAILOR BATHROOM SET",
+          "sold_units": 1505,
+          "cancelled_units": 720,
+          "sale_invoices": 35,
+          "rate": 0.4784
+        },
+        {
+          "stock_code": "21393",
+          "description": "BLUE  SPOTTY PUDDING BOWL",
+          "sold_units": 5244,
+          "cancelled_units": 2499,
+          "sale_invoices": 43,
+          "rate": 0.4765
+        },
+        {
+          "stock_code": "21336",
+          "description": "GOLD WASHBAG",
+          "sold_units": 1823,
+          "cancelled_units": 865,
+          "sale_invoices": 43,
+          "rate": 0.4745
+        },
+        {
+          "stock_code": "85184D",
+          "description": "S/4 BLUE ROUND DECOUPAGE BOXES",
+          "sold_units": 8312,
+          "cancelled_units": 3940,
+          "sale_invoices": 67,
+          "rate": 0.474
+        },
+        {
+          "stock_code": "20663",
+          "description": "QUEEN OF THE SKIES HOLIDAY PURSE ",
+          "sold_units": 1074,
+          "cancelled_units": 503,
+          "sale_invoices": 44,
+          "rate": 0.4683
+        },
+        {
+          "stock_code": "21279",
+          "description": "VINTAGE KITCHEN PRINT FRUITS",
+          "sold_units": 3527,
+          "cancelled_units": 1639,
+          "sale_invoices": 101,
+          "rate": 0.4647
+        }
+      ]
+    }
+  },
+  "top10_cancellation_lines": {
+    "total_value_gbp": "279275.760",
+    "share_of_whole_period_cpv": 0.3898,
+    "lines": [
+      {
+        "invoice": "C581484",
+        "stock_code": "23843",
+        "description": "PAPER CRAFT , LITTLE BIRDIE",
+        "customer_id": 16446,
+        "date": "2011-12-09 09:27:00",
+        "quantity": -80995,
+        "price_gbp": "2.080",
+        "value_gbp": "168469.600",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C541433",
+        "stock_code": "23166",
+        "description": "MEDIUM CERAMIC TOP STORAGE JAR",
+        "customer_id": 12346,
+        "date": "2011-01-18 10:17:00",
+        "quantity": -74215,
+        "price_gbp": "1.040",
+        "value_gbp": "77183.600",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C550456",
+        "stock_code": "21108",
+        "description": "FAIRY CAKE FLANNEL ASSORTED COLOUR",
+        "customer_id": 15749,
+        "date": "2011-04-18 13:08:00",
+        "quantity": -3114,
+        "price_gbp": "2.100",
+        "value_gbp": "6539.400",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C550456",
+        "stock_code": "85123A",
+        "description": "WHITE HANGING HEART T-LIGHT HOLDER",
+        "customer_id": 15749,
+        "date": "2011-04-18 13:08:00",
+        "quantity": -1930,
+        "price_gbp": "2.550",
+        "value_gbp": "4921.500",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C550456",
+        "stock_code": "48185",
+        "description": "DOORMAT FAIRY CAKE",
+        "customer_id": 15749,
+        "date": "2011-04-18 13:08:00",
+        "quantity": -670,
+        "price_gbp": "6.750",
+        "value_gbp": "4522.500",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C567527",
+        "stock_code": "23113",
+        "description": "PANTRY CHOPPING BOARD",
+        "customer_id": 17450,
+        "date": "2011-09-21 09:16:00",
+        "quantity": -756,
+        "price_gbp": "5.060",
+        "value_gbp": "3825.360",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C550456",
+        "stock_code": "21175",
+        "description": "GIN + TONIC DIET METAL SIGN",
+        "customer_id": 15749,
+        "date": "2011-04-18 13:08:00",
+        "quantity": -2000,
+        "price_gbp": "1.850",
+        "value_gbp": "3700.000",
+        "traceable": true,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C498151",
+        "stock_code": "85220",
+        "description": "SMALL FAIRY CAKE FRIDGE MAGNETS",
+        "customer_id": 13902,
+        "date": "2010-02-17 10:37:00",
+        "quantity": -2504,
+        "price_gbp": "1.450",
+        "value_gbp": "3630.800",
+        "traceable": true,
+        "country": "Denmark"
+      },
+      {
+        "invoice": "C550456",
+        "stock_code": "47566B",
+        "description": "TEA TIME PARTY BUNTING",
+        "customer_id": 15749,
+        "date": "2011-04-18 13:08:00",
+        "quantity": -1300,
+        "price_gbp": "2.550",
+        "value_gbp": "3315.000",
+        "traceable": false,
+        "country": "United Kingdom"
+      },
+      {
+        "invoice": "C529352",
+        "stock_code": "71477",
+        "description": "COLOUR GLASS. STAR T-LIGHT HOLDER",
+        "customer_id": 17450,
+        "date": "2010-10-28 09:32:00",
+        "quantity": -1152,
+        "price_gbp": "2.750",
+        "value_gbp": "3168.000",
+        "traceable": true,
+        "country": "United Kingdom"
+      }
+    ]
+  }
+}
