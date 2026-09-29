@@ -3,6 +3,7 @@
 Usage: uv run python tools/build_slide.py
 """
 
+import calendar
 import sys
 import textwrap
 from pathlib import Path
@@ -22,6 +23,12 @@ COLW = (1 - 2 * LEFT - 2 * GAP) / 3
 
 def _wrap(text: str, n: int) -> str:
     return "\n".join(textwrap.wrap(text, n))
+
+
+def _ym(ym: str) -> str:
+    """'2010-03' -> 'Mar 2010'."""
+    y, m = ym.split("-")
+    return f"{calendar.month_abbr[int(m)]} {y}"
 
 
 def _column(fig, i: int, big, big_color: str, heading: str, body: str):
@@ -87,9 +94,9 @@ def main(out_dir: Path | None = None) -> list[Path]:
 
     # 2. concentration bars
     conc = R["q2"]["concentration_year_b"]
-    ax, x = _column(fig, 1, pct(F["top1_share"], 0), S.GROWTH, "The top 1% of customers bring 30% of revenue".replace("30%", pct(F["top1_share"], 0)),
+    ax, x = _column(fig, 1, pct(F["top1_share"], 0), S.GROWTH, f"Top 1% of identified customers: {pct(F['top1_share'], 0)} of their revenue",
                     f"{F['top1_customers']} of {F['identified_customers_b']:,} identified customers; the top 10 alone are {pct(F['top10c_share'], 0)} of identified Year B NPR. "
-                    f"{pct(F['repeat_rate'])} of new customers place a second order within 90 days.")
+                    f"{pct(F['repeat_rate'])} of customers first seen {_ym(F['repeat_first'])}–{_ym(F['repeat_last'])} reorder within 90 days.")
     _style(ax)
     grp = [("Top 1%", conc["top_1pct"]["share_of_identified_npr"]), ("Top 10%", conc["top_10pct"]["share_of_identified_npr"]),
            ("Top 20%", conc["top_20pct"]["share_of_identified_npr"])]

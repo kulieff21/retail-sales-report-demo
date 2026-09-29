@@ -538,13 +538,13 @@ footer p{margin:0 0 8px}
       <div class="q-label"><span class="num">Q2</span><br>Customers</div>
       <div>
         <h2>How dependent is revenue on a few customers?</h2>
-        <p class="answer">Heavily. The top 1% of customers (43 accounts) brought <b>30.2%</b> of identified Year B revenue; the top 10 customers alone 16.7%. Among new customers, <b class="teal">38.8%</b> ordered again within 90 days.</p>
+        <p class="answer">Heavily. The top 1% of identified customers (43 accounts) brought <b>30.2%</b> of identified Year B revenue; the top 10 customers alone 16.7%. Among customers first seen from Mar 2010 to Aug 2011, <b class="teal">38.8%</b> ordered again within 90 days.</p>
       </div>
     </div>
     <div class="grid2 even">
       <div class="card chart" data-chart>
-        <h3>Share of Year B revenue by share of customers</h3>
-        <p class="sub">Identified customers ranked by net revenue. Drag the slider.</p>
+        <h3>Share of identified Year B revenue by share of identified customers</h3>
+        <p class="sub">Customers with an ID, ranked by net revenue; sales without an ID are outside this chart. Drag the slider.</p>
 <svg viewBox="0 0 560 420" role="img" aria-label="Cumulative share of revenue by share of customers">
 <line class="grid" x1="48" x2="546" y1="378.0" y2="378.0"/><text x="40" y="382.0" text-anchor="end">0%</text><text x="48.0" y="402" text-anchor="middle">0%</text>
 <line class="grid" x1="48" x2="546" y1="305.2" y2="305.2"/><text x="40" y="309.2" text-anchor="end">20%</text><text x="147.6" y="402" text-anchor="middle">20%</text>
@@ -566,7 +566,7 @@ footer p{margin:0 0 8px}
 </svg>
         <div class="slider"><label class="mono muted" for="pct" style="font-size:12px">Top share of customers</label>
           <input id="pct" type="range" min="0.5" max="100" step="0.5" value="1"></div>
-        <p class="readout" id="readout">The top <b>1%</b> of customers (<b>43</b> of 4,321) bring <b>30.2%</b> of identified revenue.</p>
+        <p class="readout" id="readout">The top <b>1%</b> of identified customers (<b>43</b> of 4,321) bring <b>30.2%</b> of identified revenue.</p>
         <p class="src">results/q2.json · concentration_year_b (the marked points are the exact figures)</p>
       </div>
       <div class="card chart" data-chart>
@@ -965,7 +965,7 @@ footer p{margin:0 0 8px}
       <div class="stack">
         <div class="card chart" data-chart>
           <h3>The ten largest cancellation lines</h3>
-          <p class="sub">Together £279,276: 39.0% of all cancelled value over the two years. The largest, 80,995 units of “Paper Craft , Little Birdie”, reverses an order of 80,995 units placed 12 minutes earlier.</p>
+          <p class="sub">Together £279,276: 39.0% of all cancelled value, Dec 2009 – 9 Dec 2011. The largest, 80,995 units of “Paper Craft , Little Birdie”, reverses an order of 80,995 units placed 12 minutes earlier.</p>
           <div class="stubs">
             <div class="stub"><span>2011-12-09</span><span>Paper Craft , Little Birdie <small>C581484 · 80,995 units</small></span><span class="v">£168,470</span></div>
             <div class="stub"><span>2011-01-18</span><span>Medium Ceramic Top Storage Jar <small>C541433 · 74,215 units</small></span><span class="v">£77,184</span></div>
@@ -1033,6 +1033,8 @@ footer p{margin:0 0 8px}
           <li><span class="h">29 Sep 2026, 17:32 · 6fbde10</span>Q1-Q3 results, cross-checked against an independent implementation</li>
           <li><span class="h">29 Sep 2026, 17:33 · a68cfcc</span>Plan amendment 4: state the measured size of the stock-code spelling issue</li>
           <li><span class="h">29 Sep 2026, 20:18 · 5f2d823</span>Report page: till-roll hero, animated charts, built from results JSON</li>
+          <li><span class="h">29 Sep 2026, 20:27 · 4ca8bc2</span>Client deliverables: notebook, Excel workbook, summary slide, static figures</li>
+          <li><span class="h">29 Sep 2026, 20:29 · f81de72</span>README: what the demo does, why the numbers hold, how to rebuild</li>
           <li><span class="h">ANALYSIS_PLAN.md</span>9 dated amendments, each with its reason</li>
         </ol>
       </div>
@@ -1087,7 +1089,7 @@ footer p{margin:0 0 8px}
     </div>
     <div>
       <p>© 2026 Elmar Guliyev · code MIT</p>
-      <p>Built 2026-09-29 from commit <span class="mono">5f2d823</span>.</p>
+      <p>Built 2026-09-29 from commit <span class="mono">f81de72</span>.</p>
     </div>
   </div>
 </footer>
@@ -1160,7 +1162,7 @@ document.addEventListener('pointerout', ev => { if (ev.target.closest('[data-tip
     const px = g.x0 + (g.x1 - g.x0) * x / 100, py = g.y0 - (g.y0 - g.y1) * Math.min(y, 100) / 100;
     dot.setAttribute('cx', px); dot.setAttribute('cy', py);
     guide.setAttribute('d', `M${px},${g.y0}V${py}H${g.x0}`);
-    out.innerHTML = `The top <b>${x.toFixed(1).replace('.0','')}%</b> of customers (<b>${n.toLocaleString('en-GB')}</b> of ${DATA.customers.toLocaleString('en-GB')}) bring <b>${y.toFixed(1)}%</b> of identified revenue.`;
+    out.innerHTML = `The top <b>${x.toFixed(1).replace('.0','')}%</b> of identified customers (<b>${n.toLocaleString('en-GB')}</b> of ${DATA.customers.toLocaleString('en-GB')}) bring <b>${y.toFixed(1)}%</b> of identified revenue.`;
   }
   input.addEventListener('input', upd); upd();
 })();

@@ -345,7 +345,7 @@ def pareto(led: pd.DataFrame, q2: dict) -> tuple[str, list, dict, str]:
     g.append(f'<circle id="pdot" cx="{X(k1["customers"] / n * 100):.1f}" cy="{Y(k1["share_of_identified_npr"] * 100):.1f}" '
              f'r="7" fill="var(--ink)" stroke="var(--paper)" stroke-width="2"/>')
     g.append("</svg>")
-    readout = (f'The top <b>1%</b> of customers (<b>{k1["customers"]:,}</b> of {n:,}) bring '
+    readout = (f'The top <b>1%</b> of identified customers (<b>{k1["customers"]:,}</b> of {n:,}) bring '
                f'<b>{pct(k1["share_of_identified_npr"])}</b> of identified revenue.')
     return "\n".join(g), pts, {"x0": x0, "x1": x1, "y0": y0, "y1": y1}, readout
 
@@ -475,7 +475,7 @@ def stubs(q3: dict, led: pd.DataFrame) -> tuple[str, str]:
         gap = f"{mins} minutes" if mins < 120 else f"{mins // 60} hours" if mins < 2880 else f"{mins // 1440} days"
         origin = (f" The largest, {-big['quantity']:,} units of “{big['description'].strip().title()}”, reverses an order of "
                   f"{int(s['quantity']):,} units placed {gap} earlier.")
-    sub = f"Together {full(D(t['total_value_gbp']))}: {pct(t['share_of_whole_period_cpv'])} of all cancelled value over the two years.{origin}"
+    sub = f"Together {full(D(t['total_value_gbp']))}: {pct(t['share_of_whole_period_cpv'])} of all cancelled value, Dec 2009 – 9 Dec 2011.{origin}"
     return "\n".join(out), sub
 
 
@@ -634,10 +634,10 @@ def main() -> None:
         "PRODUCT_ROWS": prod_rows, "PRODUCT_SUB": prod_sub,
         "Q1_NOT": ("It does not say why customers left or spent less: the data has no prices over time, no marketing and no "
                    "stock-outs. It shows where the change sits, which is where to ask next."),
-        "Q2_ANSWER": (f"Heavily. The top 1% of customers ({conc['top_1pct']['customers']} accounts) brought "
+        "Q2_ANSWER": (f"Heavily. The top 1% of identified customers ({conc['top_1pct']['customers']} accounts) brought "
                       f"<b>{pct(conc['top_1pct']['share_of_identified_npr'])}</b> of identified Year B revenue; the top 10 customers alone "
-                      f"{pct(conc['top_10_customers']['share_of_identified_npr'])}. Among new customers, "
-                      f"<b class=\"teal\">{pct(rp['pooled']['rate'])}</b> ordered again within 90 days."),
+                      f"{pct(conc['top_10_customers']['share_of_identified_npr'])}. Among customers first seen from "
+                      f"{month_name(rp['included_cohorts'][0])} to {month_name(rp['included_cohorts'][-1])}, <b class=\"teal\">{pct(rp['pooled']['rate'])}</b> ordered again within 90 days."),
         "PARETO_SVG": par_svg, "PARETO_READOUT": par_read,
         "REPEAT_SUB": (f"Customers first seen between {month_name(rp['included_cohorts'][0])} and "
                        f"{month_name(rp['included_cohorts'][-1])}; a second order on a later day, within 90 days of the first."),
