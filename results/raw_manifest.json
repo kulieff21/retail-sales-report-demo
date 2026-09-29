@@ -1,0 +1,20 @@
+{
+  "source": "online_retail_II.xlsx",
+  "sha256": "bcbe73b35f5b7babf197fb0cb983a11f5d9ff929078d4aa53d171b1f2df2e980",
+  "sheets": [
+    {
+      "index": 1,
+      "title": "Year 2009-2010",
+      "csv": "raw_sheet1.csv",
+      "data_rows": 525461,
+      "csv_sha256": "224f1c7548bc713088cf56ddf7c087ccdc6c07d6c8c3d2e58deb322a414c31b4"
+    },
+    {
+      "index": 2,
+      "title": "Year 2010-2011",
+      "csv": "raw_sheet2.csv",
+      "data_rows": 541910,
+      "csv_sha256": "746dbb9ced4ccbdda5b801ccd31fb597cd888347c99a338394a741a889361b6a"
+    }
+  ]
+}
