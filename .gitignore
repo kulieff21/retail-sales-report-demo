@@ -8,3 +8,4 @@ data/
 *.xlsx
 !reports/*.xlsx
 .codex-last.txt
+!site/files/*.xlsx

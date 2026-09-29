@@ -5,6 +5,7 @@
     "country_group": "Same groups as Q1: United Kingdom, five largest non-UK countries by Year B NPR, Other.",
     "top20_shares": "Top 20 products (product key = stock code stripped and upper-cased) and top 20 identified customers by CPV in the period. Share = their CPV / total CPV of the period (no-ID cancellations stay in the denominator); the customer share is also given over identified CPV only. no_id_share_of_cpv is reported separately.",
     "cancellation_rate": "Cancelled units / sold units per product over the whole period 2009-12..2011-12, only products with >= 500 sold units and >= 20 distinct sale_product invoices in that period. Cancelled units = sum |quantity| of cancel_product lines. Rate is not capped (can exceed 1). Ranked by rate, ties by cancelled units then code.",
+    "monthly_without_top10_lines": "Same as monthly, with the ten largest cancellation lines (see top10_lines) removed from the cancellation side; GPS unchanged.",
     "top10_lines": "Ten cancel_product lines with the largest |qty*price| over the whole period (ties by row_id). 'without_top10_lines' removes exactly those ten lines from the cancellation side (sales untouched) and recomputes the headline.",
     "traceability": "A cancel_product line is traceable if the same customer ID has an earlier sale_product line (InvoiceDate strictly earlier) with the same raw stock code (exact match, case and spaces as in the data) and the same price. Lines without Customer ID cannot be traced by definition and form their own bucket. Sale lines from the whole data are searched, so cancellations in the first months have no history to match (left-censoring). Quantity is not compared."
   },
@@ -157,6 +158,158 @@
       "gps_gbp": "614490.920",
       "cpv_gbp": "174091.360",
       "cpv_over_gps": 0.2833,
+      "partial": true
+    }
+  },
+  "monthly_without_top10_lines": {
+    "2009-12": {
+      "gps_gbp": "797901.160",
+      "cpv_gbp": "19558.080",
+      "cpv_over_gps": 0.0245,
+      "partial": false
+    },
+    "2010-01": {
+      "gps_gbp": "612297.422",
+      "cpv_gbp": "7465.630",
+      "cpv_over_gps": 0.0122,
+      "partial": false
+    },
+    "2010-02": {
+      "gps_gbp": "537909.676",
+      "cpv_gbp": "8944.640",
+      "cpv_over_gps": 0.0166,
+      "partial": false
+    },
+    "2010-03": {
+      "gps_gbp": "761705.981",
+      "cpv_gbp": "9603.850",
+      "cpv_over_gps": 0.0126,
+      "partial": false
+    },
+    "2010-04": {
+      "gps_gbp": "646340.932",
+      "cpv_gbp": "10025.260",
+      "cpv_over_gps": 0.0155,
+      "partial": false
+    },
+    "2010-05": {
+      "gps_gbp": "643492.030",
+      "cpv_gbp": "37192.890",
+      "cpv_over_gps": 0.0578,
+      "partial": false
+    },
+    "2010-06": {
+      "gps_gbp": "696583.190",
+      "cpv_gbp": "26373.460",
+      "cpv_over_gps": 0.0379,
+      "partial": false
+    },
+    "2010-07": {
+      "gps_gbp": "632994.320",
+      "cpv_gbp": "17132.730",
+      "cpv_over_gps": 0.0271,
+      "partial": false
+    },
+    "2010-08": {
+      "gps_gbp": "674037.720",
+      "cpv_gbp": "12397.600",
+      "cpv_over_gps": 0.0184,
+      "partial": false
+    },
+    "2010-09": {
+      "gps_gbp": "869243.121",
+      "cpv_gbp": "27686.420",
+      "cpv_over_gps": 0.0319,
+      "partial": false
+    },
+    "2010-10": {
+      "gps_gbp": "1094435.980",
+      "cpv_gbp": "22283.070",
+      "cpv_over_gps": 0.0204,
+      "partial": false
+    },
+    "2010-11": {
+      "gps_gbp": "1429700.782",
+      "cpv_gbp": "35098.980",
+      "cpv_over_gps": 0.0245,
+      "partial": false
+    },
+    "2010-12": {
+      "gps_gbp": "775638.360",
+      "cpv_gbp": "17547.860",
+      "cpv_over_gps": 0.0226,
+      "partial": false
+    },
+    "2011-01": {
+      "gps_gbp": "670380.240",
+      "cpv_gbp": "14341.450",
+      "cpv_over_gps": 0.0214,
+      "partial": false
+    },
+    "2011-02": {
+      "gps_gbp": "507799.870",
+      "cpv_gbp": "8335.520",
+      "cpv_over_gps": 0.0164,
+      "partial": false
+    },
+    "2011-03": {
+      "gps_gbp": "689833.510",
+      "cpv_gbp": "10504.300",
+      "cpv_over_gps": 0.0152,
+      "partial": false
+    },
+    "2011-04": {
+      "gps_gbp": "515377.991",
+      "cpv_gbp": "10317.660",
+      "cpv_over_gps": 0.02,
+      "partial": false
+    },
+    "2011-05": {
+      "gps_gbp": "739953.000",
+      "cpv_gbp": "8948.230",
+      "cpv_over_gps": 0.0121,
+      "partial": false
+    },
+    "2011-06": {
+      "gps_gbp": "737558.980",
+      "cpv_gbp": "13713.840",
+      "cpv_over_gps": 0.0186,
+      "partial": false
+    },
+    "2011-07": {
+      "gps_gbp": "688219.341",
+      "cpv_gbp": "11407.260",
+      "cpv_over_gps": 0.0166,
+      "partial": false
+    },
+    "2011-08": {
+      "gps_gbp": "724216.500",
+      "cpv_gbp": "22926.570",
+      "cpv_over_gps": 0.0317,
+      "partial": false
+    },
+    "2011-09": {
+      "gps_gbp": "1028320.381",
+      "cpv_gbp": "13155.280",
+      "cpv_over_gps": 0.0128,
+      "partial": false
+    },
+    "2011-10": {
+      "gps_gbp": "1103314.250",
+      "cpv_gbp": "41613.030",
+      "cpv_over_gps": 0.0377,
+      "partial": false
+    },
+    "2011-11": {
+      "gps_gbp": "1452115.980",
+      "cpv_gbp": "24991.440",
+      "cpv_over_gps": 0.0172,
+      "partial": false
+    },
+    "2011-12": {
+      "gps_gbp": "614490.920",
+      "cpv_gbp": "5621.760",
+      "cpv_over_gps": 0.0091,
       "partial": true
     }
   },

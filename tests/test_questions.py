@@ -208,6 +208,15 @@ def test_concentration_rounding_and_negative_customers():
     assert c["top_20pct"]["share_of_total_npr"] == round(21 / (total_id + 5), 4)
 
 
+def test_customer_npr_year_b_ranking_matches_concentration():
+    rows = [L(str(c), "2011-01-10 10:00", qty=c, price=1000, cust=c) for c in (3, 1, 2)]
+    rows.append(L("C9", "2011-01-11 10:00", qty=1, price=1000, cust=1))
+    p = product_lines(frame(rows))
+    cust = q2.customer_npr_year_b(p)
+    assert cust["customer_id"].tolist() == [3, 2, 1] and cust["value_milli"].tolist() == [3000, 2000, 0]
+    assert q2.concentration(p)["identified_npr_gbp"] == "5.000"
+
+
 # ---------------- Q3 ----------------
 
 def q3_fixture():
@@ -271,6 +280,18 @@ def test_top10_lines_removed_from_rates_and_headlines_in_compute():
     assert hw["cpv_gbp"] == "310.000" and hwo["cpv_gbp"] == "1.000"
     assert len(r["top10_cancellation_lines"]["lines"]) == 10
     assert r["top10_cancellation_lines"]["lines"][0]["invoice"] == "C1"
+
+
+def test_monthly_without_top10_lines():
+    rows = [L("S1", "2010-02-01 10:00", "10001", 100, 1000, 1), L("S2", "2010-03-01 10:00", "10001", 100, 1000, 1)]
+    rows.append(L("C1", "2010-02-05 10:00", "10001", 50, 1000, 1))                       # in the top 10, February
+    rows += [L(f"C{i + 2}", "2010-03-02 10:00", "10001", 1, 1000, 1) for i in range(10)]  # ten March lines
+    r = q3.compute(frame(rows))
+    m, mw = r["monthly"], r["monthly_without_top10_lines"]
+    assert m["2010-02"]["cpv_gbp"] == "50.000" and m["2010-03"]["cpv_gbp"] == "10.000"
+    # top 10 = C1 + nine of the ten March lines: one March line is left
+    assert mw["2010-02"]["cpv_gbp"] == "0.000" and mw["2010-03"]["cpv_gbp"] == "1.000"
+    assert mw["2010-02"]["gps_gbp"] == m["2010-02"]["gps_gbp"] and mw["2010-03"]["cpv_over_gps"] == 0.01
 
 
 def test_rate_eligibility_thresholds():

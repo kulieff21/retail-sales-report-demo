@@ -17,6 +17,7 @@ DEFINITIONS = {
                     "Share = their CPV / total CPV of the period (no-ID cancellations stay in the denominator); the customer share is also given over identified CPV only. no_id_share_of_cpv is reported separately.",
     "cancellation_rate": f"Cancelled units / sold units per product over the whole period {PERIOD[0]}..{PERIOD[1]}, only products with >= {MIN_SOLD_UNITS} sold units and >= {MIN_SALE_INVOICES} distinct sale_product invoices in that period. "
                          "Cancelled units = sum |quantity| of cancel_product lines. Rate is not capped (can exceed 1). Ranked by rate, ties by cancelled units then code.",
+    "monthly_without_top10_lines": "Same as monthly, with the ten largest cancellation lines (see top10_lines) removed from the cancellation side; GPS unchanged.",
     "top10_lines": "Ten cancel_product lines with the largest |qty*price| over the whole period (ties by row_id). 'without_top10_lines' removes exactly those ten lines from the cancellation side (sales untouched) and recomputes the headline.",
     "traceability": "A cancel_product line is traceable if the same customer ID has an earlier sale_product line (InvoiceDate strictly earlier) with the same raw stock code (exact match, case and spaces as in the data) and the same price. "
                     "Lines without Customer ID cannot be traced by definition and form their own bucket. Sale lines from the whole data are searched, so cancellations in the first months have no history to match (left-censoring). Quantity is not compared.",
@@ -112,6 +113,17 @@ def by_month_and_group(p: pd.DataFrame, top: list[str]) -> tuple[dict, dict, dic
     return monthly, by_group, by_group_month
 
 
+def monthly_without(p: pd.DataFrame, canc: pd.DataFrame, removed_index) -> dict:
+    """Monthly GPS / CPV / CPV-over-GPS with the given cancellation lines removed (sales untouched)."""
+    c = canc[~canc.index.isin(list(removed_index))]
+    out = {}
+    for m in month_range(*PERIOD):
+        gps = int(p.loc[p["is_sale"] & (p["month"] == m), "value_milli"].sum())
+        cpv = int(-c.loc[c["month"] == m, "value_milli"].sum())
+        out[m] = {"gps_gbp": gbp(gps), "cpv_gbp": gbp(cpv), "cpv_over_gps": ratio(cpv, gps), "partial": m == PARTIAL_MONTH}
+    return out
+
+
 def compute(df: pd.DataFrame) -> dict:
     p = product_lines(df)
     canc = add_traceability(p)
@@ -134,6 +146,7 @@ def compute(df: pd.DataFrame) -> dict:
     return {
         "definitions": DEFINITIONS,
         "monthly": monthly,
+        "monthly_without_top10_lines": monthly_without(p, canc, removed),
         "by_country_group": by_group,
         "by_country_group_month": by_group_month,
         "top5_non_uk_by_year_b_npr": top,

@@ -26,13 +26,19 @@ DEFINITIONS = {
 }
 
 
+def customer_npr_year_b(p: pd.DataFrame) -> pd.DataFrame:
+    """Year B NPR per identified customer (product lines, cancellations included), ranked descending
+    (ties by customer ID). Columns: customer_id, value_milli. `p` is a product_lines frame."""
+    ident = in_year(p, "B")
+    ident = ident[ident["customer_id"].notna()]
+    cust = ident.groupby(ident["customer_id"].astype("int64"))["value_milli"].sum().reset_index()
+    return cust.sort_values(["value_milli", "customer_id"], ascending=[False, True]).reset_index(drop=True)
+
+
 def concentration(df_or_p: pd.DataFrame) -> dict:
     p = df_or_p
-    b = in_year(p, "B")
-    total_b = int(b["value_milli"].sum())
-    ident = b[b["customer_id"].notna()]
-    cust = ident.groupby(ident["customer_id"].astype("int64"))["value_milli"].sum().reset_index()
-    cust = cust.sort_values(["value_milli", "customer_id"], ascending=[False, True]).reset_index(drop=True)
+    total_b = int(in_year(p, "B")["value_milli"].sum())
+    cust = customer_npr_year_b(p)
     n = len(cust)
     total_id = int(cust["value_milli"].sum())
 
