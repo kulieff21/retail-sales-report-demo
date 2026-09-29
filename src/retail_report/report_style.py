@@ -1,5 +1,6 @@
 """Visual identity for the report deliverables: palette, fonts, matplotlib defaults, chart helpers."""
 
+import os
 from pathlib import Path
 
 import matplotlib
@@ -19,7 +20,8 @@ NEUTRAL = "#4a5563"     # retained / neutral
 YEAR_A = "#9aa4af"
 YEAR_B = INK
 
-FONT_DIR = Path("/mnt/d/ronin-work/assets/fonts")
+# Archivo and DM Mono TTFs (OFL, from github.com/google/fonts); optional, DejaVu is the fallback.
+FONT_DIR = Path(os.environ.get("RETAIL_FONT_DIR", "fonts"))
 HEAD = "DejaVu Sans"
 MONO = "DejaVu Sans Mono"
 DPI = 200

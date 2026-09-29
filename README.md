@@ -3,8 +3,8 @@
 A raw sales export in, a decision report out: every raw line accounted for, three business
 questions answered, and every headline number re-derived by a second, independent implementation.
 
-**Report page:** `site/index.html` (built by `tools/build_site.py`; published with GitHub Pages
-once the repository is public).
+**Report page: https://kulieff21.github.io/retail-sales-report-demo/** (built by
+`tools/build_site.py`, published from `site/`).
 
 > **Demo analysis on public data.** The data is the *Online Retail II* transaction log of a UK
 > online gift retailer (2009–2011), published by the UCI Machine Learning Repository under
@@ -53,6 +53,7 @@ https://archive.ics.uci.edu/dataset/502/online+retail+ii into a data folder, the
 
 ```bash
 export RETAIL_DATA_DIR=/path/to/data
+export RETAIL_FONT_DIR=/path/to/fonts                # optional: Archivo + DM Mono TTFs for the figures
 uv sync
 uv run python tools/export_raw_csv.py            # xlsx -> raw_sheet1.csv, raw_sheet2.csv (hash-checked)
 uv run python -m retail_report.build_ledger      # row ledger -> results/reconciliation.json, profile.json
