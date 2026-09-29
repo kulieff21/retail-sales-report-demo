@@ -124,8 +124,9 @@ Amendments 4–9 were made **after** the first Q1–Q3 run, when the two indepen
 were compared. None changes a total, a year figure or a rule in section 2; they settle choices
 the plan left open, and both implementations now follow them.
 
-4. **2026-09-29, product key.** 171 stock codes appear in two letter cases (about 3,240 lines,
-   ~£52k), e.g. `85123A` / `85123a`. Product-level results (Q1 product Δ, Q3 top-20 products,
+4. **2026-09-29, product key.** 171 products appear under two spellings of their stock code
+   (letter case or a trailing space), e.g. `85123A` / `85123a`; 3,189 sale and cancellation lines
+   (£51,505 in absolute value) use the less common spelling. Product-level results (Q1 product Δ, Q3 top-20 products,
    cancellation rates) group by the code stripped and upper-cased. Traceability (Q3) still matches
    the raw code, which is the more conservative reading.
 5. **2026-09-29, top p% of customers.** The group is `floor(N × p)` customers, at least 1, so it
