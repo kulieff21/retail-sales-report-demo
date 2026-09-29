@@ -1,0 +1,27 @@
+{
+  "rows": 1067371,
+  "distinct": {
+    "invoices": 53628,
+    "customers": 5942,
+    "stock_codes": 5305,
+    "countries": 43
+  },
+  "missing_values_by_column": {
+    "raw_invoice": 0,
+    "raw_stock_code": 0,
+    "raw_description": 4382,
+    "raw_quantity": 0,
+    "raw_invoice_date": 0,
+    "raw_price": 0,
+    "raw_customer_id": 243007,
+    "raw_country": 0
+  },
+  "before_dispositions": {
+    "quantity_negative": 22950,
+    "quantity_zero": 0,
+    "price_negative": 5,
+    "price_zero": 6202,
+    "invoices_starting_C": 19494,
+    "invoices_starting_A": 6
+  }
+}

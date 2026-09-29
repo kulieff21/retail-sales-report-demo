@@ -1,0 +1,300 @@
+{
+  "raw": {
+    "rows": 1067371,
+    "value_gbp": "19287250.568",
+    "missing_customer_id_rows": 243007,
+    "missing_customer_id_value_gbp": "2638958.180"
+  },
+  "money_note": "value = quantity * price, exact (integer milli-GBP internally); *_gbp are decimal strings",
+  "dispositions": {
+    "dup_cross_sheet": {
+      "rows": 22523,
+      "value_gbp": "377488.450",
+      "missing_customer_id_rows": 7720,
+      "missing_customer_id_value_gbp": "72865.100"
+    },
+    "dup_exact": {
+      "rows": 11812,
+      "value_gbp": "54228.420",
+      "missing_customer_id_rows": 136,
+      "missing_customer_id_value_gbp": "550.670"
+    },
+    "adjustment": {
+      "rows": 6,
+      "value_gbp": "-147614.080",
+      "missing_customer_id_rows": 6,
+      "missing_customer_id_value_gbp": "-147614.080"
+    },
+    "cancel_product": {
+      "rows": 17915,
+      "value_gbp": "-716462.570",
+      "missing_customer_id_rows": 328,
+      "missing_customer_id_value_gbp": "-6472.540"
+    },
+    "cancel_non_product": {
+      "rows": 1189,
+      "value_gbp": "-745588.040",
+      "missing_customer_id_rows": 386,
+      "missing_customer_id_value_gbp": "-370765.090"
+    },
+    "stock_movement": {
+      "rows": 3393,
+      "value_gbp": "0.000",
+      "missing_customer_id_rows": 3393,
+      "missing_customer_id_value_gbp": "0.000"
+    },
+    "zero_price": {
+      "rows": 2621,
+      "value_gbp": "0.000",
+      "missing_customer_id_rows": 2551,
+      "missing_customer_id_value_gbp": "0.000"
+    },
+    "sale_non_product": {
+      "rows": 4555,
+      "value_gbp": "821336.751",
+      "missing_customer_id_rows": 1726,
+      "missing_customer_id_value_gbp": "515115.220"
+    },
+    "sale_product": {
+      "rows": 1003357,
+      "value_gbp": "19643861.637",
+      "missing_customer_id_rows": 226761,
+      "missing_customer_id_value_gbp": "2575278.900"
+    },
+    "unclassified": {
+      "rows": 0,
+      "value_gbp": "0.000",
+      "missing_customer_id_rows": 0,
+      "missing_customer_id_value_gbp": "0.000"
+    }
+  },
+  "identities": {
+    "row_count_sums_to_raw": true,
+    "value_sums_to_raw_exactly": true
+  },
+  "sheets": {
+    "sheet1": {
+      "rows": 525461,
+      "date_min": "2009-12-01 07:45:00",
+      "date_max": "2010-12-09 20:01:00"
+    },
+    "sheet2": {
+      "rows": 541910,
+      "date_min": "2010-12-01 08:26:00",
+      "date_max": "2011-12-09 12:50:00"
+    },
+    "overlap_window": {
+      "from": "2010-12-01 08:26:00",
+      "to": "2010-12-09 20:01:00",
+      "overlaps": true,
+      "rows_sheet1_in_window": 22523,
+      "rows_sheet2_in_window": 22523,
+      "dup_cross_sheet_rows": 22523
+    }
+  },
+  "section3": {
+    "definitions": "GPS=sum(qty*price) sale_product; CPV=sum|qty*price| cancel_product; NPR=GPS-CPV; order=distinct invoice with a sale_product line in the period; customers=distinct customer IDs on those lines (missing IDs excluded). Lines dated by own InvoiceDate.",
+    "year_a": {
+      "from": "2009-12",
+      "to": "2010-11",
+      "gps_gbp": "9396642.314",
+      "cpv_gbp": "240561.410",
+      "npr_gbp": "9156080.904",
+      "orders": 19743,
+      "identified_customers": 4239
+    },
+    "year_b": {
+      "from": "2010-12",
+      "to": "2011-11",
+      "gps_gbp": "9632728.403",
+      "cpv_gbp": "301809.800",
+      "npr_gbp": "9330918.603",
+      "orders": 18957,
+      "identified_customers": 4293
+    },
+    "by_month": {
+      "2009-12": {
+        "gps_gbp": "797901.160",
+        "cpv_gbp": "19558.080",
+        "npr_gbp": "778343.080",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-01": {
+        "gps_gbp": "612297.422",
+        "cpv_gbp": "7465.630",
+        "npr_gbp": "604831.792",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-02": {
+        "gps_gbp": "537909.676",
+        "cpv_gbp": "12575.440",
+        "npr_gbp": "525334.236",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-03": {
+        "gps_gbp": "761705.981",
+        "cpv_gbp": "9603.850",
+        "npr_gbp": "752102.131",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-04": {
+        "gps_gbp": "646340.932",
+        "cpv_gbp": "10025.260",
+        "npr_gbp": "636315.672",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-05": {
+        "gps_gbp": "643492.030",
+        "cpv_gbp": "37192.890",
+        "npr_gbp": "606299.140",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-06": {
+        "gps_gbp": "696583.190",
+        "cpv_gbp": "26373.460",
+        "npr_gbp": "670209.730",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-07": {
+        "gps_gbp": "632994.320",
+        "cpv_gbp": "17132.730",
+        "npr_gbp": "615861.590",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-08": {
+        "gps_gbp": "674037.720",
+        "cpv_gbp": "12397.600",
+        "npr_gbp": "661640.120",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-09": {
+        "gps_gbp": "869243.121",
+        "cpv_gbp": "27686.420",
+        "npr_gbp": "841556.701",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-10": {
+        "gps_gbp": "1094435.980",
+        "cpv_gbp": "25451.070",
+        "npr_gbp": "1068984.910",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-11": {
+        "gps_gbp": "1429700.782",
+        "cpv_gbp": "35098.980",
+        "npr_gbp": "1394601.802",
+        "partial": false,
+        "year": "A"
+      },
+      "2010-12": {
+        "gps_gbp": "775638.360",
+        "cpv_gbp": "17547.860",
+        "npr_gbp": "758090.500",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-01": {
+        "gps_gbp": "670380.240",
+        "cpv_gbp": "91525.050",
+        "npr_gbp": "578855.190",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-02": {
+        "gps_gbp": "507799.870",
+        "cpv_gbp": "8335.520",
+        "npr_gbp": "499464.350",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-03": {
+        "gps_gbp": "689833.510",
+        "cpv_gbp": "10504.300",
+        "npr_gbp": "679329.210",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-04": {
+        "gps_gbp": "515377.991",
+        "cpv_gbp": "33316.060",
+        "npr_gbp": "482061.931",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-05": {
+        "gps_gbp": "739953.000",
+        "cpv_gbp": "8948.230",
+        "npr_gbp": "731004.770",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-06": {
+        "gps_gbp": "737558.980",
+        "cpv_gbp": "13713.840",
+        "npr_gbp": "723845.140",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-07": {
+        "gps_gbp": "688219.341",
+        "cpv_gbp": "11407.260",
+        "npr_gbp": "676812.081",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-08": {
+        "gps_gbp": "724216.500",
+        "cpv_gbp": "22926.570",
+        "npr_gbp": "701289.930",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-09": {
+        "gps_gbp": "1028320.381",
+        "cpv_gbp": "16980.640",
+        "npr_gbp": "1011339.741",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-10": {
+        "gps_gbp": "1103314.250",
+        "cpv_gbp": "41613.030",
+        "npr_gbp": "1061701.220",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-11": {
+        "gps_gbp": "1452115.980",
+        "cpv_gbp": "24991.440",
+        "npr_gbp": "1427124.540",
+        "partial": false,
+        "year": "B"
+      },
+      "2011-12": {
+        "gps_gbp": "614490.920",
+        "cpv_gbp": "174091.360",
+        "npr_gbp": "440399.560",
+        "partial": true,
+        "year": null
+      }
+    },
+    "orders_spanning_years": 0,
+    "excluded_from_year_totals": {
+      "month": "2011-12",
+      "gps_gbp": "614490.920",
+      "cpv_gbp": "174091.360",
+      "npr_gbp": "440399.560"
+    }
+  }
+}

@@ -106,4 +106,16 @@ of revenue is reported.
 
 ## Amendments
 
-(none yet)
+Each amendment is dated and was made before any Q1–Q3 number was computed unless it says otherwise.
+
+1. **2026-09-29, money unit.** 18 raw rows carry a price of £0.001 (`PADS`, one `BANK CHARGES`
+   line), so pence are not exact. All money is held as integer milli-pounds (£0.001) and the value
+   identity is asserted to £0.001, which is stricter than "to the penny".
+2. **2026-09-29, surplus cross-sheet copies (clarification).** If sheet 2 holds more copies of a
+   row than sheet 1 can absorb, the surplus is not `dup_cross_sheet`; it falls to rule 2 and is
+   flagged `dup_exact`, because it duplicates an earlier remaining row. This follows from the rule
+   order; stated here because section 2 did not spell it out.
+3. **2026-09-29, stock code classes.** `config/stock_codes.yaml` lists 63 codes outside the product
+   pattern. Classed as products because the descriptions are merchandise: `DCGS*` (33 codes),
+   `PADS`, `SP1002`, and `47503J ` (a product code with a trailing space). `B` (bad-debt adjustment)
+   is class `other`; all 6 of its rows are on `A` invoices and land in `adjustment` either way.

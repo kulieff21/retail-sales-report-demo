@@ -1,0 +1,450 @@
+# Non-product-regex stock codes (regex ^\d{5}[A-Za-z]{0,2}$). Every distinct code that does not match
+# must be listed here with an explicit class. rows/value_gbp are checked against the data at build time.
+codes:
+  '47503J ':
+    rows: 1
+    value_gbp: '16.130'
+    sample_descriptions:
+    - SET/3 FLORAL GARDEN TOOLS IN BAG
+    class: product
+    note: real product code with a trailing space in the raw text; kept verbatim
+  ADJUST:
+    rows: 67
+    value_gbp: '6835.240'
+    sample_descriptions:
+    - Adjustment by john on 26/01/2010 16
+    - Adjustment by john on 26/01/2010 17
+    - Adjustment by Peter on 24/05/2010 1
+    class: manual
+    note: manual adjustment lines
+  ADJUST2:
+    rows: 3
+    value_gbp: '731.050'
+    sample_descriptions:
+    - 'Adjustment by Peter on Jun 25 2010 '
+    class: manual
+    note: manual adjustment lines
+  AMAZONFEE:
+    rows: 43
+    value_gbp: '-260763.580'
+    sample_descriptions:
+    - AMAZON FEE
+    class: fee
+  B:
+    rows: 6
+    value_gbp: '-147614.080'
+    sample_descriptions:
+    - Adjust bad debt
+    class: other
+    note: bad-debt adjustment (invoices start with A)
+  BANK CHARGES:
+    rows: 102
+    value_gbp: '-35562.629'
+    sample_descriptions:
+    - Bank Charges
+    - ' Bank Charges'
+    class: fee
+  C2:
+    rows: 282
+    value_gbp: '13386.000'
+    sample_descriptions:
+    - CARRIAGE
+    class: postage
+    note: carriage
+  C3:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: other
+    note: blank description, single zero-value row
+  CRUK:
+    rows: 16
+    value_gbp: '-7933.430'
+    sample_descriptions:
+    - CRUK Commission
+    class: fee
+    note: charity commission
+  D:
+    rows: 177
+    value_gbp: '-13484.540'
+    sample_descriptions:
+    - Discount
+    class: discount
+  DCGS0003:
+    rows: 14
+    value_gbp: '32.590'
+    sample_descriptions:
+    - BOXED GLASS ASHTRAY
+    - ebay
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0004:
+    rows: 5
+    value_gbp: '67.940'
+    sample_descriptions:
+    - HAYNES CAMPER SHOULDER BAG
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0006:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0016:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0027:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0036:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0037:
+    rows: 2
+    value_gbp: '12.720'
+    sample_descriptions:
+    - KEY-RING CORKSCREW
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0039:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0041:
+    rows: 1
+    value_gbp: '5.060'
+    sample_descriptions:
+    - HAYNES MINI-COOPER PLAYING CARDS
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0044:
+    rows: 1
+    value_gbp: '2.570'
+    sample_descriptions:
+    - HANDZ-OFF CAR FRESHENER
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0053:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0055:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0056:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0057:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0058:
+    rows: 31
+    value_gbp: '34.820'
+    sample_descriptions:
+    - MISO PRETTY  GUM
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0059:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0060:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0062:
+    rows: 2
+    value_gbp: '2.510'
+    sample_descriptions:
+    - ROAD-RAGE CAR FRESHENER
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0066N:
+    rows: 4
+    value_gbp: '17.300'
+    sample_descriptions:
+    - NAVY CUDDLES DOG HOODIE
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0066P:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0067:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions:
+    - ebay
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0068:
+    rows: 3
+    value_gbp: '17.120'
+    sample_descriptions:
+    - DOGS NIGHT COLLAR
+    - ebay
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0069:
+    rows: 6
+    value_gbp: '80.310'
+    sample_descriptions:
+    - OOH LA LA DOGS COLLAR
+    - ebay
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0070:
+    rows: 3
+    value_gbp: '25.440'
+    sample_descriptions:
+    - CAMOUFLAGE DOG COLLAR
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0071:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0072:
+    rows: 4
+    value_gbp: '20.680'
+    sample_descriptions:
+    - CAT CAMOUFLAGUE COLLAR
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0073:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions:
+    - ebay
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0074:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0075:
+    rows: 1
+    value_gbp: '12.720'
+    sample_descriptions:
+    - CAMOUFLAGUE DOG LEAD
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGS0076:
+    rows: 15
+    value_gbp: '292.090'
+    sample_descriptions:
+    - SUNJAR LED NIGHT NIGHT LIGHT
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGSLBOY:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGSLGIRL:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGSSBOY:
+    rows: 23
+    value_gbp: '251.350'
+    sample_descriptions:
+    - BOYS PARTY BAG
+    - update
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DCGSSGIRL:
+    rows: 25
+    value_gbp: '295.630'
+    sample_descriptions:
+    - GIRLS PARTY BAG
+    - update
+    class: product
+    note: 'DCGS family: merchandise (eBay/dotcom gift shop items) with real item descriptions; blank-description rows follow
+      the family'
+  DOT:
+    rows: 1446
+    value_gbp: '322647.470'
+    sample_descriptions:
+    - DOTCOM POSTAGE
+    class: postage
+    note: dotcom postage
+  GIFT:
+    rows: 1
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: other
+    note: blank description, single zero-value row
+  M:
+    rows: 1421
+    value_gbp: '-82796.320'
+    sample_descriptions:
+    - Manual
+    class: manual
+  PADS:
+    rows: 19
+    value_gbp: '-36.583'
+    sample_descriptions:
+    - PADS TO MATCH ALL CUSHIONS
+    class: product
+    note: real item description (cushion pads), sold at 0.001
+  POST:
+    rows: 2122
+    value_gbp: '112341.000'
+    sample_descriptions:
+    - POSTAGE
+    class: postage
+  S:
+    rows: 104
+    value_gbp: '-6065.800'
+    sample_descriptions:
+    - SAMPLES
+    class: sample
+  SP1002:
+    rows: 3
+    value_gbp: '14.750'
+    sample_descriptions:
+    - KID'S CHALKBOARD/EASEL
+    class: product
+    note: real item description (chalkboard easel)
+  TEST001:
+    rows: 15
+    value_gbp: '202.500'
+    sample_descriptions:
+    - This is a test product.
+    class: test
+  TEST002:
+    rows: 2
+    value_gbp: '1.000'
+    sample_descriptions:
+    - This is a test product.
+    class: test
+  gift_0001_10:
+    rows: 16
+    value_gbp: '126.210'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £10.00
+    class: voucher
+  gift_0001_20:
+    rows: 29
+    value_gbp: '471.060'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £20.00
+    - 'to push order througha s stock was '
+    class: voucher
+  gift_0001_30:
+    rows: 29
+    value_gbp: '610.090'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £30.00
+    class: voucher
+  gift_0001_40:
+    rows: 7
+    value_gbp: '166.090'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £40.00
+    class: voucher
+  gift_0001_50:
+    rows: 8
+    value_gbp: '253.590'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £50.00
+    class: voucher
+  gift_0001_60:
+    rows: 2
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: voucher
+  gift_0001_70:
+    rows: 3
+    value_gbp: '59.570'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £70.00
+    class: voucher
+  gift_0001_80:
+    rows: 4
+    value_gbp: '0.000'
+    sample_descriptions:
+    - Dotcomgiftshop Gift Voucher £80.00
+    class: voucher
+  gift_0001_90:
+    rows: 2
+    value_gbp: '0.000'
+    sample_descriptions: []
+    class: voucher
+  m:
+    rows: 5
+    value_gbp: '15.050'
+    sample_descriptions:
+    - Manual
+    class: manual
+    note: lowercase variant of M
